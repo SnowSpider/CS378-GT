@@ -1,0 +1,11 @@
+ACLOCAL_AMFLAGS= -I m4
+noinst_HEADERS= BaseApplication.h TutorialApplication.h
+
+bin_PROGRAMS= Balla
+proj1_CPPFLAGS= -I$(top_srcdir)
+proj1_SOURCES= BaseApplication.cpp TutorialApplication.cpp
+proj1_CXXFLAGS= $(OGRE_CFLAGS) $(OIS_CFLAGS)
+proj1_LDADD= $(OGRE_LIBS) $(OIS_LIBS)
+
+EXTRA_DIST= buildit makeit
+AUTOMAKE_OPTIONS= foreign
