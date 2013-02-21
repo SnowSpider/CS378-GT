@@ -4,15 +4,15 @@
 
 int id = 0;
 
-GameObject::GameObject(Ogre::SceneManager* scnMgr, Ogre::Vector3 loc, char* mesh, char* mat){
-    location = loc;
+GameObject::GameObject(Ogre::SceneManager* scnMgr, Ogre::Vector3 pos, char* mesh, char* mat){
+    position = pos;
     Ogre::Entity* ball = scnMgr->createEntity("GameObject"+id, mesh);
     ball->setMaterialName(mat);
     ball->setCastShadows(true);
     rootNode = scnMgr->getRootSceneNode()->createChildSceneNode("GameObject"+id);
     rootNode->attachObject(ball);
     rootNode->scale(0.1f, 0.1f, 0.1f);
-    rootNode->translate(loc.x, loc.y, loc.z);
+    rootNode->translate(pos.x, pos.y, pos.z);
     direction = Ogre::Vector3(0.0f, 0.0f, 0.0f);
     //direction.normalise();
     speed = 0.0f;
@@ -23,7 +23,7 @@ GameObject::GameObject(Ogre::SceneManager* scnMgr, Ogre::Vector3 loc, char* mesh
 void GameObject::move(const Ogre::FrameEvent& evt){
     //Ogre::Vector3 position = rootNode->getPosition();
     rootNode->translate(speed * evt.timeSinceLastFrame * direction);
-    location += speed * evt.timeSinceLastFrame * direction;
+    position += speed * evt.timeSinceLastFrame * direction;
 }
 
 void GameObject::setSpeed(Ogre::Real s){
@@ -40,4 +40,9 @@ void GameObject::setMass(Ogre::Real m){
 
 void GameObject::scale(float s){
     rootNode->scale(s, s, s);
+}
+
+void GameObject::setPosition(Ogre::Vector3 pos){
+    position = pos;
+    rootNode->setPosition(pos);
 }

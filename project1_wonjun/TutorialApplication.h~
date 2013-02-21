@@ -30,7 +30,8 @@ private:
     int xi;
     int yi;
     GameObject myPaddle;
-    bool serve;
+    GameObject myBall;
+    bool ready;
     
 public:
     TutorialApplication(void);

@@ -9,22 +9,26 @@ using namespace std;
 
 class GameObject {
     private:
+    Ogre::Vector3 position; // xyz coordinates with respect to the world origin
+    Ogre::Vector3 nextPosition; // expected position in the next frame
+    
+    public:
     Ogre::SceneNode* rootNode;
     Ogre::Vector3 direction;
     Ogre::Vector3 speed;
-    Ogre::Vector3 location; //xyz coordinates with respect to the world origin
     Ogre::Real mass; 
     //GameObject(){}
     
-    public:
+    
     GameObject(){}
-    GameObject(Ogre::SceneManager* scnMgr, Ogre::Vector3 loc, char* mesh, char* mat);
+    GameObject(Ogre::SceneManager* scnMgr, Ogre::Vector3 pos, char* mesh, char* mat);
     //~GameObject();
     void move(const Ogre::FrameEvent& evt);
     void setSpeed(Ogre::Real s);
     void setDirection(Ogre::Vector3 d);
     void setMass(Ogre::Real m);
     void scale(float s);
+    void setPosition(Ogre::Vector3 d);
     Ogre::SceneNode* getNode() { return rootNode; }
 };
 

@@ -30,6 +30,7 @@ private:
     int xi;
     int yi;
     GameObject myPaddle;
+    GameObject myBall;
     bool ready;
     
 public:
@@ -37,21 +38,6 @@ public:
     virtual ~TutorialApplication(void);
 
 protected:
-    
-    Ogre::Real mNumber;
-    Ogre::Vector3 mTempVector;
-    
-    Ogre::Vector3 mDirection;
-    Ogre::Vector3 mCurrPosition;
-    Ogre::Vector3 mNextPosition;
-    
-    Ogre::Entity *mBall;
-    Ogre::SceneNode *mNode;
- 
-    Ogre::Real mBallSpeed;
-    
-    bool exitCmd;
-    
     virtual void createScene(void);
     
     // Ogre::FrameListener
