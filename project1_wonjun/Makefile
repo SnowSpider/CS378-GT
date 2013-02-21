@@ -54,7 +54,8 @@ CONFIG_CLEAN_VPATH_FILES =
 am__installdirs = "$(DESTDIR)$(bindir)"
 PROGRAMS = $(bin_PROGRAMS)
 am_OgreApp_OBJECTS = OgreApp-BaseApplication.$(OBJEXT) \
-	OgreApp-TutorialApplication.$(OBJEXT)
+	OgreApp-TutorialApplication.$(OBJEXT) \
+	OgreApp-GameObject.$(OBJEXT)
 OgreApp_OBJECTS = $(am_OgreApp_OBJECTS)
 am__DEPENDENCIES_1 =
 OgreApp_DEPENDENCIES = $(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
@@ -95,12 +96,12 @@ distuninstallcheck_listfiles = find . -type f -print
 am__distuninstallcheck_listfiles = $(distuninstallcheck_listfiles) \
   | sed 's|^\./|$(prefix)/|' | grep -v '$(infodir)/dir$$'
 distcleancheck_listfiles = find . -type f -print
-ACLOCAL = ${SHELL} /v/filer4b/v38q001/wlee/CS378_GT_2013/Pong3D/missing --run aclocal-1.11
+ACLOCAL = ${SHELL} /v/filer4b/v38q001/wlee/CS378-GT/project1_wonjun/missing --run aclocal-1.11
 AMTAR = $${TAR-tar}
 AR = ar
-AUTOCONF = ${SHELL} /v/filer4b/v38q001/wlee/CS378_GT_2013/Pong3D/missing --run autoconf
-AUTOHEADER = ${SHELL} /v/filer4b/v38q001/wlee/CS378_GT_2013/Pong3D/missing --run autoheader
-AUTOMAKE = ${SHELL} /v/filer4b/v38q001/wlee/CS378_GT_2013/Pong3D/missing --run automake-1.11
+AUTOCONF = ${SHELL} /v/filer4b/v38q001/wlee/CS378-GT/project1_wonjun/missing --run autoconf
+AUTOHEADER = ${SHELL} /v/filer4b/v38q001/wlee/CS378-GT/project1_wonjun/missing --run autoheader
+AUTOMAKE = ${SHELL} /v/filer4b/v38q001/wlee/CS378-GT/project1_wonjun/missing --run automake-1.11
 AWK = gawk
 CC = gcc
 CCDEPMODE = depmode=gcc3
@@ -137,7 +138,7 @@ LIBTOOL = $(SHELL) $(top_builddir)/libtool
 LIPO = 
 LN_S = ln -s
 LTLIBOBJS = 
-MAKEINFO = ${SHELL} /v/filer4b/v38q001/wlee/CS378_GT_2013/Pong3D/missing --run makeinfo
+MAKEINFO = ${SHELL} /v/filer4b/v38q001/wlee/CS378-GT/project1_wonjun/missing --run makeinfo
 MANIFEST_TOOL = :
 MKDIR_P = /bin/mkdir -p
 NM = /usr/bin/nm -B
@@ -169,10 +170,10 @@ SET_MAKE =
 SHELL = /bin/bash
 STRIP = strip
 VERSION = 0.1
-abs_builddir = /v/filer4b/v38q001/wlee/CS378_GT_2013/Pong3D
-abs_srcdir = /v/filer4b/v38q001/wlee/CS378_GT_2013/Pong3D
-abs_top_builddir = /v/filer4b/v38q001/wlee/CS378_GT_2013/Pong3D
-abs_top_srcdir = /v/filer4b/v38q001/wlee/CS378_GT_2013/Pong3D
+abs_builddir = /v/filer4b/v38q001/wlee/CS378-GT/project1_wonjun
+abs_srcdir = /v/filer4b/v38q001/wlee/CS378-GT/project1_wonjun
+abs_top_builddir = /v/filer4b/v38q001/wlee/CS378-GT/project1_wonjun
+abs_top_srcdir = /v/filer4b/v38q001/wlee/CS378-GT/project1_wonjun
 ac_ct_AR = ar
 ac_ct_CC = gcc
 ac_ct_CXX = g++
@@ -202,7 +203,7 @@ host_vendor = unknown
 htmldir = ${docdir}
 includedir = ${prefix}/include
 infodir = ${datarootdir}/info
-install_sh = ${SHELL} /v/filer4b/v38q001/wlee/CS378_GT_2013/Pong3D/install-sh
+install_sh = ${SHELL} /v/filer4b/v38q001/wlee/CS378-GT/project1_wonjun/install-sh
 libdir = ${exec_prefix}/lib
 libexecdir = ${exec_prefix}/libexec
 localedir = ${datarootdir}/locale
@@ -225,7 +226,7 @@ top_srcdir = .
 ACLOCAL_AMFLAGS = -I m4
 noinst_HEADERS = BaseApplication.h TutorialApplication.h
 OgreApp_CPPFLAGS = -I$(top_srcdir)
-OgreApp_SOURCES = BaseApplication.cpp TutorialApplication.cpp
+OgreApp_SOURCES = BaseApplication.cpp TutorialApplication.cpp GameObject.cpp 
 OgreApp_CXXFLAGS = $(OGRE_CFLAGS) $(OGRE_TERRAIN_CFLAGS) $(OIS_CFLAGS)
 OgreApp_LDADD = $(OGRE_LIBS) $(OGRE_TERRAIN_LIBS) $(OIS_LIBS)
 EXTRA_DIST = buildit makeit
@@ -338,6 +339,7 @@ distclean-compile:
 	-rm -f *.tab.c
 
 include ./$(DEPDIR)/OgreApp-BaseApplication.Po
+include ./$(DEPDIR)/OgreApp-GameObject.Po
 include ./$(DEPDIR)/OgreApp-TutorialApplication.Po
 
 .cpp.o:
@@ -388,6 +390,20 @@ OgreApp-TutorialApplication.obj: TutorialApplication.cpp
 #	source='TutorialApplication.cpp' object='OgreApp-TutorialApplication.obj' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
 #	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(OgreApp_CPPFLAGS) $(CPPFLAGS) $(OgreApp_CXXFLAGS) $(CXXFLAGS) -c -o OgreApp-TutorialApplication.obj `if test -f 'TutorialApplication.cpp'; then $(CYGPATH_W) 'TutorialApplication.cpp'; else $(CYGPATH_W) '$(srcdir)/TutorialApplication.cpp'; fi`
+
+OgreApp-GameObject.o: GameObject.cpp
+	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(OgreApp_CPPFLAGS) $(CPPFLAGS) $(OgreApp_CXXFLAGS) $(CXXFLAGS) -MT OgreApp-GameObject.o -MD -MP -MF $(DEPDIR)/OgreApp-GameObject.Tpo -c -o OgreApp-GameObject.o `test -f 'GameObject.cpp' || echo '$(srcdir)/'`GameObject.cpp
+	$(am__mv) $(DEPDIR)/OgreApp-GameObject.Tpo $(DEPDIR)/OgreApp-GameObject.Po
+#	source='GameObject.cpp' object='OgreApp-GameObject.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
+#	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(OgreApp_CPPFLAGS) $(CPPFLAGS) $(OgreApp_CXXFLAGS) $(CXXFLAGS) -c -o OgreApp-GameObject.o `test -f 'GameObject.cpp' || echo '$(srcdir)/'`GameObject.cpp
+
+OgreApp-GameObject.obj: GameObject.cpp
+	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(OgreApp_CPPFLAGS) $(CPPFLAGS) $(OgreApp_CXXFLAGS) $(CXXFLAGS) -MT OgreApp-GameObject.obj -MD -MP -MF $(DEPDIR)/OgreApp-GameObject.Tpo -c -o OgreApp-GameObject.obj `if test -f 'GameObject.cpp'; then $(CYGPATH_W) 'GameObject.cpp'; else $(CYGPATH_W) '$(srcdir)/GameObject.cpp'; fi`
+	$(am__mv) $(DEPDIR)/OgreApp-GameObject.Tpo $(DEPDIR)/OgreApp-GameObject.Po
+#	source='GameObject.cpp' object='OgreApp-GameObject.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
+#	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(OgreApp_CPPFLAGS) $(CPPFLAGS) $(OgreApp_CXXFLAGS) $(CXXFLAGS) -c -o OgreApp-GameObject.obj `if test -f 'GameObject.cpp'; then $(CYGPATH_W) 'GameObject.cpp'; else $(CYGPATH_W) '$(srcdir)/GameObject.cpp'; fi`
 
 mostlyclean-libtool:
 	-rm -f *.lo

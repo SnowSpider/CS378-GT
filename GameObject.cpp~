@@ -1,0 +1,36 @@
+#include "GameObject.h"
+
+GameObject::GameObject(Ogre::SceneManager* scnMgr, Ogre::Vector3 loc, char* mesh, char* mat){
+    location = loc;
+    Ogre::Entity* ball = scnMgr->createEntity("GameObject", mesh);
+    ball->setMaterialName(mat);
+    ball->setCastShadows(true);
+    rootNode = scnMgr->createSceneNode("Object");
+    rootNode->attachObject(ball);
+    rootNode->scale(0.1f, 0.1f, 0.1f);
+    direction = Ogre::Vector3(0.0f, 0.0f, 0.0f);
+    //directin.normalise();
+    speed = 0.0f;
+    mass = 0.0f;
+}
+
+void GameObject::move(const Ogre::FrameEvent& evt){
+    //Ogre::Vector3 position = rootNode->getPosition();
+    rootNode->translate(speed * evt.timeSinceLastrame * direction);
+}
+
+void GameObject::setSpeed(Ogre::Real s){
+    speed = s;
+}
+
+void GameObject::setDirection(Ogre::Vector3 d){
+    direction = d;
+}
+
+void GameObject::setMass(Ogre::Real m){
+    mass = m;
+}
+
+void GameObject::scale(float s){
+    rootNode->scale(s, s, s);
+}
