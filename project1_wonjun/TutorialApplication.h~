@@ -29,6 +29,8 @@ private:
     int deltaY;
     int xi;
     int yi;
+    GameObject myPaddle;
+    bool serve;
     
 public:
     TutorialApplication(void);

@@ -29,6 +29,7 @@ TutorialApplication::TutorialApplication(void)
     xi = 0;
     yi = 0;
     exitCmd = false; 
+    ready = true;
 }
  
 TutorialApplication::~TutorialApplication(void)
@@ -138,14 +139,14 @@ void TutorialApplication::createScene(void)
 
 
 void TutorialApplication::createFrameListener(void){
-    // Set default values for variables
     srand(time(0));  // Initialize random number generator.
+    // Set default values for variables
     float r1 = (rand() % 100);
     float r2 = (rand() % 100);
     float r3 = (rand() % 100);
     
     //mDirection = Ogre::Vector3(r1, r2, r3);
-    mDirection = Ogre::Vector3(r1, r2, 1000);
+    mDirection = Ogre::Vector3(r1, r2, -1000);
     
     mDirection.normalise();
     mDirection /= 5.0; // to adjust speed
@@ -164,6 +165,7 @@ bool TutorialApplication::frameRenderingQueued(const Ogre::FrameEvent &evt){
     myPaddle.setDirection(Ogre::Vector3(deltaX, -deltaY, 0));
     myPaddle.setSpeed(sqrt(deltaX*deltaX + deltaY*deltaY));
     myPaddle.move(evt);
+    
     //cout << myPaddle.direction << endl;
     //cout << myPaddle.speed << endl;
     
@@ -215,6 +217,14 @@ bool TutorialApplication::frameRenderingQueued(const Ogre::FrameEvent &evt){
          }
          else{
             cout << "MISS" << endl;
+            ready = true;
+            float r1 = (rand() % 100);
+            float r2 = (rand() % 100);
+            mDirection = Ogre::Vector3(r1, r2, -1000);
+            mDirection.normalise();
+            mDirection /= 5.0; // to adjust speed
+            mSceneMgr->getSceneNode("mBall")->setPosition(0,0,0);
+            mCurrPosition = Ogre::Vector3::ZERO;
          }
          //cout << "hit!" << endl;
     }
@@ -226,9 +236,10 @@ bool TutorialApplication::frameRenderingQueued(const Ogre::FrameEvent &evt){
          //cout << "hit!" << endl;
     }
     
-    mSceneMgr->getSceneNode("mBall")->translate(mDirection);
-    mCurrPosition += mDirection;
-    
+    if (!ready){
+        mSceneMgr->getSceneNode("mBall")->translate(mDirection);
+        mCurrPosition += mDirection;
+    }
     
 	return BaseApplication::frameRenderingQueued(evt);
 }
@@ -261,8 +272,11 @@ bool TutorialApplication::mouseMoved( const OIS::MouseEvent &evt ){
 
 bool TutorialApplication::mousePressed( const OIS::MouseEvent &evt, OIS::MouseButtonID id ){
     switch (id) {
-        case OIS::MB_Left: 
-            cout << "Left Click" << endl;
+        case OIS::MB_Left:
+            if (ready){
+                cout << "Left Click: Start Game" << endl;
+                ready = false;
+            }
             break;
         case OIS::MB_Right: 
             cout << "Right Click" << endl;
