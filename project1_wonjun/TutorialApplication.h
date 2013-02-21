@@ -32,8 +32,11 @@ private:
     GameObject myPaddle;
     GameObject myBall;
     bool ready;
+    int score;
     
 public:
+    float speed_default;
+    
     TutorialApplication(void);
     virtual ~TutorialApplication(void);
 

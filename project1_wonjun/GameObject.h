@@ -15,7 +15,7 @@ class GameObject {
     Ogre::Vector3 nextPosition; // expected position in the next frame
     Ogre::SceneNode* rootNode;
     Ogre::Vector3 direction;
-    Ogre::Vector3 speed;
+    Ogre::Real speed;
     Ogre::Real mass; 
     //GameObject(){}
     

@@ -30,6 +30,8 @@ TutorialApplication::TutorialApplication(void)
     yi = 0;
     //exitCmd = false; 
     ready = true;
+    speed_default = 250;
+    score = 0;
 }
  
 TutorialApplication::~TutorialApplication(void)
@@ -46,7 +48,7 @@ void TutorialApplication::createScene(void)
     
     // Create game objects
     myBall = GameObject(mSceneMgr, Ogre::Vector3(0,0,0), "sphere.mesh", "Examples/Chrome");
-    myPaddle = GameObject(mSceneMgr, Ogre::Vector3(0,0,100), "cube.mesh", "Examples/BumpyMetal");
+    myPaddle = GameObject(mSceneMgr, Ogre::Vector3(0,0,110), "cube.mesh", "Examples/BumpyMetal");
     myPaddle.scale(2);
     
     Ogre::Plane plane_x_pos_in(Ogre::Vector3::NEGATIVE_UNIT_X, -100);
@@ -112,11 +114,10 @@ void TutorialApplication::createFrameListener(void){
     float r2 = (rand() % 100);
     float r3 = (rand() % 100);
     
-    myBall.direction = Ogre::Vector3(r1, r2, -1000);
+    myBall.direction = Ogre::Vector3(r1, r2, -500);
     myBall.direction.normalise();
-    myBall.speed = 80;
+    myBall.speed = speed_default;
     myBall.setPosition(Ogre::Vector3::ZERO);
-    //myBall.nextPosition = ???;
     
     BaseApplication::createFrameListener();
 }
@@ -146,52 +147,59 @@ bool TutorialApplication::frameRenderingQueued(const Ogre::FrameEvent &evt){
     
     */
     
-    
     // The ball hits the positive x plane
-    if (myBall.position.x > 90 ){
+    if (myBall.position.x > 90 || myBall.nextPosition.x > 100){
         myBall.direction += (-2.0 * (Ogre::Vector3::NEGATIVE_UNIT_X.dotProduct(myBall.direction)) * Ogre::Vector3::NEGATIVE_UNIT_X);
         //cout << "hit!" << endl;
     }
     
     // The ball hits the negative x plane
-    else if (myBall.position.x < -90 ){
+    else if (myBall.position.x < -90 || myBall.nextPosition.x < -100){
         myBall.direction += (-2.0 * (Ogre::Vector3::UNIT_X.dotProduct(myBall.direction)) * Ogre::Vector3::UNIT_X);
         //cout << "hit!" << endl;
     }
     
     // The ball hits the positive y plane
-    else if (myBall.position.y > 90 ){
+    else if (myBall.position.y > 90 || myBall.nextPosition.y > 100){
         myBall.direction += (-2.0 * (Ogre::Vector3::NEGATIVE_UNIT_Y.dotProduct(myBall.direction)) * Ogre::Vector3::NEGATIVE_UNIT_Y);
         //cout << "hit!" << endl;
     }
     
     // The ball hits the negative y plane
-    else if (myBall.position.y < -90 ){
+    else if (myBall.position.y < -90 || myBall.nextPosition.y < -100){
         myBall.direction += (-2.0 * (Ogre::Vector3::UNIT_Y.dotProduct(myBall.direction)) * Ogre::Vector3::UNIT_Y);
         //cout << "hit!" << endl;
     }
     
     // The ball hits the positive z plane
-    else if (myBall.position.z > 90 ){
+    else if (myBall.position.z > 90 || myBall.nextPosition.z > 100){
         myBall.direction += (-2.0 * (Ogre::Vector3::NEGATIVE_UNIT_Z.dotProduct(myBall.direction)) * Ogre::Vector3::NEGATIVE_UNIT_Z);
         if (abs(myPaddle.position.x - myBall.position.x) <= 25 && abs(myPaddle.position.y - myBall.position.y) <= 25){
+            score += myBall.speed;
+            myBall.speed += 10;
+            cout << "HIT" << endl;
+        }
+        else if (abs(myPaddle.nextPosition.x - myBall.nextPosition.x) <= 25 && abs(myPaddle.nextPosition.y - myBall.nextPosition.y) <= 25){
+            score += myBall.speed;
+            myBall.speed += 10;
             cout << "HIT" << endl;
         }
         else{
-            cout << "MISS" << endl;
+            cout << "MISS\nScore:" << score << "\nClick to restart" << endl;
+            score = 0;
             ready = true;
             float r1 = (rand() % 100);
             float r2 = (rand() % 100);
             myBall.direction = Ogre::Vector3(r1, r2, -1000);
             myBall.direction.normalise();
-            myBall.speed = 80;
+            myBall.speed = speed_default;
             myBall.setPosition(Ogre::Vector3::ZERO);
         }
         //cout << "hit!" << endl;
     }
     
     // The ball hits the negative z plane
-    else if (myBall.position.z < -90 ){
+    else if (myBall.position.z < -90 || myBall.nextPosition.z < -100){
         myBall.direction += (-2.0 * (Ogre::Vector3::UNIT_Z.dotProduct(myBall.direction)) * Ogre::Vector3::UNIT_Z);
          //cout << "hit!" << endl;
     }
@@ -228,13 +236,13 @@ bool TutorialApplication::mouseMoved( const OIS::MouseEvent &evt ){
 bool TutorialApplication::mousePressed( const OIS::MouseEvent &evt, OIS::MouseButtonID id ){
     switch (id) {
         case OIS::MB_Left:
+            //cout << "Left Click" << endl;
             if (ready){
-                cout << "Left Click: Start Game" << endl;
                 ready = false;
             }
             break;
         case OIS::MB_Right: 
-            cout << "Right Click" << endl;
+            //cout << "Right Click" << endl;
             break;
         default:
             break;
