@@ -42,13 +42,13 @@ void TutorialApplication::createScene(void)
     shadow = mSceneMgr->createEntity("Shadow", "sphere.mesh");
  
     // Create a SceneNode and attach the Entity to it
-    Ogre::SceneNode* ballNode = mSceneMgr->getRootSceneNode()->createChildSceneNode("BallNode");
-    sphereNode->attachObject(ball);
-    sphereNode->scale(.4,.4,.4);
+    ballNode = mSceneMgr->getRootSceneNode()->createChildSceneNode("BallNode");
+    ballNode->attachObject(ball);
+    ballNode->scale(.4,.4,.4);
 
     //paddle
     //paddle->setMaterialName("Glass");
-    Ogre::SceneNode* paddleNode = mSceneMgr->getRootSceneNode()->createChildSceneNode("PaddleNode");
+    paddleNode = mSceneMgr->getRootSceneNode()->createChildSceneNode("PaddleNode");
     paddleNode->attachObject(paddle);
     paddleNode->scale(1,1,.1);
     paddleNode->setPosition(0,0,1000);
@@ -80,7 +80,7 @@ void TutorialApplication::createScene(void)
     circle->end();
 
  
-    Ogre::SceneNode* shadowNode = mSceneMgr->getRootSceneNode()->createChildSceneNode("ShadowNode");
+    shadowNode = mSceneMgr->getRootSceneNode()->createChildSceneNode("ShadowNode");
     shadowNode->attachObject(circle);
     shadowNode->setPosition(0,-499,0);    
  
@@ -194,7 +194,7 @@ R = 2(N dot L)N - L
          cout << "hit!" << endl;
     }
     
-    mSceneMgr->getSceneNode("Ball")->translate(mDirection);
+    mSceneMgr->getSceneNode("BallNode")->translate(mDirection);
     mCurrPosition += mDirection;
     
     

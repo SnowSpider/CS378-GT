@@ -153,48 +153,48 @@ R = 2(N dot L)N - L
     
     
     // The ball hits the positive x plane
-    if (mCurrPosition.x > 500 ){
+    if (mCurrPosition.x > 460 ){
         mTempVector = (-2.0 * (Ogre::Vector3::NEGATIVE_UNIT_X.dotProduct(mDirection)) * Ogre::Vector3::NEGATIVE_UNIT_X) + mDirection;
          mDirection = mTempVector;
          cout << "hit!" << endl;
     }
     
     // The ball hits the negative x plane
-    else if (mCurrPosition.x < -500 ){
+    else if (mCurrPosition.x < -460 ){
         mTempVector = (-2.0 * (Ogre::Vector3::UNIT_X.dotProduct(mDirection)) * Ogre::Vector3::UNIT_X) + mDirection;
          mDirection = mTempVector;
          cout << "hit!" << endl;
     }
     
     // The ball hits the positive y plane
-    else if (mCurrPosition.y > 500 ){
+    else if (mCurrPosition.y > 460 ){
         mTempVector = (-2.0 * (Ogre::Vector3::NEGATIVE_UNIT_Y.dotProduct(mDirection)) * Ogre::Vector3::NEGATIVE_UNIT_Y) + mDirection;
          mDirection = mTempVector;
          cout << "hit!" << endl;
     }
     
     // The ball hits the negative y plane
-    else if (mCurrPosition.y < -500 ){
+    else if (mCurrPosition.y < -460 ){
         mTempVector = (-2.0 * (Ogre::Vector3::UNIT_Y.dotProduct(mDirection)) * Ogre::Vector3::UNIT_Y) + mDirection;
          mDirection = mTempVector;
          cout << "hit!" << endl;
     }
     
     // The ball hits the positive z plane
-    else if (mCurrPosition.z > 1000 ){
+    else if (mCurrPosition.z > 960 ){
         mTempVector = (-2.0 * (Ogre::Vector3::NEGATIVE_UNIT_Z.dotProduct(mDirection)) * Ogre::Vector3::NEGATIVE_UNIT_Z) + mDirection;
          mDirection = mTempVector;
          cout << "hit!" << endl;
     }
     
     // The ball hits the negative z plane
-    else if (mCurrPosition.z < -1000 ){
+    else if (mCurrPosition.z < -960 ){
         mTempVector = (-2.0 * (Ogre::Vector3::UNIT_Z.dotProduct(mDirection)) * Ogre::Vector3::UNIT_Z) + mDirection;
          mDirection = mTempVector;
          cout << "hit!" << endl;
     }
     
-    mSceneMgr->getSceneNode("Ball")->translate(mDirection);
+    mSceneMgr->getSceneNode("BallNode")->translate(mDirection);
     mCurrPosition += mDirection;
     
     
