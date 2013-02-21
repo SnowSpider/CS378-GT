@@ -38,7 +38,7 @@ protected:
     
     Ogre::Entity *ball;
     Ogre::Entity *shadow;
-    Ogre::Entity *paddle;
+    Ogre::Enitty *paddle;
     Ogre::SceneNode *ballNode;
     Ogre::SceneNode *paddleNode;
     Ogre::SceneNode *shadowNode;

@@ -16,7 +16,9 @@ This source file is part of the
 */
 #include "TutorialApplication.h"
 #include <stdlib.h>
-#include <math.h>
+
+#include <ctime> // For time()
+#include <cstdlib> // For srand() and rand()
 
 //-------------------------------------------------------------------------------------
 TutorialApplication::TutorialApplication(void)
@@ -35,19 +37,18 @@ void TutorialApplication::createScene(void)
     mSceneMgr->setAmbientLight(Ogre::ColourValue(0.0f, 0.0f, 0.0f));
  
     // Create an Entity
-    Ogre::Entity* sphere = mSceneMgr->createEntity("Sphere", "sphere.mesh");
-    Ogre::Entity* paddle = mSceneMgr->createEntity("Paddle", "cube.mesh");
-    Ogre::Entity* shadow = mSceneMgr->createEntity("Shadow", "sphere.mesh");
+    ball = mSceneMgr->createEntity("Ball", "sphere.mesh");
+    paddle = mSceneMgr->createEntity("Paddle", "cube.mesh");
+    shadow = mSceneMgr->createEntity("Shadow", "sphere.mesh");
  
     // Create a SceneNode and attach the Entity to it
-    Ogre::SceneNode* sphereNode = mSceneMgr->getRootSceneNode()->createChildSceneNode("SphereNode");
-    sphereNode->attachObject(sphere);
-    sphereNode->scale(.4,.4,.4);
-    sphereNode->setDirection(rand() % 1001 + 1000, rand() % 1001 + 1000, rand() % 1001 + 1000);
+    ballNode = mSceneMgr->getRootSceneNode()->createChildSceneNode("BallNode");
+    ballNode->attachObject(ball);
+    ballNode->scale(.4,.4,.4);
 
     //paddle
-    paddle->setMaterialName("Glass");
-    Ogre::SceneNode* paddleNode = mSceneMgr->getRootSceneNode()->createChildSceneNode("PaddleNode");
+    //paddle->setMaterialName("Glass");
+    paddleNode = mSceneMgr->getRootSceneNode()->createChildSceneNode("PaddleNode");
     paddleNode->attachObject(paddle);
     paddleNode->scale(1,1,.1);
     paddleNode->setPosition(0,0,1000);
@@ -79,7 +80,7 @@ void TutorialApplication::createScene(void)
     circle->end();
 
  
-    Ogre::SceneNode* shadowNode = mSceneMgr->getRootSceneNode()->createChildSceneNode("ShadowNode");
+    shadowNode = mSceneMgr->getRootSceneNode()->createChildSceneNode("ShadowNode");
     shadowNode->attachObject(circle);
     shadowNode->setPosition(0,-499,0);    
  
@@ -120,6 +121,84 @@ void TutorialApplication::createScene(void)
 	mSceneMgr->getRootSceneNode()->createChildSceneNode()->attachObject(entFront);*/
 	Ogre::Entity* entBack = mSceneMgr->createEntity("CubeBack", "back");
 	mSceneMgr->getRootSceneNode()->createChildSceneNode()->attachObject(entBack);
+}
+
+void TutorialApplication::createFrameListener(void){
+    // Set default values for variables
+    srand(time(0)); // Initialize random number generator.
+    float r1 = (rand() % 100);
+    float r2 = (rand() % 100);
+    float r3 = (rand() % 100);
+    
+    mDirection = Ogre::Vector3(r1, r2, r3);
+    mDirection.normalise();
+    mDirection /= 10.0; // to adjust speed
+    
+    mCurrPosition = Ogre::Vector3::ZERO;
+    mNextPosition = mDirection;
+    
+    //mBallSpeed = 35.0f;
+    
+    BaseApplication::createFrameListener();
+}
+
+bool TutorialApplication::frameRenderingQueued(const Ogre::FrameEvent &evt){
+    
+    /*
+Reflection vector formula:
+L = light
+R = reflection
+R = 2(N dot L)N - L
+*/
+    
+    
+    // The ball hits the positive x plane
+    if (mCurrPosition.x > 500 ){
+        mTempVector = (-2.0 * (Ogre::Vector3::NEGATIVE_UNIT_X.dotProduct(mDirection)) * Ogre::Vector3::NEGATIVE_UNIT_X) + mDirection;
+         mDirection = mTempVector;
+         cout << "hit!" << endl;
+    }
+    
+    // The ball hits the negative x plane
+    else if (mCurrPosition.x < -500 ){
+        mTempVector = (-2.0 * (Ogre::Vector3::UNIT_X.dotProduct(mDirection)) * Ogre::Vector3::UNIT_X) + mDirection;
+         mDirection = mTempVector;
+         cout << "hit!" << endl;
+    }
+    
+    // The ball hits the positive y plane
+    else if (mCurrPosition.y > 500 ){
+        mTempVector = (-2.0 * (Ogre::Vector3::NEGATIVE_UNIT_Y.dotProduct(mDirection)) * Ogre::Vector3::NEGATIVE_UNIT_Y) + mDirection;
+         mDirection = mTempVector;
+         cout << "hit!" << endl;
+    }
+    
+    // The ball hits the negative y plane
+    else if (mCurrPosition.y < -500 ){
+        mTempVector = (-2.0 * (Ogre::Vector3::UNIT_Y.dotProduct(mDirection)) * Ogre::Vector3::UNIT_Y) + mDirection;
+         mDirection = mTempVector;
+         cout << "hit!" << endl;
+    }
+    
+    // The ball hits the positive z plane
+    else if (mCurrPosition.z > 1000 ){
+        mTempVector = (-2.0 * (Ogre::Vector3::NEGATIVE_UNIT_Z.dotProduct(mDirection)) * Ogre::Vector3::NEGATIVE_UNIT_Z) + mDirection;
+         mDirection = mTempVector;
+         cout << "hit!" << endl;
+    }
+    
+    // The ball hits the negative z plane
+    else if (mCurrPosition.z < -1000 ){
+        mTempVector = (-2.0 * (Ogre::Vector3::UNIT_Z.dotProduct(mDirection)) * Ogre::Vector3::UNIT_Z) + mDirection;
+         mDirection = mTempVector;
+         cout << "hit!" << endl;
+    }
+    
+    mSceneMgr->getSceneNode("Ball")->translate(mDirection);
+    mCurrPosition += mDirection;
+    
+    
+return BaseApplication::frameRenderingQueued(evt);
 }
 
 
