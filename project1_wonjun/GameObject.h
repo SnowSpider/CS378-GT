@@ -4,6 +4,7 @@
 #define __GameObject_h_
 
 #include "Ogre.h"
+#include <btBulletDynamicsCommon.h>
 
 using namespace std;
 

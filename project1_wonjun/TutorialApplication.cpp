@@ -41,46 +41,46 @@ TutorialApplication::~TutorialApplication(void)
 //-------------------------------------------------------------------------------------
 void TutorialApplication::createScene(void)
 {
-    mCamera->setPosition(0,0,400); 
+    mCamera->setPosition(0,0,450); 
     
     // Set the scene's ambient light
     mSceneMgr->setAmbientLight(Ogre::ColourValue(0.5f, 0.5f, 0.5f));
     
     // Create game objects
-    myBall = GameObject(mSceneMgr, Ogre::Vector3(0,0,0), "sphere.mesh", "Examples/Chrome");
-    myPaddle = GameObject(mSceneMgr, Ogre::Vector3(0,0,110), "cube.mesh", "Examples/BumpyMetal");
+    myBall = GameObject(mSceneMgr, Ogre::Vector3(0,0,0), "sphere.mesh", "Examples/GreenSkin");
+    myPaddle = GameObject(mSceneMgr, Ogre::Vector3(0,0,210), "cube.mesh", "Examples/BumpyMetal");
     myPaddle.scale(2);
     
     Ogre::Plane plane_x_pos_in(Ogre::Vector3::NEGATIVE_UNIT_X, -100);
     Ogre::Plane plane_x_neg_in(Ogre::Vector3::UNIT_X, -100);
     Ogre::Plane plane_y_pos_in(Ogre::Vector3::NEGATIVE_UNIT_Y, -100);
     Ogre::Plane plane_y_neg_in(Ogre::Vector3::UNIT_Y, -100);
-    Ogre::Plane plane_z_pos_in(Ogre::Vector3::NEGATIVE_UNIT_Z, -100);
-    Ogre::Plane plane_z_neg_in(Ogre::Vector3::UNIT_Z, -100);
+    Ogre::Plane plane_z_pos_in(Ogre::Vector3::NEGATIVE_UNIT_Z, -200);
+    Ogre::Plane plane_z_neg_in(Ogre::Vector3::UNIT_Z, -200);
     
     // plane_x_pos_in
-	Ogre::MeshManager::getSingleton().createPlane("plane_x_pos_in", Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME, plane_x_pos_in, 200.0f, 200.0f, 1, 1, true, 1, 1.0f, 1.0f, Ogre::Vector3::UNIT_Z);
+	Ogre::MeshManager::getSingleton().createPlane("plane_x_pos_in", Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME, plane_x_pos_in, 200.0f, 400.0f, 1, 1, true, 1, 1.0f, 1.0f, Ogre::Vector3::UNIT_Z);
 	Ogre::Entity* plane1 = mSceneMgr->createEntity("ent_plane_x_pos_in", "plane_x_pos_in");
 	plane1->setMaterialName("Examples/Rockwall");
 	plane1->setCastShadows(false);
 	mSceneMgr->getRootSceneNode()->createChildSceneNode()->attachObject(plane1);
     
     // plane_x_neg_in
-	Ogre::MeshManager::getSingleton().createPlane("plane_x_neg_in", Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME, plane_x_neg_in, 200.0f, 200.0f, 1, 1, true, 1, 1.0f, 1.0f, Ogre::Vector3::UNIT_Z);
+	Ogre::MeshManager::getSingleton().createPlane("plane_x_neg_in", Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME, plane_x_neg_in, 200.0f, 400.0f, 1, 1, true, 1, 1.0f, 1.0f, Ogre::Vector3::UNIT_Z);
 	Ogre::Entity* plane2 = mSceneMgr->createEntity("ent_plane_x_neg_in", "plane_x_neg_in");
 	plane2->setMaterialName("Examples/Rockwall");
 	plane2->setCastShadows(false);
 	mSceneMgr->getRootSceneNode()->createChildSceneNode()->attachObject(plane2);
     
     // plane_y_pos_in
-	Ogre::MeshManager::getSingleton().createPlane("plane_y_pos_in", Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME, plane_y_pos_in, 200.0f, 200.0f, 1, 1, true, 1, 1.0f, 1.0f, Ogre::Vector3::UNIT_X);
+	Ogre::MeshManager::getSingleton().createPlane("plane_y_pos_in", Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME, plane_y_pos_in, 400.0f, 200.0f, 1, 1, true, 1, 1.0f, 1.0f, Ogre::Vector3::UNIT_X);
 	Ogre::Entity* plane3 = mSceneMgr->createEntity("ent_plane_y_pos_in", "plane_y_pos_in");
 	plane3->setMaterialName("Examples/Rockwall");
 	plane3->setCastShadows(false);
 	mSceneMgr->getRootSceneNode()->createChildSceneNode()->attachObject(plane3);
     
     // plane_y_neg_in
-	Ogre::MeshManager::getSingleton().createPlane("plane_y_neg_in", Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME, plane_y_neg_in, 200.0f, 200.0f, 1, 1, true, 1, 1.0f, 1.0f, Ogre::Vector3::UNIT_X);
+	Ogre::MeshManager::getSingleton().createPlane("plane_y_neg_in", Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME, plane_y_neg_in, 400.0f, 200.0f, 1, 1, true, 1, 1.0f, 1.0f, Ogre::Vector3::UNIT_X);
 	Ogre::Entity* plane4 = mSceneMgr->createEntity("ent_plane_y_neg_in", "plane_y_neg_in");
 	plane4->setMaterialName("Examples/Rockwall");
 	plane4->setCastShadows(false);
@@ -103,7 +103,7 @@ void TutorialApplication::createScene(void)
     // Create a Light and set its position
     Ogre::Light* light = mSceneMgr->createLight("MainLight");
     light->setPosition(75.0f, 75.0f, 75.0f);
-    light->setDiffuseColour(1,0,0);
+    light->setDiffuseColour(1,1,1);
 }
 
 
@@ -147,45 +147,52 @@ bool TutorialApplication::frameRenderingQueued(const Ogre::FrameEvent &evt){
     
     */
     
+    //myBall.nextPosition.x >= 90-myBall.position.x
+    
     // The ball hits the positive x plane
     if (myBall.position.x > 90 || myBall.nextPosition.x > 90){
+        myBall.setPosition(Ogre::Vector3(90, myBall.position.y, myBall.position.z));
         myBall.direction += (-2.0 * (Ogre::Vector3::NEGATIVE_UNIT_X.dotProduct(myBall.direction)) * Ogre::Vector3::NEGATIVE_UNIT_X);
         //cout << "hit!" << endl;
     }
     
     // The ball hits the negative x plane
     else if (myBall.position.x < -90 || myBall.nextPosition.x < -90){
+        myBall.setPosition(Ogre::Vector3(-90, myBall.position.y, myBall.position.z));
         myBall.direction += (-2.0 * (Ogre::Vector3::UNIT_X.dotProduct(myBall.direction)) * Ogre::Vector3::UNIT_X);
         //cout << "hit!" << endl;
     }
     
     // The ball hits the positive y plane
     else if (myBall.position.y > 90 || myBall.nextPosition.y > 90){
+        myBall.setPosition(Ogre::Vector3(myBall.position.x, 90, myBall.position.z));
         myBall.direction += (-2.0 * (Ogre::Vector3::NEGATIVE_UNIT_Y.dotProduct(myBall.direction)) * Ogre::Vector3::NEGATIVE_UNIT_Y);
         //cout << "hit!" << endl;
     }
     
     // The ball hits the negative y plane
     else if (myBall.position.y < -90 || myBall.nextPosition.y < -90){
+        myBall.setPosition(Ogre::Vector3(myBall.position.x, -90, myBall.position.z));
         myBall.direction += (-2.0 * (Ogre::Vector3::UNIT_Y.dotProduct(myBall.direction)) * Ogre::Vector3::UNIT_Y);
         //cout << "hit!" << endl;
     }
     
     // The ball hits the positive z plane
-    else if (myBall.position.z > 90 || myBall.nextPosition.z > 90){
+    else if (myBall.position.z > 190 || myBall.nextPosition.z > 190){
+        myBall.setPosition(Ogre::Vector3(myBall.position.x, myBall.position.y, 190));
         myBall.direction += (-2.0 * (Ogre::Vector3::NEGATIVE_UNIT_Z.dotProduct(myBall.direction)) * Ogre::Vector3::NEGATIVE_UNIT_Z);
         if (abs(myPaddle.position.x - myBall.position.x) <= 25 && abs(myPaddle.position.y - myBall.position.y) <= 25){
             score += myBall.speed;
             myBall.speed += 10;
-            cout << "HIT" << endl;
+            //cout << "HIT" << endl;
         }
         else if (abs(myPaddle.nextPosition.x - myBall.nextPosition.x) <= 25 && abs(myPaddle.nextPosition.y - myBall.nextPosition.y) <= 25){
             score += myBall.speed;
             myBall.speed += 10;
-            cout << "HIT" << endl;
+            //cout << "HIT" << endl;
         }
         else{
-            cout << "MISS\nScore:" << score << "\nClick to restart" << endl;
+            cout << "Score:" << score << "\nClick to restart" << endl;
             score = 0;
             ready = true;
             float r1 = (rand() % 100);
@@ -199,7 +206,8 @@ bool TutorialApplication::frameRenderingQueued(const Ogre::FrameEvent &evt){
     }
     
     // The ball hits the negative z plane
-    else if (myBall.position.z < -90 || myBall.nextPosition.z < -90){
+    else if (myBall.position.z < -190 || myBall.nextPosition.z < -190){
+        myBall.setPosition(Ogre::Vector3(myBall.position.x, myBall.position.y, -190));
         myBall.direction += (-2.0 * (Ogre::Vector3::UNIT_Z.dotProduct(myBall.direction)) * Ogre::Vector3::UNIT_Z);
          //cout << "hit!" << endl;
     }

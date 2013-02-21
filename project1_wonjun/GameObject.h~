@@ -4,6 +4,8 @@
 #define __GameObject_h_
 
 #include "Ogre.h"
+//#include <btRigidBody.h>
+#include <btBulletDynamicsCommon.h>
 
 using namespace std;
 
@@ -15,7 +17,7 @@ class GameObject {
     Ogre::Vector3 nextPosition; // expected position in the next frame
     Ogre::SceneNode* rootNode;
     Ogre::Vector3 direction;
-    Ogre::Vector3 speed;
+    Ogre::Real speed;
     Ogre::Real mass; 
     //GameObject(){}
     

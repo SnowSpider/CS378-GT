@@ -59,7 +59,7 @@ am_OgreApp_OBJECTS = OgreApp-BaseApplication.$(OBJEXT) \
 OgreApp_OBJECTS = $(am_OgreApp_OBJECTS)
 am__DEPENDENCIES_1 =
 OgreApp_DEPENDENCIES = $(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
-	$(am__DEPENDENCIES_1)
+	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1)
 OgreApp_LINK = $(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
 	--mode=link $(CXXLD) $(OgreApp_CXXFLAGS) $(CXXFLAGS) \
 	$(AM_LDFLAGS) $(LDFLAGS) -o $@
@@ -103,6 +103,8 @@ AUTOCONF = ${SHELL} /v/filer4b/v38q001/wlee/CS378-GT/project1_wonjun/missing --r
 AUTOHEADER = ${SHELL} /v/filer4b/v38q001/wlee/CS378-GT/project1_wonjun/missing --run autoheader
 AUTOMAKE = ${SHELL} /v/filer4b/v38q001/wlee/CS378-GT/project1_wonjun/missing --run automake-1.11
 AWK = gawk
+BULLET_CFLAGS = 
+BULLET_LIBS = 
 CC = gcc
 CCDEPMODE = depmode=gcc3
 CFLAGS = -g -O2
@@ -190,6 +192,8 @@ build_cpu = x86_64
 build_os = linux-gnu
 build_vendor = unknown
 builddir = .
+bullet_CFLAGS = -I/usr/local/include/bullet  
+bullet_LIBS = -L/usr/local/lib -lBulletSoftBody -lBulletDynamics -lBulletCollision -lLinearMath  
 datadir = ${datarootdir}
 datarootdir = ${prefix}/share
 docdir = ${datarootdir}/doc/${PACKAGE}
@@ -227,8 +231,8 @@ ACLOCAL_AMFLAGS = -I m4
 noinst_HEADERS = BaseApplication.h TutorialApplication.h
 OgreApp_CPPFLAGS = -I$(top_srcdir)
 OgreApp_SOURCES = BaseApplication.cpp TutorialApplication.cpp GameObject.cpp 
-OgreApp_CXXFLAGS = $(OGRE_CFLAGS) $(OGRE_TERRAIN_CFLAGS) $(OIS_CFLAGS)
-OgreApp_LDADD = $(OGRE_LIBS) $(OGRE_TERRAIN_LIBS) $(OIS_LIBS)
+OgreApp_CXXFLAGS = $(OGRE_CFLAGS) $(OGRE_TERRAIN_CFLAGS) $(OIS_CFLAGS) $(bullet_CFLAGS)
+OgreApp_LDADD = $(OGRE_LIBS) $(OGRE_TERRAIN_LIBS) $(OIS_LIBS) $(bullet_LIBS)
 EXTRA_DIST = buildit makeit
 AUTOMAKE_OPTIONS = foreign
 all: config.h

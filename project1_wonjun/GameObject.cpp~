@@ -6,7 +6,7 @@ int id = 0;
 
 GameObject::GameObject(Ogre::SceneManager* scnMgr, Ogre::Vector3 pos, char* mesh, char* mat){
     position = pos;
-    nextPosition = pos + speed * 0.001 * direction;
+    nextPosition = pos + speed * 0.002 * direction;
     Ogre::Entity* ball = scnMgr->createEntity("GameObject"+id, mesh);
     ball->setMaterialName(mat);
     ball->setCastShadows(true);
@@ -25,7 +25,7 @@ void GameObject::move(const Ogre::FrameEvent& evt){
     //Ogre::Vector3 position = rootNode->getPosition();
     rootNode->translate(speed * evt.timeSinceLastFrame * direction);
     position += speed * evt.timeSinceLastFrame * direction;
-    nextPosition = position + speed * evt.timeSinceLastFrame * direction; 
+    nextPosition = position + speed * 0.002 * direction; 
     // TODO: I need optimization here
     // Future: calculate nextSpeed also, to accelerate/decelerate the object
 }
