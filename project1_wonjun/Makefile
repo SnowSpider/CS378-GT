@@ -55,7 +55,7 @@ am__installdirs = "$(DESTDIR)$(bindir)"
 PROGRAMS = $(bin_PROGRAMS)
 am_OgreApp_OBJECTS = OgreApp-BaseApplication.$(OBJEXT) \
 	OgreApp-TutorialApplication.$(OBJEXT) \
-	OgreApp-GameObject.$(OBJEXT)
+	OgreApp-GameObject.$(OBJEXT) OgreApp-Simulator.$(OBJEXT)
 OgreApp_OBJECTS = $(am_OgreApp_OBJECTS)
 am__DEPENDENCIES_1 =
 OgreApp_DEPENDENCIES = $(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
@@ -230,7 +230,7 @@ top_srcdir = .
 ACLOCAL_AMFLAGS = -I m4
 noinst_HEADERS = BaseApplication.h TutorialApplication.h
 OgreApp_CPPFLAGS = -I$(top_srcdir)
-OgreApp_SOURCES = BaseApplication.cpp TutorialApplication.cpp GameObject.cpp 
+OgreApp_SOURCES = BaseApplication.cpp TutorialApplication.cpp GameObject.cpp Simulator.cpp
 OgreApp_CXXFLAGS = $(OGRE_CFLAGS) $(OGRE_TERRAIN_CFLAGS) $(OIS_CFLAGS) $(bullet_CFLAGS)
 OgreApp_LDADD = $(OGRE_LIBS) $(OGRE_TERRAIN_LIBS) $(OIS_LIBS) $(bullet_LIBS)
 EXTRA_DIST = buildit makeit
@@ -344,6 +344,7 @@ distclean-compile:
 
 include ./$(DEPDIR)/OgreApp-BaseApplication.Po
 include ./$(DEPDIR)/OgreApp-GameObject.Po
+include ./$(DEPDIR)/OgreApp-Simulator.Po
 include ./$(DEPDIR)/OgreApp-TutorialApplication.Po
 
 .cpp.o:
@@ -408,6 +409,20 @@ OgreApp-GameObject.obj: GameObject.cpp
 #	source='GameObject.cpp' object='OgreApp-GameObject.obj' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
 #	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(OgreApp_CPPFLAGS) $(CPPFLAGS) $(OgreApp_CXXFLAGS) $(CXXFLAGS) -c -o OgreApp-GameObject.obj `if test -f 'GameObject.cpp'; then $(CYGPATH_W) 'GameObject.cpp'; else $(CYGPATH_W) '$(srcdir)/GameObject.cpp'; fi`
+
+OgreApp-Simulator.o: Simulator.cpp
+	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(OgreApp_CPPFLAGS) $(CPPFLAGS) $(OgreApp_CXXFLAGS) $(CXXFLAGS) -MT OgreApp-Simulator.o -MD -MP -MF $(DEPDIR)/OgreApp-Simulator.Tpo -c -o OgreApp-Simulator.o `test -f 'Simulator.cpp' || echo '$(srcdir)/'`Simulator.cpp
+	$(am__mv) $(DEPDIR)/OgreApp-Simulator.Tpo $(DEPDIR)/OgreApp-Simulator.Po
+#	source='Simulator.cpp' object='OgreApp-Simulator.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
+#	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(OgreApp_CPPFLAGS) $(CPPFLAGS) $(OgreApp_CXXFLAGS) $(CXXFLAGS) -c -o OgreApp-Simulator.o `test -f 'Simulator.cpp' || echo '$(srcdir)/'`Simulator.cpp
+
+OgreApp-Simulator.obj: Simulator.cpp
+	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(OgreApp_CPPFLAGS) $(CPPFLAGS) $(OgreApp_CXXFLAGS) $(CXXFLAGS) -MT OgreApp-Simulator.obj -MD -MP -MF $(DEPDIR)/OgreApp-Simulator.Tpo -c -o OgreApp-Simulator.obj `if test -f 'Simulator.cpp'; then $(CYGPATH_W) 'Simulator.cpp'; else $(CYGPATH_W) '$(srcdir)/Simulator.cpp'; fi`
+	$(am__mv) $(DEPDIR)/OgreApp-Simulator.Tpo $(DEPDIR)/OgreApp-Simulator.Po
+#	source='Simulator.cpp' object='OgreApp-Simulator.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
+#	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(OgreApp_CPPFLAGS) $(CPPFLAGS) $(OgreApp_CXXFLAGS) $(CXXFLAGS) -c -o OgreApp-Simulator.obj `if test -f 'Simulator.cpp'; then $(CYGPATH_W) 'Simulator.cpp'; else $(CYGPATH_W) '$(srcdir)/Simulator.cpp'; fi`
 
 mostlyclean-libtool:
 	-rm -f *.lo

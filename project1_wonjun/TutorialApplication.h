@@ -36,6 +36,7 @@ private:
     
 public:
     float speed_default;
+    float increment;
     
     TutorialApplication(void);
     virtual ~TutorialApplication(void);
