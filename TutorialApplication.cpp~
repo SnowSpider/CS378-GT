@@ -138,7 +138,7 @@ void TutorialApplication::createFrameListener(void){
     
     mDirection = Ogre::Vector3(r1, r2, r3);
     mDirection.normalise();
-    mDirection /= 3.0; // to adjust speed
+    mDirection /= 10.0; // to adjust speed
     
     mCurrPosition = Ogre::Vector3::ZERO;
     mNextPosition = mDirection;

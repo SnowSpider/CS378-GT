@@ -54,10 +54,12 @@ CONFIG_CLEAN_VPATH_FILES =
 am__installdirs = "$(DESTDIR)$(bindir)"
 PROGRAMS = $(bin_PROGRAMS)
 am_Balla_OBJECTS = Balla-BaseApplication.$(OBJEXT) \
-	Balla-TutorialApplication.$(OBJEXT)
+	Balla-TutorialApplication.$(OBJEXT) \
+	Balla-SoundManager.$(OBJEXT)
 Balla_OBJECTS = $(am_Balla_OBJECTS)
 am__DEPENDENCIES_1 =
-Balla_DEPENDENCIES = $(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1)
+Balla_DEPENDENCIES = $(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
+	$(am__DEPENDENCIES_1)
 Balla_LINK = $(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
 	--mode=link $(CXXLD) $(Balla_CXXFLAGS) $(CXXFLAGS) \
 	$(AM_LDFLAGS) $(LDFLAGS) -o $@
@@ -212,6 +214,8 @@ prefix = @prefix@
 program_transform_name = @program_transform_name@
 psdir = @psdir@
 sbindir = @sbindir@
+sdl_CFLAGS = @sdl_CFLAGS@
+sdl_LIBS = @sdl_LIBS@
 sharedstatedir = @sharedstatedir@
 srcdir = @srcdir@
 sysconfdir = @sysconfdir@
@@ -220,11 +224,11 @@ top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 ACLOCAL_AMFLAGS = -I m4
-noinst_HEADERS = BaseApplication.h TutorialApplication.h
+noinst_HEADERS = BaseApplication.h TutorialApplication.h SoundManager.h
 Balla_CPPFLAGS = -I$(top_srcdir)
-Balla_SOURCES = BaseApplication.cpp TutorialApplication.cpp
-Balla_CXXFLAGS = $(OGRE_CFLAGS) $(OIS_CFLAGS)
-Balla_LDADD = $(OGRE_LIBS) $(OIS_LIBS)
+Balla_SOURCES = BaseApplication.cpp TutorialApplication.cpp SoundManager.cpp
+Balla_CXXFLAGS = $(OGRE_CFLAGS) $(OIS_CFLAGS) $(sdl_CFLAGS)
+Balla_LDADD = $(OGRE_LIBS) $(OIS_LIBS) $(sdl_LIBS)
 EXTRA_DIST = buildit makeit
 AUTOMAKE_OPTIONS = foreign
 all: config.h
@@ -335,6 +339,7 @@ distclean-compile:
 	-rm -f *.tab.c
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Balla-BaseApplication.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Balla-SoundManager.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Balla-TutorialApplication.Po@am__quote@
 
 .cpp.o:
@@ -385,6 +390,20 @@ Balla-TutorialApplication.obj: TutorialApplication.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='TutorialApplication.cpp' object='Balla-TutorialApplication.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(Balla_CPPFLAGS) $(CPPFLAGS) $(Balla_CXXFLAGS) $(CXXFLAGS) -c -o Balla-TutorialApplication.obj `if test -f 'TutorialApplication.cpp'; then $(CYGPATH_W) 'TutorialApplication.cpp'; else $(CYGPATH_W) '$(srcdir)/TutorialApplication.cpp'; fi`
+
+Balla-SoundManager.o: SoundManager.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(Balla_CPPFLAGS) $(CPPFLAGS) $(Balla_CXXFLAGS) $(CXXFLAGS) -MT Balla-SoundManager.o -MD -MP -MF $(DEPDIR)/Balla-SoundManager.Tpo -c -o Balla-SoundManager.o `test -f 'SoundManager.cpp' || echo '$(srcdir)/'`SoundManager.cpp
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/Balla-SoundManager.Tpo $(DEPDIR)/Balla-SoundManager.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='SoundManager.cpp' object='Balla-SoundManager.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(Balla_CPPFLAGS) $(CPPFLAGS) $(Balla_CXXFLAGS) $(CXXFLAGS) -c -o Balla-SoundManager.o `test -f 'SoundManager.cpp' || echo '$(srcdir)/'`SoundManager.cpp
+
+Balla-SoundManager.obj: SoundManager.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(Balla_CPPFLAGS) $(CPPFLAGS) $(Balla_CXXFLAGS) $(CXXFLAGS) -MT Balla-SoundManager.obj -MD -MP -MF $(DEPDIR)/Balla-SoundManager.Tpo -c -o Balla-SoundManager.obj `if test -f 'SoundManager.cpp'; then $(CYGPATH_W) 'SoundManager.cpp'; else $(CYGPATH_W) '$(srcdir)/SoundManager.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/Balla-SoundManager.Tpo $(DEPDIR)/Balla-SoundManager.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='SoundManager.cpp' object='Balla-SoundManager.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(Balla_CPPFLAGS) $(CPPFLAGS) $(Balla_CXXFLAGS) $(CXXFLAGS) -c -o Balla-SoundManager.obj `if test -f 'SoundManager.cpp'; then $(CYGPATH_W) 'SoundManager.cpp'; else $(CYGPATH_W) '$(srcdir)/SoundManager.cpp'; fi`
 
 mostlyclean-libtool:
 	-rm -f *.lo

@@ -18,8 +18,10 @@ http://www.ogre3d.org/tikiwiki/
 #define __TutorialApplication_h_
 
 #include "BaseApplication.h"
+#include "SoundManager.h"
 
 using namespace std;
+
 
 class TutorialApplication : public BaseApplication
 {
@@ -43,6 +45,8 @@ protected:
     Ogre::SceneNode *paddleNode;
     Ogre::SceneNode *shadowNode;
 
+    SoundManager sound;
+
 
  
     Ogre::Real mBallSpeed;
@@ -51,6 +55,7 @@ protected:
     
     virtual void createFrameListener(void);
     virtual bool frameRenderingQueued(const Ogre::FrameEvent &evt);
+    void mixaudio(void *unused, Uint8 *stream, int len);
     
 };
 

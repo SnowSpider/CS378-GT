@@ -54,10 +54,12 @@ CONFIG_CLEAN_VPATH_FILES =
 am__installdirs = "$(DESTDIR)$(bindir)"
 PROGRAMS = $(bin_PROGRAMS)
 am_Balla_OBJECTS = Balla-BaseApplication.$(OBJEXT) \
-	Balla-TutorialApplication.$(OBJEXT)
+	Balla-TutorialApplication.$(OBJEXT) \
+	Balla-SoundManager.$(OBJEXT)
 Balla_OBJECTS = $(am_Balla_OBJECTS)
 am__DEPENDENCIES_1 =
-Balla_DEPENDENCIES = $(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1)
+Balla_DEPENDENCIES = $(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
+	$(am__DEPENDENCIES_1)
 Balla_LINK = $(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
 	--mode=link $(CXXLD) $(Balla_CXXFLAGS) $(CXXFLAGS) \
 	$(AM_LDFLAGS) $(LDFLAGS) -o $@
@@ -94,12 +96,12 @@ distuninstallcheck_listfiles = find . -type f -print
 am__distuninstallcheck_listfiles = $(distuninstallcheck_listfiles) \
   | sed 's|^\./|$(prefix)/|' | grep -v '$(infodir)/dir$$'
 distcleancheck_listfiles = find . -type f -print
-ACLOCAL = ${SHELL} /v/filer4b/v38q001/wlee/CS378-GT/missing --run aclocal-1.11
+ACLOCAL = ${SHELL} /v/filer4b/v38q001/howardfu/Desktop/CS378-GT/missing --run aclocal-1.11
 AMTAR = $${TAR-tar}
 AR = ar
-AUTOCONF = ${SHELL} /v/filer4b/v38q001/wlee/CS378-GT/missing --run autoconf
-AUTOHEADER = ${SHELL} /v/filer4b/v38q001/wlee/CS378-GT/missing --run autoheader
-AUTOMAKE = ${SHELL} /v/filer4b/v38q001/wlee/CS378-GT/missing --run automake-1.11
+AUTOCONF = ${SHELL} /v/filer4b/v38q001/howardfu/Desktop/CS378-GT/missing --run autoconf
+AUTOHEADER = ${SHELL} /v/filer4b/v38q001/howardfu/Desktop/CS378-GT/missing --run autoheader
+AUTOMAKE = ${SHELL} /v/filer4b/v38q001/howardfu/Desktop/CS378-GT/missing --run automake-1.11
 AWK = gawk
 CC = gcc
 CCDEPMODE = depmode=gcc3
@@ -136,7 +138,7 @@ LIBTOOL = $(SHELL) $(top_builddir)/libtool
 LIPO = 
 LN_S = ln -s
 LTLIBOBJS = 
-MAKEINFO = ${SHELL} /v/filer4b/v38q001/wlee/CS378-GT/missing --run makeinfo
+MAKEINFO = ${SHELL} /v/filer4b/v38q001/howardfu/Desktop/CS378-GT/missing --run makeinfo
 MANIFEST_TOOL = :
 MKDIR_P = /bin/mkdir -p
 NM = /usr/bin/nm -B
@@ -166,10 +168,10 @@ SET_MAKE =
 SHELL = /bin/bash
 STRIP = strip
 VERSION = 0.1
-abs_builddir = /v/filer4b/v38q001/wlee/CS378-GT
-abs_srcdir = /v/filer4b/v38q001/wlee/CS378-GT
-abs_top_builddir = /v/filer4b/v38q001/wlee/CS378-GT
-abs_top_srcdir = /v/filer4b/v38q001/wlee/CS378-GT
+abs_builddir = /v/filer4b/v38q001/howardfu/Desktop/CS378-GT
+abs_srcdir = /v/filer4b/v38q001/howardfu/Desktop/CS378-GT
+abs_top_builddir = /v/filer4b/v38q001/howardfu/Desktop/CS378-GT
+abs_top_srcdir = /v/filer4b/v38q001/howardfu/Desktop/CS378-GT
 ac_ct_AR = ar
 ac_ct_CC = gcc
 ac_ct_CXX = g++
@@ -199,7 +201,7 @@ host_vendor = unknown
 htmldir = ${docdir}
 includedir = ${prefix}/include
 infodir = ${datarootdir}/info
-install_sh = ${SHELL} /v/filer4b/v38q001/wlee/CS378-GT/install-sh
+install_sh = ${SHELL} /v/filer4b/v38q001/howardfu/Desktop/CS378-GT/install-sh
 libdir = ${exec_prefix}/lib
 libexecdir = ${exec_prefix}/libexec
 localedir = ${datarootdir}/locale
@@ -212,6 +214,8 @@ prefix = /usr/local
 program_transform_name = s,x,x,
 psdir = ${docdir}
 sbindir = ${exec_prefix}/sbin
+sdl_CFLAGS = -D_GNU_SOURCE=1 -D_REENTRANT -I/usr/include/SDL  
+sdl_LIBS = -lSDL  
 sharedstatedir = ${prefix}/com
 srcdir = .
 sysconfdir = ${prefix}/etc
@@ -220,11 +224,11 @@ top_build_prefix =
 top_builddir = .
 top_srcdir = .
 ACLOCAL_AMFLAGS = -I m4
-noinst_HEADERS = BaseApplication.h TutorialApplication.h
+noinst_HEADERS = BaseApplication.h TutorialApplication.h SoundManager.h
 Balla_CPPFLAGS = -I$(top_srcdir)
-Balla_SOURCES = BaseApplication.cpp TutorialApplication.cpp
-Balla_CXXFLAGS = $(OGRE_CFLAGS) $(OIS_CFLAGS)
-Balla_LDADD = $(OGRE_LIBS) $(OIS_LIBS)
+Balla_SOURCES = BaseApplication.cpp TutorialApplication.cpp SoundManager.cpp
+Balla_CXXFLAGS = $(OGRE_CFLAGS) $(OIS_CFLAGS) $(sdl_CFLAGS)
+Balla_LDADD = $(OGRE_LIBS) $(OIS_LIBS) $(sdl_LIBS)
 EXTRA_DIST = buildit makeit
 AUTOMAKE_OPTIONS = foreign
 all: config.h
@@ -335,6 +339,7 @@ distclean-compile:
 	-rm -f *.tab.c
 
 include ./$(DEPDIR)/Balla-BaseApplication.Po
+include ./$(DEPDIR)/Balla-SoundManager.Po
 include ./$(DEPDIR)/Balla-TutorialApplication.Po
 
 .cpp.o:
@@ -385,6 +390,20 @@ Balla-TutorialApplication.obj: TutorialApplication.cpp
 #	source='TutorialApplication.cpp' object='Balla-TutorialApplication.obj' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
 #	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(Balla_CPPFLAGS) $(CPPFLAGS) $(Balla_CXXFLAGS) $(CXXFLAGS) -c -o Balla-TutorialApplication.obj `if test -f 'TutorialApplication.cpp'; then $(CYGPATH_W) 'TutorialApplication.cpp'; else $(CYGPATH_W) '$(srcdir)/TutorialApplication.cpp'; fi`
+
+Balla-SoundManager.o: SoundManager.cpp
+	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(Balla_CPPFLAGS) $(CPPFLAGS) $(Balla_CXXFLAGS) $(CXXFLAGS) -MT Balla-SoundManager.o -MD -MP -MF $(DEPDIR)/Balla-SoundManager.Tpo -c -o Balla-SoundManager.o `test -f 'SoundManager.cpp' || echo '$(srcdir)/'`SoundManager.cpp
+	$(am__mv) $(DEPDIR)/Balla-SoundManager.Tpo $(DEPDIR)/Balla-SoundManager.Po
+#	source='SoundManager.cpp' object='Balla-SoundManager.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
+#	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(Balla_CPPFLAGS) $(CPPFLAGS) $(Balla_CXXFLAGS) $(CXXFLAGS) -c -o Balla-SoundManager.o `test -f 'SoundManager.cpp' || echo '$(srcdir)/'`SoundManager.cpp
+
+Balla-SoundManager.obj: SoundManager.cpp
+	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(Balla_CPPFLAGS) $(CPPFLAGS) $(Balla_CXXFLAGS) $(CXXFLAGS) -MT Balla-SoundManager.obj -MD -MP -MF $(DEPDIR)/Balla-SoundManager.Tpo -c -o Balla-SoundManager.obj `if test -f 'SoundManager.cpp'; then $(CYGPATH_W) 'SoundManager.cpp'; else $(CYGPATH_W) '$(srcdir)/SoundManager.cpp'; fi`
+	$(am__mv) $(DEPDIR)/Balla-SoundManager.Tpo $(DEPDIR)/Balla-SoundManager.Po
+#	source='SoundManager.cpp' object='Balla-SoundManager.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
+#	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(Balla_CPPFLAGS) $(CPPFLAGS) $(Balla_CXXFLAGS) $(CXXFLAGS) -c -o Balla-SoundManager.obj `if test -f 'SoundManager.cpp'; then $(CYGPATH_W) 'SoundManager.cpp'; else $(CYGPATH_W) '$(srcdir)/SoundManager.cpp'; fi`
 
 mostlyclean-libtool:
 	-rm -f *.lo
