@@ -1,0 +1,19 @@
+material Template/texture_map
+{
+    technique
+    {
+        pass
+        {
+            scene blend alpha_blend
+            depth_write off
+            
+            texture_unit
+            {
+                texture wood1.png
+                scale 1 1
+                // colour_op_ex source1 src_manual src_current 1 0 0
+                alpha_op_ex source1 src_manual src_current 0.5
+            }
+        }   
+    }
+}

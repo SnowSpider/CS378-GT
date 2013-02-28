@@ -1,7 +1,7 @@
-OgreApp-GameObject.o: GameObject.cpp GameObject.h \
- /usr/include/OGRE/Ogre.h /usr/include/OGRE/OgrePrerequisites.h \
- /usr/include/OGRE/OgrePlatform.h /usr/include/OGRE/OgreConfig.h \
- /usr/include/OGRE/OgreBuildSettings.h /usr/include/c++/4.6/string \
+OgreApp-Simulator.o: Simulator.cpp Simulator.h /usr/include/OGRE/Ogre.h \
+ /usr/include/OGRE/OgrePrerequisites.h /usr/include/OGRE/OgrePlatform.h \
+ /usr/include/OGRE/OgreConfig.h /usr/include/OGRE/OgreBuildSettings.h \
+ /usr/include/c++/4.6/string \
  /usr/include/c++/4.6/x86_64-linux-gnu/./bits/c++config.h \
  /usr/include/c++/4.6/x86_64-linux-gnu/./bits/os_defines.h \
  /usr/include/features.h /usr/include/x86_64-linux-gnu/bits/predefs.h \
@@ -812,8 +812,8 @@ OgreApp-GameObject.o: GameObject.cpp GameObject.h \
  /usr/local/include/bullet/LinearMath/btMotionState.h \
  /usr/local/include/bullet/LinearMath/btQuickprof.h \
  /usr/local/include/bullet/LinearMath/btIDebugDraw.h \
- /usr/local/include/bullet/LinearMath/btSerializer.h OgreMotionState.h \
- Simulator.h /usr/local/include/bullet/btBulletDynamicsCommon.h \
+ /usr/local/include/bullet/LinearMath/btSerializer.h \
+ /usr/local/include/bullet/btBulletDynamicsCommon.h \
  /usr/local/include/bullet/btBulletCollisionCommon.h \
  /usr/local/include/bullet/BulletDynamics/Dynamics/btDiscreteDynamicsWorld.h \
  /usr/local/include/bullet/BulletDynamics/Dynamics/btDynamicsWorld.h \
@@ -847,9 +847,9 @@ OgreApp-GameObject.o: GameObject.cpp GameObject.h \
  /usr/local/include/bullet/BulletDynamics/Vehicle/btWheelInfo.h \
  /usr/local/include/bullet/BulletDynamics/Dynamics/btActionInterface.h \
  /usr/local/include/bullet/BulletDynamics/Dynamics/btRigidBody.h \
- /usr/include/OGRE/OgreEntity.h /usr/include/OGRE/OgreSceneManager.h
+ GameObject.h OgreMotionState.h
 
-GameObject.h:
+Simulator.h:
 
 /usr/include/OGRE/Ogre.h:
 
@@ -2737,10 +2737,6 @@ GameObject.h:
 
 /usr/local/include/bullet/LinearMath/btSerializer.h:
 
-OgreMotionState.h:
-
-Simulator.h:
-
 /usr/local/include/bullet/btBulletDynamicsCommon.h:
 
 /usr/local/include/bullet/btBulletCollisionCommon.h:
@@ -2809,6 +2805,6 @@ Simulator.h:
 
 /usr/local/include/bullet/BulletDynamics/Dynamics/btRigidBody.h:
 
-/usr/include/OGRE/OgreEntity.h:
+GameObject.h:
 
-/usr/include/OGRE/OgreSceneManager.h:
+OgreMotionState.h:

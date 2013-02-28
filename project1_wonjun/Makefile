@@ -55,11 +55,14 @@ am__installdirs = "$(DESTDIR)$(bindir)"
 PROGRAMS = $(bin_PROGRAMS)
 am_OgreApp_OBJECTS = OgreApp-BaseApplication.$(OBJEXT) \
 	OgreApp-TutorialApplication.$(OBJEXT) \
-	OgreApp-GameObject.$(OBJEXT)
+	OgreApp-GameObject.$(OBJEXT) OgreApp-Simulator.$(OBJEXT) \
+	OgreApp-SoundManager.$(OBJEXT)
 OgreApp_OBJECTS = $(am_OgreApp_OBJECTS)
 am__DEPENDENCIES_1 =
 OgreApp_DEPENDENCIES = $(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
-	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1)
+	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
+	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
+	$(am__DEPENDENCIES_1)
 OgreApp_LINK = $(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
 	--mode=link $(CXXLD) $(OgreApp_CXXFLAGS) $(CXXFLAGS) \
 	$(AM_LDFLAGS) $(LDFLAGS) -o $@
@@ -96,17 +99,21 @@ distuninstallcheck_listfiles = find . -type f -print
 am__distuninstallcheck_listfiles = $(distuninstallcheck_listfiles) \
   | sed 's|^\./|$(prefix)/|' | grep -v '$(infodir)/dir$$'
 distcleancheck_listfiles = find . -type f -print
-ACLOCAL = ${SHELL} /v/filer4b/v38q001/wlee/CS378-GT/project1_wonjun/missing --run aclocal-1.11
+ACLOCAL = ${SHELL} /v/filer4b/v38q001/howardfu/Desktop/CS378-GT/project1_wonjun/missing --run aclocal-1.11
 AMTAR = $${TAR-tar}
 AR = ar
-AUTOCONF = ${SHELL} /v/filer4b/v38q001/wlee/CS378-GT/project1_wonjun/missing --run autoconf
-AUTOHEADER = ${SHELL} /v/filer4b/v38q001/wlee/CS378-GT/project1_wonjun/missing --run autoheader
-AUTOMAKE = ${SHELL} /v/filer4b/v38q001/wlee/CS378-GT/project1_wonjun/missing --run automake-1.11
+AUTOCONF = ${SHELL} /v/filer4b/v38q001/howardfu/Desktop/CS378-GT/project1_wonjun/missing --run autoconf
+AUTOHEADER = ${SHELL} /v/filer4b/v38q001/howardfu/Desktop/CS378-GT/project1_wonjun/missing --run autoheader
+AUTOMAKE = ${SHELL} /v/filer4b/v38q001/howardfu/Desktop/CS378-GT/project1_wonjun/missing --run automake-1.11
 AWK = gawk
 BULLET_CFLAGS = 
 BULLET_LIBS = 
 CC = gcc
 CCDEPMODE = depmode=gcc3
+CEGUI_CFLAGS = -I/lusr/opt/cegui-0.7.6/include -I/lusr/opt/cegui-0.7.6/include/CEGUI  
+CEGUI_LIBS = -L/lusr/opt/cegui-0.7.6/lib -lCEGUIBase  
+CEGUI_OGRE_CFLAGS = -pthread -I/lusr/opt/cegui-0.7.6/include -I/lusr/opt/cegui-0.7.6/include/CEGUI -I/usr/include/OGRE  
+CEGUI_OGRE_LIBS = -L/lusr/opt/cegui-0.7.6/lib -lCEGUIOgreRenderer -lOgreMain -lpthread -lCEGUIBase  
 CFLAGS = -g -O2
 CPP = gcc -E
 CPPFLAGS = 
@@ -140,7 +147,7 @@ LIBTOOL = $(SHELL) $(top_builddir)/libtool
 LIPO = 
 LN_S = ln -s
 LTLIBOBJS = 
-MAKEINFO = ${SHELL} /v/filer4b/v38q001/wlee/CS378-GT/project1_wonjun/missing --run makeinfo
+MAKEINFO = ${SHELL} /v/filer4b/v38q001/howardfu/Desktop/CS378-GT/project1_wonjun/missing --run makeinfo
 MANIFEST_TOOL = :
 MKDIR_P = /bin/mkdir -p
 NM = /usr/bin/nm -B
@@ -172,10 +179,10 @@ SET_MAKE =
 SHELL = /bin/bash
 STRIP = strip
 VERSION = 0.1
-abs_builddir = /v/filer4b/v38q001/wlee/CS378-GT/project1_wonjun
-abs_srcdir = /v/filer4b/v38q001/wlee/CS378-GT/project1_wonjun
-abs_top_builddir = /v/filer4b/v38q001/wlee/CS378-GT/project1_wonjun
-abs_top_srcdir = /v/filer4b/v38q001/wlee/CS378-GT/project1_wonjun
+abs_builddir = /v/filer4b/v38q001/howardfu/Desktop/CS378-GT/project1_wonjun
+abs_srcdir = /v/filer4b/v38q001/howardfu/Desktop/CS378-GT/project1_wonjun
+abs_top_builddir = /v/filer4b/v38q001/howardfu/Desktop/CS378-GT/project1_wonjun
+abs_top_srcdir = /v/filer4b/v38q001/howardfu/Desktop/CS378-GT/project1_wonjun
 ac_ct_AR = ar
 ac_ct_CC = gcc
 ac_ct_CXX = g++
@@ -207,7 +214,7 @@ host_vendor = unknown
 htmldir = ${docdir}
 includedir = ${prefix}/include
 infodir = ${datarootdir}/info
-install_sh = ${SHELL} /v/filer4b/v38q001/wlee/CS378-GT/project1_wonjun/install-sh
+install_sh = ${SHELL} /v/filer4b/v38q001/howardfu/Desktop/CS378-GT/project1_wonjun/install-sh
 libdir = ${exec_prefix}/lib
 libexecdir = ${exec_prefix}/libexec
 localedir = ${datarootdir}/locale
@@ -220,6 +227,8 @@ prefix = /usr/local
 program_transform_name = s,x,x,
 psdir = ${docdir}
 sbindir = ${exec_prefix}/sbin
+sdl_CFLAGS = -D_GNU_SOURCE=1 -D_REENTRANT -I/usr/include/SDL  
+sdl_LIBS = -lSDL  
 sharedstatedir = ${prefix}/com
 srcdir = .
 sysconfdir = ${prefix}/etc
@@ -230,9 +239,9 @@ top_srcdir = .
 ACLOCAL_AMFLAGS = -I m4
 noinst_HEADERS = BaseApplication.h TutorialApplication.h
 OgreApp_CPPFLAGS = -I$(top_srcdir)
-OgreApp_SOURCES = BaseApplication.cpp TutorialApplication.cpp GameObject.cpp 
-OgreApp_CXXFLAGS = $(OGRE_CFLAGS) $(OGRE_TERRAIN_CFLAGS) $(OIS_CFLAGS) $(bullet_CFLAGS)
-OgreApp_LDADD = $(OGRE_LIBS) $(OGRE_TERRAIN_LIBS) $(OIS_LIBS) $(bullet_LIBS)
+OgreApp_SOURCES = BaseApplication.cpp TutorialApplication.cpp GameObject.cpp Simulator.cpp SoundManager.cpp
+OgreApp_CXXFLAGS = $(OGRE_CFLAGS) $(OGRE_TERRAIN_CFLAGS) $(OIS_CFLAGS) $(bullet_CFLAGS) $(CEGUI_CFLAGS) $(CEGUI_OGRE_CFLAGS) $(sdl_CFLAGS)
+OgreApp_LDADD = $(OGRE_LIBS) $(OGRE_TERRAIN_LIBS) $(OIS_LIBS) $(bullet_LIBS) $(CEGUI_LIBS) $(CEGUI_OGRE_LIBS) $(sdl_LIBS)
 EXTRA_DIST = buildit makeit
 AUTOMAKE_OPTIONS = foreign
 all: config.h
@@ -344,6 +353,8 @@ distclean-compile:
 
 include ./$(DEPDIR)/OgreApp-BaseApplication.Po
 include ./$(DEPDIR)/OgreApp-GameObject.Po
+include ./$(DEPDIR)/OgreApp-Simulator.Po
+include ./$(DEPDIR)/OgreApp-SoundManager.Po
 include ./$(DEPDIR)/OgreApp-TutorialApplication.Po
 
 .cpp.o:
@@ -408,6 +419,34 @@ OgreApp-GameObject.obj: GameObject.cpp
 #	source='GameObject.cpp' object='OgreApp-GameObject.obj' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
 #	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(OgreApp_CPPFLAGS) $(CPPFLAGS) $(OgreApp_CXXFLAGS) $(CXXFLAGS) -c -o OgreApp-GameObject.obj `if test -f 'GameObject.cpp'; then $(CYGPATH_W) 'GameObject.cpp'; else $(CYGPATH_W) '$(srcdir)/GameObject.cpp'; fi`
+
+OgreApp-Simulator.o: Simulator.cpp
+	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(OgreApp_CPPFLAGS) $(CPPFLAGS) $(OgreApp_CXXFLAGS) $(CXXFLAGS) -MT OgreApp-Simulator.o -MD -MP -MF $(DEPDIR)/OgreApp-Simulator.Tpo -c -o OgreApp-Simulator.o `test -f 'Simulator.cpp' || echo '$(srcdir)/'`Simulator.cpp
+	$(am__mv) $(DEPDIR)/OgreApp-Simulator.Tpo $(DEPDIR)/OgreApp-Simulator.Po
+#	source='Simulator.cpp' object='OgreApp-Simulator.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
+#	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(OgreApp_CPPFLAGS) $(CPPFLAGS) $(OgreApp_CXXFLAGS) $(CXXFLAGS) -c -o OgreApp-Simulator.o `test -f 'Simulator.cpp' || echo '$(srcdir)/'`Simulator.cpp
+
+OgreApp-Simulator.obj: Simulator.cpp
+	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(OgreApp_CPPFLAGS) $(CPPFLAGS) $(OgreApp_CXXFLAGS) $(CXXFLAGS) -MT OgreApp-Simulator.obj -MD -MP -MF $(DEPDIR)/OgreApp-Simulator.Tpo -c -o OgreApp-Simulator.obj `if test -f 'Simulator.cpp'; then $(CYGPATH_W) 'Simulator.cpp'; else $(CYGPATH_W) '$(srcdir)/Simulator.cpp'; fi`
+	$(am__mv) $(DEPDIR)/OgreApp-Simulator.Tpo $(DEPDIR)/OgreApp-Simulator.Po
+#	source='Simulator.cpp' object='OgreApp-Simulator.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
+#	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(OgreApp_CPPFLAGS) $(CPPFLAGS) $(OgreApp_CXXFLAGS) $(CXXFLAGS) -c -o OgreApp-Simulator.obj `if test -f 'Simulator.cpp'; then $(CYGPATH_W) 'Simulator.cpp'; else $(CYGPATH_W) '$(srcdir)/Simulator.cpp'; fi`
+
+OgreApp-SoundManager.o: SoundManager.cpp
+	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(OgreApp_CPPFLAGS) $(CPPFLAGS) $(OgreApp_CXXFLAGS) $(CXXFLAGS) -MT OgreApp-SoundManager.o -MD -MP -MF $(DEPDIR)/OgreApp-SoundManager.Tpo -c -o OgreApp-SoundManager.o `test -f 'SoundManager.cpp' || echo '$(srcdir)/'`SoundManager.cpp
+	$(am__mv) $(DEPDIR)/OgreApp-SoundManager.Tpo $(DEPDIR)/OgreApp-SoundManager.Po
+#	source='SoundManager.cpp' object='OgreApp-SoundManager.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
+#	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(OgreApp_CPPFLAGS) $(CPPFLAGS) $(OgreApp_CXXFLAGS) $(CXXFLAGS) -c -o OgreApp-SoundManager.o `test -f 'SoundManager.cpp' || echo '$(srcdir)/'`SoundManager.cpp
+
+OgreApp-SoundManager.obj: SoundManager.cpp
+	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(OgreApp_CPPFLAGS) $(CPPFLAGS) $(OgreApp_CXXFLAGS) $(CXXFLAGS) -MT OgreApp-SoundManager.obj -MD -MP -MF $(DEPDIR)/OgreApp-SoundManager.Tpo -c -o OgreApp-SoundManager.obj `if test -f 'SoundManager.cpp'; then $(CYGPATH_W) 'SoundManager.cpp'; else $(CYGPATH_W) '$(srcdir)/SoundManager.cpp'; fi`
+	$(am__mv) $(DEPDIR)/OgreApp-SoundManager.Tpo $(DEPDIR)/OgreApp-SoundManager.Po
+#	source='SoundManager.cpp' object='OgreApp-SoundManager.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
+#	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(OgreApp_CPPFLAGS) $(CPPFLAGS) $(OgreApp_CXXFLAGS) $(CXXFLAGS) -c -o OgreApp-SoundManager.obj `if test -f 'SoundManager.cpp'; then $(CYGPATH_W) 'SoundManager.cpp'; else $(CYGPATH_W) '$(srcdir)/SoundManager.cpp'; fi`
 
 mostlyclean-libtool:
 	-rm -f *.lo

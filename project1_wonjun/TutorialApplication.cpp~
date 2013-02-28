@@ -22,6 +22,9 @@ This source file is part of the
 #include <iostream>
 #include <math.h>
 
+//#include <LinearMath/btVector3.h>
+#include <btBulletCollisionCommon.h>
+
 TutorialApplication::TutorialApplication(void)
 {
     deltaX = 0;
@@ -30,7 +33,8 @@ TutorialApplication::TutorialApplication(void)
     yi = 0;
     //exitCmd = false; 
     ready = true;
-    speed_default = 250;
+    speed_default = 200;
+    increment = 25;
     score = 0;
 }
  
@@ -42,14 +46,18 @@ TutorialApplication::~TutorialApplication(void)
 void TutorialApplication::createScene(void)
 {
     mCamera->setPosition(0,0,450); 
+
+    // Create SoundManager
+    sound.open();
+    sound.turnOn();
     
     // Set the scene's ambient light
     mSceneMgr->setAmbientLight(Ogre::ColourValue(0.5f, 0.5f, 0.5f));
     
     // Create game objects
-    myBall = GameObject(mSceneMgr, Ogre::Vector3(0,0,0), "sphere.mesh", "Examples/GreenSkin");
-    myPaddle = GameObject(mSceneMgr, Ogre::Vector3(0,0,210), "cube.mesh", "Examples/BumpyMetal");
-    myPaddle.scale(2);
+    myBall = GameObject(mSceneMgr, btVector3(0,0,0), "sphere.mesh", "Examples/GreenSkin");
+    myPaddle = GameObject(mSceneMgr, btVector3(0,0,210), "cube.mesh", "MyMaterials/wood1");
+    myPaddle.scale(2, 2, 0.1);
     
     Ogre::Plane plane_x_pos_in(Ogre::Vector3::NEGATIVE_UNIT_X, -100);
     Ogre::Plane plane_x_neg_in(Ogre::Vector3::UNIT_X, -100);
@@ -59,14 +67,14 @@ void TutorialApplication::createScene(void)
     Ogre::Plane plane_z_neg_in(Ogre::Vector3::UNIT_Z, -200);
     
     // plane_x_pos_in
-	Ogre::MeshManager::getSingleton().createPlane("plane_x_pos_in", Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME, plane_x_pos_in, 200.0f, 400.0f, 1, 1, true, 1, 1.0f, 1.0f, Ogre::Vector3::UNIT_Z);
+	Ogre::MeshManager::getSingleton().createPlane("plane_x_pos_in", Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME, plane_x_pos_in, 400.0f, 200.0f, 1, 1, true, 1, 1.0f, 1.0f, Ogre::Vector3::UNIT_Y);
 	Ogre::Entity* plane1 = mSceneMgr->createEntity("ent_plane_x_pos_in", "plane_x_pos_in");
 	plane1->setMaterialName("Examples/Rockwall");
 	plane1->setCastShadows(false);
 	mSceneMgr->getRootSceneNode()->createChildSceneNode()->attachObject(plane1);
     
     // plane_x_neg_in
-	Ogre::MeshManager::getSingleton().createPlane("plane_x_neg_in", Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME, plane_x_neg_in, 200.0f, 400.0f, 1, 1, true, 1, 1.0f, 1.0f, Ogre::Vector3::UNIT_Z);
+	Ogre::MeshManager::getSingleton().createPlane("plane_x_neg_in", Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME, plane_x_neg_in, 400.0f, 200.0f, 1, 1, true, 1, 1.0f, 1.0f, Ogre::Vector3::UNIT_Y);
 	Ogre::Entity* plane2 = mSceneMgr->createEntity("ent_plane_x_neg_in", "plane_x_neg_in");
 	plane2->setMaterialName("Examples/Rockwall");
 	plane2->setCastShadows(false);
@@ -75,14 +83,14 @@ void TutorialApplication::createScene(void)
     // plane_y_pos_in
 	Ogre::MeshManager::getSingleton().createPlane("plane_y_pos_in", Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME, plane_y_pos_in, 400.0f, 200.0f, 1, 1, true, 1, 1.0f, 1.0f, Ogre::Vector3::UNIT_X);
 	Ogre::Entity* plane3 = mSceneMgr->createEntity("ent_plane_y_pos_in", "plane_y_pos_in");
-	plane3->setMaterialName("Examples/Rockwall");
+	plane3->setMaterialName("MyMaterials/wood2");
 	plane3->setCastShadows(false);
 	mSceneMgr->getRootSceneNode()->createChildSceneNode()->attachObject(plane3);
     
     // plane_y_neg_in
 	Ogre::MeshManager::getSingleton().createPlane("plane_y_neg_in", Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME, plane_y_neg_in, 400.0f, 200.0f, 1, 1, true, 1, 1.0f, 1.0f, Ogre::Vector3::UNIT_X);
 	Ogre::Entity* plane4 = mSceneMgr->createEntity("ent_plane_y_neg_in", "plane_y_neg_in");
-	plane4->setMaterialName("Examples/Rockwall");
+	plane4->setMaterialName("MyMaterials/wood2");
 	plane4->setCastShadows(false);
 	mSceneMgr->getRootSceneNode()->createChildSceneNode()->attachObject(plane4);
     
@@ -96,7 +104,7 @@ void TutorialApplication::createScene(void)
     // plane_z_neg_in
 	Ogre::MeshManager::getSingleton().createPlane("plane_z_neg_in", Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME, plane_z_neg_in, 200.0f, 200.0f, 1, 1, true, 1, 1.0f, 1.0f, Ogre::Vector3::UNIT_Y);
 	Ogre::Entity* plane6 = mSceneMgr->createEntity("ent_plane_z_neg_in", "plane_z_neg_in");
-	plane6->setMaterialName("Examples/Rockwall");
+	plane6->setMaterialName("MyMaterials/buddha1");
 	plane6->setCastShadows(false);
 	mSceneMgr->getRootSceneNode()->createChildSceneNode()->attachObject(plane6);
 	
@@ -114,10 +122,10 @@ void TutorialApplication::createFrameListener(void){
     float r2 = (rand() % 100);
     float r3 = (rand() % 100);
     
-    myBall.direction = Ogre::Vector3(r1, r2, -500);
-    myBall.direction.normalise();
+    myBall.direction = btVector3(r1, r2, -500);
+    myBall.direction.normalize();
     myBall.speed = speed_default;
-    myBall.setPosition(Ogre::Vector3::ZERO);
+    myBall.setPosition(btVector3(0,0,0));
     
     BaseApplication::createFrameListener();
 }
@@ -130,9 +138,24 @@ bool TutorialApplication::frameRenderingQueued(const Ogre::FrameEvent &evt){
     }
     
     // Move the paddle
-    myPaddle.direction = Ogre::Vector3(deltaX, -deltaY, 0);
+    myPaddle.direction = btVector3(deltaX, deltaY, 0);
     myPaddle.speed = sqrt(deltaX*deltaX + deltaY*deltaY);
-    myPaddle.move(evt);
+    myPaddle.setPosition(btVector3(xi, yi, 210)); 
+    //myPaddle.move(evt);
+    
+    if (myPaddle.position.x() > 90){
+        myPaddle.setPosition(btVector3(90, myPaddle.position.y(), myPaddle.position.z()));
+    }
+    if (myPaddle.position.x() < -90){
+        myPaddle.setPosition(btVector3(-90, myPaddle.position.y(), myPaddle.position.z()));
+    }
+    if (myPaddle.position.y() > 90){
+        myPaddle.setPosition(btVector3(myPaddle.position.x(), 90, myPaddle.position.z()));
+    }
+    if (myPaddle.position.y() < -90){
+        myPaddle.setPosition(btVector3(myPaddle.position.x(), -90, myPaddle.position.z()));
+    }
+    
     
     //cout << myPaddle.direction << endl;
     //cout << myPaddle.speed << endl;
@@ -147,49 +170,55 @@ bool TutorialApplication::frameRenderingQueued(const Ogre::FrameEvent &evt){
     
     */
     
-    //myBall.nextPosition.x >= 90-myBall.position.x
+    //myBall.nextPosition.x() >= 90-myBall.position.x()
     
     // The ball hits the positive x plane
-    if (myBall.position.x > 90 || myBall.nextPosition.x > 90){
-        myBall.setPosition(Ogre::Vector3(90, myBall.position.y, myBall.position.z));
-        myBall.direction += (-2.0 * (Ogre::Vector3::NEGATIVE_UNIT_X.dotProduct(myBall.direction)) * Ogre::Vector3::NEGATIVE_UNIT_X);
+    if (myBall.position.x() > 90 || myBall.nextPosition.x() > 90){
+        myBall.setPosition(btVector3(90, myBall.position.y(), myBall.position.z()));
+        myBall.direction += (-2.0 * (btVector3(-1,0,0).dot(myBall.direction)) * btVector3(-1,0,0));
         //cout << "hit!" << endl;
+	sound.PlaySound("boing.wav");
     }
     
     // The ball hits the negative x plane
-    else if (myBall.position.x < -90 || myBall.nextPosition.x < -90){
-        myBall.setPosition(Ogre::Vector3(-90, myBall.position.y, myBall.position.z));
-        myBall.direction += (-2.0 * (Ogre::Vector3::UNIT_X.dotProduct(myBall.direction)) * Ogre::Vector3::UNIT_X);
+    else if (myBall.position.x() < -90 || myBall.nextPosition.x() < -90){
+        myBall.setPosition(btVector3(-90, myBall.position.y(), myBall.position.z()));
+        myBall.direction += (-2.0 * (btVector3(1,0,0).dot(myBall.direction)) * btVector3(1,0,0));
         //cout << "hit!" << endl;
+	sound.PlaySound("boing.wav");
     }
     
     // The ball hits the positive y plane
-    else if (myBall.position.y > 90 || myBall.nextPosition.y > 90){
-        myBall.setPosition(Ogre::Vector3(myBall.position.x, 90, myBall.position.z));
-        myBall.direction += (-2.0 * (Ogre::Vector3::NEGATIVE_UNIT_Y.dotProduct(myBall.direction)) * Ogre::Vector3::NEGATIVE_UNIT_Y);
+    else if (myBall.position.y() > 90 || myBall.nextPosition.y() > 90){
+        myBall.setPosition(btVector3(myBall.position.x(), 90, myBall.position.z()));
+        myBall.direction += (-2.0 * (btVector3(0,-1,0).dot(myBall.direction)) * btVector3(0,-1,0));
         //cout << "hit!" << endl;
+	sound.PlaySound("boing.wav");
     }
     
     // The ball hits the negative y plane
-    else if (myBall.position.y < -90 || myBall.nextPosition.y < -90){
-        myBall.setPosition(Ogre::Vector3(myBall.position.x, -90, myBall.position.z));
-        myBall.direction += (-2.0 * (Ogre::Vector3::UNIT_Y.dotProduct(myBall.direction)) * Ogre::Vector3::UNIT_Y);
+    else if (myBall.position.y() < -90 || myBall.nextPosition.y() < -90){
+        myBall.setPosition(btVector3(myBall.position.x(), -90, myBall.position.z()));
+        myBall.direction += (-2.0 * (btVector3(0,1,0).dot(myBall.direction)) * btVector3(0,1,0));
         //cout << "hit!" << endl;
+	sound.PlaySound("boing.wav");
     }
     
     // The ball hits the positive z plane
-    else if (myBall.position.z > 190 || myBall.nextPosition.z > 190){
-        myBall.setPosition(Ogre::Vector3(myBall.position.x, myBall.position.y, 190));
-        myBall.direction += (-2.0 * (Ogre::Vector3::NEGATIVE_UNIT_Z.dotProduct(myBall.direction)) * Ogre::Vector3::NEGATIVE_UNIT_Z);
-        if (abs(myPaddle.position.x - myBall.position.x) <= 25 && abs(myPaddle.position.y - myBall.position.y) <= 25){
+    else if (myBall.position.z() > 190 || myBall.nextPosition.z() > 190){
+        myBall.setPosition(btVector3(myBall.position.x(), myBall.position.y(), 190));
+        myBall.direction += (-2.0 * (btVector3(0,0,-1).dot(myBall.direction)) * btVector3(0,0,-1));
+        if (abs(myPaddle.position.x() - myBall.position.x()) <= 25 && abs(myPaddle.position.y() - myBall.position.y()) <= 25){
             score += myBall.speed;
-            myBall.speed += 10;
+            myBall.speed += increment;
             //cout << "HIT" << endl;
+	sound.PlaySound("boing.wav");
         }
-        else if (abs(myPaddle.nextPosition.x - myBall.nextPosition.x) <= 25 && abs(myPaddle.nextPosition.y - myBall.nextPosition.y) <= 25){
+        else if (abs(myPaddle.nextPosition.x() - myBall.nextPosition.x()) <= 25 && abs(myPaddle.nextPosition.y() - myBall.nextPosition.y()) <= 25){
             score += myBall.speed;
-            myBall.speed += 10;
+            myBall.speed += increment;
             //cout << "HIT" << endl;
+	sound.PlaySound("boing.wav");
         }
         else{
             cout << "Score:" << score << "\nClick to restart" << endl;
@@ -197,18 +226,18 @@ bool TutorialApplication::frameRenderingQueued(const Ogre::FrameEvent &evt){
             ready = true;
             float r1 = (rand() % 100);
             float r2 = (rand() % 100);
-            myBall.direction = Ogre::Vector3(r1, r2, -1000);
-            myBall.direction.normalise();
+            myBall.direction = btVector3(r1, r2, -1000);
+            myBall.direction.normalize();
             myBall.speed = speed_default;
-            myBall.setPosition(Ogre::Vector3::ZERO);
+            myBall.setPosition(btVector3(0,0,0));
         }
         //cout << "hit!" << endl;
     }
     
     // The ball hits the negative z plane
-    else if (myBall.position.z < -190 || myBall.nextPosition.z < -190){
-        myBall.setPosition(Ogre::Vector3(myBall.position.x, myBall.position.y, -190));
-        myBall.direction += (-2.0 * (Ogre::Vector3::UNIT_Z.dotProduct(myBall.direction)) * Ogre::Vector3::UNIT_Z);
+    else if (myBall.position.z() < -190 || myBall.nextPosition.z() < -190){
+        myBall.setPosition(btVector3(myBall.position.x(), myBall.position.y(), -190));
+        myBall.direction += (-2.0 * (btVector3(0,0,1).dot(myBall.direction)) * btVector3(0,0,1));
          //cout << "hit!" << endl;
     }
     
@@ -236,7 +265,15 @@ bool TutorialApplication::keyReleased( const OIS::KeyEvent &evt ){
 */
 bool TutorialApplication::mouseMoved( const OIS::MouseEvent &evt ){ 
     deltaX = evt.state.X.rel;
-    deltaY = evt.state.Y.rel;
+    deltaY = -evt.state.Y.rel;
+    //xi = evt.state.X.abs - (1024/2);
+    //yi = -evt.state.Y.abs + (768/2); 
+    xi += evt.state.X.rel;
+    yi += -evt.state.Y.rel; 
+    if (xi > 90) xi = 90;
+    if (xi < -90) xi = -90;
+    if (yi > 90) yi = 90;
+    if (yi < -90) yi = -90;
     //cout << "move: (" << deltaX << "," << deltaY << ")" << endl;
     return true;
 }

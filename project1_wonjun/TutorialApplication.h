@@ -19,6 +19,7 @@ This source file is part of the
 
 #include "BaseApplication.h"
 #include "GameObject.h"
+#include "SoundManager.h"
 
 using namespace std;
 
@@ -31,11 +32,13 @@ private:
     int yi;
     GameObject myPaddle;
     GameObject myBall;
+    SoundManager sound;
     bool ready;
     int score;
     
 public:
     float speed_default;
+    float increment;
     
     TutorialApplication(void);
     virtual ~TutorialApplication(void);
