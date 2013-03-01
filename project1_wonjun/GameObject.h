@@ -12,7 +12,8 @@ using namespace std;
 class Simulator;
 
 class GameObject {
-    protected:
+    //protected:
+    public:
     Ogre::String name;
     Ogre::SceneManager* sceneMgr;
     Simulator* simulator;
@@ -26,7 +27,7 @@ class GameObject {
     
     //private:
     
-    public:
+    //public:
     btVector3 position; // xyz coordinates with respect to the world origin
     btVector3 nextPosition; // expected position in the next frame
     btVector3 direction;
@@ -35,8 +36,7 @@ class GameObject {
     
     
     GameObject(){}
-    GameObject(Ogre::String nym, Ogre::SceneManager* mgr, Simulator* sim);
-    GameObject(Ogre::SceneManager* scnMgr, btVector3 pos, char* mesh, char* mat);
+    GameObject(Ogre::SceneManager* scnMgr, Simulator* sim, btVector3 pos, char* mesh, char* mat);
     //~GameObject();
     void move(const Ogre::FrameEvent& evt);
     void setSpeed(float s);

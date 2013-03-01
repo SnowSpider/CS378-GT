@@ -35,7 +35,7 @@ class GameObject {
     
     
     GameObject(){}
-    GameObject(Ogre::String nym, Ogre::SceneManager* mgr, Simulator* sim);
+    GameObject(Ogre::SceneManager* scnMgr, Simulator* sim);
     GameObject(Ogre::SceneManager* scnMgr, btVector3 pos, char* mesh, char* mat);
     //~GameObject();
     void move(const Ogre::FrameEvent& evt);
@@ -48,7 +48,7 @@ class GameObject {
     Ogre::SceneNode* getNode() { return rootNode; }
     void updateTransform();
     void addToSimulator();
-    btRigidBody getBody() { return &body; }
+    btRigidBody* getBody() { return body; }
     
 };
 

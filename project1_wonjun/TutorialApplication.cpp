@@ -36,7 +36,8 @@ TutorialApplication::TutorialApplication(void)
     //exitCmd = false; 
     ready = true;
     speed_default = 200;
-    increment = 25;
+    increment = 30;
+    
     score = 0;
     highScore = 0;
     soundIs = true;
@@ -53,7 +54,7 @@ void TutorialApplication::createScene(void)
 {
     mRenderer = &CEGUI::OgreRenderer::bootstrapSystem();
     mCamera->setPosition(0,0,450); 
-
+    
     // Create SoundManager
     sound.open();
     sound.turnOn();
@@ -61,10 +62,21 @@ void TutorialApplication::createScene(void)
     // Set the scene's ambient light
     mSceneMgr->setAmbientLight(Ogre::ColourValue(0.5f, 0.5f, 0.5f));
     
+    //cout << "1" << endl;
     // Create game objects
-    myBall = GameObject(mSceneMgr, btVector3(0,0,0), "sphere.mesh", "Examples/GreenSkin");
-    myPaddle = GameObject(mSceneMgr, btVector3(0,0,210), "cube.mesh", "MyMaterials/wood1");
+    myBall = GameObject(mSceneMgr, &simulator, btVector3(0,0,0), "sphere.mesh", "Examples/BumpyMetal"); //cout << "2" << endl;
+    myBall.mass = 1.0f; //cout << "3" << endl;
+    myBall.shape = new btSphereShape(10.0f); //cout << "4" << endl;
+    myBall.tr = btTransform(btMatrix3x3(1,0,0,0,1,0,0,0,1)); //cout << "5" << endl;
+    myBall.addToSimulator(); //cout << "6" << endl;
+    
+    myPaddle = GameObject(mSceneMgr, &simulator, btVector3(0,0,0), "cube.mesh", "MyMaterials/wood1");
     myPaddle.scale(2, 2, 0.1);
+    myPaddle.mass = 1.0f;
+    btVector3 halfExtents(10.0f, 10.0f, 0.5f);
+    myPaddle.shape = new btBoxShape(halfExtents);
+    myPaddle.tr = btTransform(btMatrix3x3(1,0,0,0,1,0,0,0,1));
+    myPaddle.addToSimulator();
     
     Ogre::Plane plane_x_pos_in(Ogre::Vector3::NEGATIVE_UNIT_X, -100);
     Ogre::Plane plane_x_neg_in(Ogre::Vector3::UNIT_X, -100);
@@ -164,25 +176,38 @@ void TutorialApplication::createScene(void)
 
 
 void TutorialApplication::createFrameListener(void){
+    
+    // Backgroun Music
+    sound.PlaySound("buddhist_chant.wav");
+    
     srand(time(0));  // Initialize random number generator.
     // Set default values for variables
     float r1 = (rand() % 100);
     float r2 = (rand() % 100);
     float r3 = (rand() % 100);
     
+    myBall.tr = btTransform(btMatrix3x3(1,0,0,0,1,0,0,0,1),btVector3(r1, r2, -500));
+    myBall.updateTransform();
+    
     myBall.direction = btVector3(r1, r2, -500);
     myBall.direction.normalize();
     myBall.speed = speed_default;
     myBall.setPosition(btVector3(0,0,0));
-
+    
+    //myBall.addToSimulator();
     
     BaseApplication::createFrameListener();
 }
 
 bool TutorialApplication::frameRenderingQueued(const Ogre::FrameEvent &evt){
+    // Apply gravity
+    myBall.direction += btVector3(0, -(0.00001*GRAVITY), 0);
+    myBall.direction.normalize();
     
     // Move the ball
     if (!ready){
+        //myBall.simulator->stepSimulation(0.001);
+        //myPaddle.simulator->stepSimulation(0.001);
         myBall.move(evt);
     }
     
@@ -226,7 +251,8 @@ bool TutorialApplication::frameRenderingQueued(const Ogre::FrameEvent &evt){
         myBall.setPosition(btVector3(90, myBall.position.y(), myBall.position.z()));
         myBall.direction += (-2.0 * (btVector3(-1,0,0).dot(myBall.direction)) * btVector3(-1,0,0));
         //cout << "hit!" << endl;
-	sound.PlaySound("boing.wav");
+	    sound.PlaySound("boink1_cx65377.wav");
+	    myBall.speed -= 10;
     }
     
     // The ball hits the negative x plane
@@ -234,7 +260,8 @@ bool TutorialApplication::frameRenderingQueued(const Ogre::FrameEvent &evt){
         myBall.setPosition(btVector3(-90, myBall.position.y(), myBall.position.z()));
         myBall.direction += (-2.0 * (btVector3(1,0,0).dot(myBall.direction)) * btVector3(1,0,0));
         //cout << "hit!" << endl;
-	sound.PlaySound("boing.wav");
+	    sound.PlaySound("boink1_cx65377.wav");
+	    myBall.speed -= 10;
     }
     
     // The ball hits the positive y plane
@@ -242,7 +269,8 @@ bool TutorialApplication::frameRenderingQueued(const Ogre::FrameEvent &evt){
         myBall.setPosition(btVector3(myBall.position.x(), 90, myBall.position.z()));
         myBall.direction += (-2.0 * (btVector3(0,-1,0).dot(myBall.direction)) * btVector3(0,-1,0));
         //cout << "hit!" << endl;
-	sound.PlaySound("boing.wav");
+	    sound.PlaySound("boink1_cx65377.wav");
+	    myBall.speed -= 10;
     }
     
     // The ball hits the negative y plane
@@ -250,7 +278,8 @@ bool TutorialApplication::frameRenderingQueued(const Ogre::FrameEvent &evt){
         myBall.setPosition(btVector3(myBall.position.x(), -90, myBall.position.z()));
         myBall.direction += (-2.0 * (btVector3(0,1,0).dot(myBall.direction)) * btVector3(0,1,0));
         //cout << "hit!" << endl;
-	sound.PlaySound("boing.wav");
+	    sound.PlaySound("boink1_cx65377.wav");
+	    myBall.speed -= 10;
     }
     
     // The ball hits the positive z plane
@@ -258,6 +287,8 @@ bool TutorialApplication::frameRenderingQueued(const Ogre::FrameEvent &evt){
         myBall.setPosition(btVector3(myBall.position.x(), myBall.position.y(), 190));
         myBall.direction += (-2.0 * (btVector3(0,0,-1).dot(myBall.direction)) * btVector3(0,0,-1));
         if (abs(myPaddle.position.x() - myBall.position.x()) <= 25 && abs(myPaddle.position.y() - myBall.position.y()) <= 25){
+            myBall.direction += (0.2 * myPaddle.direction);
+            myBall.direction.normalize();
             score += myBall.speed;
             myBall.speed += increment;
             CEGUI::Window* counter = CEGUI::WindowManager::getSingleton().getWindow("Counter");
@@ -267,8 +298,11 @@ bool TutorialApplication::frameRenderingQueued(const Ogre::FrameEvent &evt){
             shownScore = out.str();
             counter->setText("Score: " + shownScore);
             //cout << "HIT" << endl;
+            sound.PlaySound("boink1_cx65377.wav");
         }
         else if (abs(myPaddle.nextPosition.x() - myBall.nextPosition.x()) <= 25 && abs(myPaddle.nextPosition.y() - myBall.nextPosition.y()) <= 25){
+            myBall.direction += (0.2 * myPaddle.direction);
+            myBall.direction.normalize();
             score += myBall.speed;
             myBall.speed += increment;
             CEGUI::Window* counter = CEGUI::WindowManager::getSingleton().getWindow("Counter");
@@ -278,7 +312,7 @@ bool TutorialApplication::frameRenderingQueued(const Ogre::FrameEvent &evt){
             shownScore = out.str();
             counter->setText("Score: " + shownScore);
             //cout << "HIT" << endl;
-	sound.PlaySound("boing.wav");
+	        sound.PlaySound("boink1_cx65377.wav");
         }
         else{
             //cout << "Score:" << score << "\nClick to restart" << endl;
@@ -312,8 +346,9 @@ bool TutorialApplication::frameRenderingQueued(const Ogre::FrameEvent &evt){
     else if (myBall.position.z() < -190 || myBall.nextPosition.z() < -190){
         myBall.setPosition(btVector3(myBall.position.x(), myBall.position.y(), -190));
         myBall.direction += (-2.0 * (btVector3(0,0,1).dot(myBall.direction)) * btVector3(0,0,1));
-         //cout << "hit!" << endl;
-	sound.PlaySound("boing.wav");
+        //cout << "hit!" << endl;
+	    sound.PlaySound("boink1_cx65377.wav");
+	    myBall.speed -= 10;
     }
 
     if(mWindow->isClosed())
@@ -333,8 +368,11 @@ bool TutorialApplication::keyPressed( const OIS::KeyEvent &evt ){
     CEGUI::System &sys = CEGUI::System::getSingleton();
     sys.injectKeyDown(evt.key);
     sys.injectChar(evt.text);
- 
-    if (evt.key == OIS::KC_X)
+    
+    if (evt.key == OIS::KC_SYSRQ){ // take a screenshot 
+        mWindow->writeContentsToTimestampedFile("screenshot", ".jpg"); 
+    }
+    else if (evt.key == OIS::KC_X)
     {
         TutorialApplication::soundSwitch();
         CEGUI::Window* sounder = CEGUI::WindowManager::getSingleton().getWindow("SounderDontBreak");
@@ -343,7 +381,7 @@ bool TutorialApplication::keyPressed( const OIS::KeyEvent &evt ){
         else
             sounder->setText("Sound: Off");
     }
-    if (evt.key == OIS::KC_ESCAPE)
+    else if (evt.key == OIS::KC_ESCAPE)
     {
         mShutDown = true;
     }
@@ -392,6 +430,7 @@ bool TutorialApplication::mouseMoved( const OIS::MouseEvent &evt ){
     if (yi > 90) yi = 90;
     if (yi < -90) yi = -90;
     //cout << "move: (" << deltaX << "," << deltaY << ")" << endl;
+    return true;
 }
 
 bool TutorialApplication::mousePressed( const OIS::MouseEvent &evt, OIS::MouseButtonID id ){

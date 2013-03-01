@@ -23,7 +23,6 @@ This source file is part of the
 #include <CEGUI/CEGUI.h>
 #include <CEGUI/RendererModules/Ogre/CEGUIOgreRenderer.h>
 
-
 using namespace std;
 
 class TutorialApplication : public BaseApplication
@@ -37,6 +36,7 @@ private:
     GameObject myBall;
     SoundManager sound;
     bool ready;
+    Simulator simulator;
     
 public:
     float speed_default;
@@ -48,6 +48,7 @@ public:
 protected:
     CEGUI::OgreRenderer* mRenderer;
     int score;
+    int highScore;
     bool soundIs;
     bool startUp;
     bool lost;
@@ -67,5 +68,7 @@ protected:
 
     bool soundSwitch(void);
 };
+
+#define GRAVITY 9.80665
 
 #endif // #ifndef __TutorialApplication_h_

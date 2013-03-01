@@ -17,11 +17,12 @@ This source file is part of the
 #ifndef __TutorialApplication_h_
 #define __TutorialApplication_h_
 
+#include <CEGUI/CEGUI.h>
+#include <CEGUI/RendererModules/Ogre/CEGUIOgreRenderer.h>
+
 #include "BaseApplication.h"
 #include "GameObject.h"
 #include "SoundManager.h"
-#include <CEGUI/CEGUI.h>
-#include <CEGUI/RendererModules/Ogre/CEGUIOgreRenderer.h>
 
 
 using namespace std;
@@ -37,6 +38,7 @@ private:
     GameObject myBall;
     SoundManager sound;
     bool ready;
+    Simulator simulator;
     
 public:
     float speed_default;
@@ -68,5 +70,7 @@ protected:
 
     bool soundSwitch(void);
 };
+
+#define GRAVITY 9.80665
 
 #endif // #ifndef __TutorialApplication_h_

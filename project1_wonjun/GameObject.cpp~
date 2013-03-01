@@ -4,32 +4,29 @@
 
 int id = 0;
 
-GameObject(Ogre::String nym, Ogre::SceneManager* mgr, Simulator* sim){
-    name = nym;
-    sceneMgr = mgr;
+GameObject::GameObject(Ogre::SceneManager* scnMgr, Simulator* sim, btVector3 pos, char* mesh, char* mat){
+    name = "GameObject_"+id;
+    id += 1;
+    sceneMgr = scnMgr;
     simulator = sim;
     rootNode = sceneMgr->getRootSceneNode()->createChildSceneNode(name);
     shape = NULL;
     tr.setIdentity();
     mass = 0.0f;
     inertia.setZero();
-}
-
-GameObject::GameObject(Ogre::SceneManager* scnMgr, btVector3 pos, char* mesh, char* mat){
+    
     position = pos;
     nextPosition = pos + speed * 0.001 * direction;
-    Ogre::Entity* ball = scnMgr->createEntity("GameObject"+id, mesh);
+    Ogre::Entity* ball = scnMgr->createEntity(name, mesh);
     ball->setMaterialName(mat);
     ball->setCastShadows(true);
-    rootNode = scnMgr->getRootSceneNode()->createChildSceneNode("GameObject"+id);
     rootNode->attachObject(ball);
     rootNode->scale(0.1f, 0.1f, 0.1f);
     rootNode->setPosition(pos.x(), pos.y(), pos.z());
     direction = btVector3(0.0f, 0.0f, 0.0f);
-    //direction.normalise();
     speed = 0.0f;
-    mass = 0.0f;
-    id++;
+    
+    motionState = new OgreMotionState(tr, rootNode);
 }
 
 void GameObject::move(const Ogre::FrameEvent& evt){
@@ -68,26 +65,37 @@ void GameObject::setPosition(btVector3 pos){
 }
 
 void GameObject::updateTransform(){
-    Ogre::Vector3 pos = rootNode->getPosition();
-    tr.setOrigin(btVector3(pos.x, pos.y, pos.z));
-    Ogre::Quaternion qt = rootNode->getOrientation();
-    tr.setRotation(btQuaternion(qt.x, qt.y, qt.z, qt.w));
+    Ogre::Vector3 pos = rootNode->getPosition(); //std::cout << "a" << std::endl;
+    tr.setOrigin(btVector3(pos.x, pos.y, pos.z)); //std::cout << "b" << std::endl;
+    Ogre::Quaternion qt = rootNode->getOrientation(); //std::cout << "c" << std::endl;
+    tr.setRotation(btQuaternion(qt.x, qt.y, qt.z, qt.w)); //std::cout << "d" << std::endl;
     if (motionState){
-        motionState->updateTransform(tr);
+        motionState->updateTransform(tr); //std::cout << "e" << std::endl;
     }
+    //std::cout << "f" << std::endl;
 }
 
 void GameObject::addToSimulator(){
     // using motionstate is recommended, it provides interpolation capabilities, and only synchronizes 'active' objects 
-    updateTransform();
+    updateTransform(); std::cout << "A" << std::endl;
+    std::cout << motionState << std::endl;
+    std::cout << "A2" << std::endl;
     motionState = new OgreMotionState(tr, rootNode);
+    std::cout << "B" << std::endl;
     // rigidbody is dynamic if and only if mass is non zero, otherwise static
     if (mass != 0.0f){
         shape->calculateLocalInertia(mass, inertia);
+        std::cout << "C" << std::endl;
     }
+    std::cout << "D" << std::endl;
     btRigidBody::btRigidBodyConstructionInfo rbInfo(mass, motionState, shape, inertia);
+    std::cout << "E" << std::endl;
+    rbInfo.m_restitution = 0.5;
+    std::cout << "F" << std::endl;
     body = new btRigidBody(rbInfo);
+    std::cout << "G" << std::endl;
     simulator->addObject(this);
+    std::cout << "H" << std::endl;
 }
 
 

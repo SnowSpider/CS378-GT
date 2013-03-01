@@ -12,10 +12,7 @@ using namespace std;
 
    
 class SoundManager{
-
-
     public:
-
     SDL_AudioSpec fmt;
 
     SoundManager(void);
@@ -25,7 +22,7 @@ class SoundManager{
     void PlaySound(char *file);
     void turnOn(void);
     void turnOff(void);
-    
+    void close(void);
 };
 
 
