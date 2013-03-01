@@ -20,12 +20,14 @@ This source file is part of the
 #include <cstdlib>  // For srand() and rand()
 
 #include <iostream>
+#include <sstream>
 #include <math.h>
 
 //#include <LinearMath/btVector3.h>
 #include <btBulletCollisionCommon.h>
 
 TutorialApplication::TutorialApplication(void)
+: mRenderer(0)
 {
     deltaX = 0;
     deltaY = 0;
@@ -36,6 +38,10 @@ TutorialApplication::TutorialApplication(void)
     speed_default = 200;
     increment = 25;
     score = 0;
+    highScore = 0;
+    soundIs = true;
+    startUp = true;
+    lost = false;
 }
  
 TutorialApplication::~TutorialApplication(void)
@@ -45,6 +51,7 @@ TutorialApplication::~TutorialApplication(void)
 //-------------------------------------------------------------------------------------
 void TutorialApplication::createScene(void)
 {
+    mRenderer = &CEGUI::OgreRenderer::bootstrapSystem();
     mCamera->setPosition(0,0,450); 
 
     // Create SoundManager
@@ -112,6 +119,47 @@ void TutorialApplication::createScene(void)
     Ogre::Light* light = mSceneMgr->createLight("MainLight");
     light->setPosition(75.0f, 75.0f, 75.0f);
     light->setDiffuseColour(1,1,1);
+    
+    //CEGUI SHIT(Stuff Hard to Improve Technically)
+    CEGUI::Imageset::setDefaultResourceGroup("Imagesets");
+    CEGUI::Font::setDefaultResourceGroup("Fonts");
+    CEGUI::Scheme::setDefaultResourceGroup("Schemes");
+    CEGUI::WidgetLookManager::setDefaultResourceGroup("LookNFeel");
+    CEGUI::WindowManager::setDefaultResourceGroup("Layouts");
+ 
+    CEGUI::SchemeManager::getSingleton().create("TaharezLook.scheme");
+ 
+    CEGUI::WindowManager &wmgr = CEGUI::WindowManager::getSingleton();
+    CEGUI::Window *sheet = wmgr.createWindow("DefaultWindow", "CEGUIDemo/Sheet");
+ 
+    CEGUI::Window *counter = wmgr.createWindow("TaharezLook/Button", "Counter");
+    counter->setText("Score:  ");
+    counter->setSize(CEGUI::UVector2(CEGUI::UDim(0.15, 0), CEGUI::UDim(0.05, 0)));
+ 
+    sheet->addChildWindow(counter);
+
+    CEGUI::Window *sounder = wmgr.createWindow("TaharezLook/Button", "SounderDontBreak");
+    sounder->setText("Sound: On");
+    sounder->setSize(CEGUI::UVector2(CEGUI::UDim(0.15, 0), CEGUI::UDim(0.05, 0)));
+    sounder->setHorizontalAlignment(CEGUI::HA_RIGHT);
+ 
+    sheet->addChildWindow(sounder);
+
+    CEGUI::Window *starter = wmgr.createWindow("TaharezLook/StaticText", "StartingWindow");
+    starter->setText("Welcome, please click to begin.\nClick X to toggle sound.");
+    starter->setSize(CEGUI::UVector2(CEGUI::UDim(0.30, 0), CEGUI::UDim(0.10, 0)));
+    starter->setPosition(CEGUI::UVector2(CEGUI::UDim(0.35f, 0), CEGUI::UDim(0.45f, 0 )));
+ 
+    sheet->addChildWindow(starter);
+
+    CEGUI::Window *gameOver = wmgr.createWindow("TaharezLook/StaticText", "GameOverWindow");
+    gameOver->setText("");
+    gameOver->setVisible(false);
+    gameOver->setSize(CEGUI::UVector2(CEGUI::UDim(0.30, 0), CEGUI::UDim(0.15, 0)));
+    gameOver->setPosition(CEGUI::UVector2(CEGUI::UDim(0.35f, 0), CEGUI::UDim(0.425f, 0 )));
+ 
+    sheet->addChildWindow(gameOver);
+    CEGUI::System::getSingleton().setGUISheet(sheet);
 }
 
 
@@ -126,6 +174,7 @@ void TutorialApplication::createFrameListener(void){
     myBall.direction.normalize();
     myBall.speed = speed_default;
     myBall.setPosition(btVector3(0,0,0));
+
     
     BaseApplication::createFrameListener();
 }
@@ -211,17 +260,42 @@ bool TutorialApplication::frameRenderingQueued(const Ogre::FrameEvent &evt){
         if (abs(myPaddle.position.x() - myBall.position.x()) <= 25 && abs(myPaddle.position.y() - myBall.position.y()) <= 25){
             score += myBall.speed;
             myBall.speed += increment;
+            CEGUI::Window* counter = CEGUI::WindowManager::getSingleton().getWindow("Counter");
+            std::string shownScore;
+            std::stringstream out;
+            out << score;
+            shownScore = out.str();
+            counter->setText("Score: " + shownScore);
             //cout << "HIT" << endl;
-	sound.PlaySound("boing.wav");
         }
         else if (abs(myPaddle.nextPosition.x() - myBall.nextPosition.x()) <= 25 && abs(myPaddle.nextPosition.y() - myBall.nextPosition.y()) <= 25){
             score += myBall.speed;
             myBall.speed += increment;
+            CEGUI::Window* counter = CEGUI::WindowManager::getSingleton().getWindow("Counter");
+            std::string shownScore;
+            std::stringstream out;
+            out << score;
+            shownScore = out.str();
+            counter->setText("Score: " + shownScore);
             //cout << "HIT" << endl;
 	sound.PlaySound("boing.wav");
         }
         else{
-            cout << "Score:" << score << "\nClick to restart" << endl;
+            //cout << "Score:" << score << "\nClick to restart" << endl;
+            lost = true;
+            if(score > highScore)
+                highScore = score;
+            CEGUI::Window* gameOver = CEGUI::WindowManager::getSingleton().getWindow("GameOverWindow");
+            std::string shownScore;
+            std::string shownHighScore;
+            std::stringstream out;
+            std::stringstream highOut;
+            out << score;
+            highOut << highScore;
+            shownScore = out.str();
+            shownHighScore = highOut.str();
+            gameOver->setText("Game Over, Final Score: " + shownScore + "\nTop Score: " + shownHighScore + "\nClick To Restart");
+            gameOver->setVisible(true);
             score = 0;
             ready = true;
             float r1 = (rand() % 100);
@@ -239,30 +313,73 @@ bool TutorialApplication::frameRenderingQueued(const Ogre::FrameEvent &evt){
         myBall.setPosition(btVector3(myBall.position.x(), myBall.position.y(), -190));
         myBall.direction += (-2.0 * (btVector3(0,0,1).dot(myBall.direction)) * btVector3(0,0,1));
          //cout << "hit!" << endl;
+	sound.PlaySound("boing.wav");
     }
+
+    if(mWindow->isClosed())
+        return false;
+ 
+    if(mShutDown)
+        return false;
+ 
+    //Need to capture/update each device
+    mKeyboard->capture();
+    mMouse->capture();
     
 	return BaseApplication::frameRenderingQueued(evt);
 }
-/*
+
 bool TutorialApplication::keyPressed( const OIS::KeyEvent &evt ){
-    switch (evt.key){
-        case OIS::KC_SYSRQ:
-            mWindow->writeContentsToTimestampedFile("screenshot", ".jpg");
-            break;
-        case OIS::KC_ESCAPE:
-            exitCmd = true;
-            mShutDown = true;
-            break;
-        default:
-            break;
+    CEGUI::System &sys = CEGUI::System::getSingleton();
+    sys.injectKeyDown(evt.key);
+    sys.injectChar(evt.text);
+ 
+    if (evt.key == OIS::KC_X)
+    {
+        TutorialApplication::soundSwitch();
+        CEGUI::Window* sounder = CEGUI::WindowManager::getSingleton().getWindow("SounderDontBreak");
+        if (soundIs)
+            sounder->setText("Sound: On");
+        else
+            sounder->setText("Sound: Off");
     }
+    if (evt.key == OIS::KC_ESCAPE)
+    {
+        mShutDown = true;
+    }
+ 
+    mCameraMan->injectKeyDown(evt);
     return true;
 }
 
 bool TutorialApplication::keyReleased( const OIS::KeyEvent &evt ){
+    if(CEGUI::System::getSingleton().injectKeyUp(evt.key)) return true;
+    mCameraMan->injectKeyUp(evt);
     return true;
 }
-*/
+
+CEGUI::MouseButton convertButton(OIS::MouseButtonID buttonID)
+{
+    switch (buttonID)
+    {
+    case OIS::MB_Left:
+        return CEGUI::LeftButton;
+        break;
+ 
+    case OIS::MB_Right:
+        return CEGUI::RightButton;
+        break;
+ 
+    case OIS::MB_Middle:
+        return CEGUI::MiddleButton;
+        break;
+ 
+    default:
+        return CEGUI::LeftButton;
+        break;
+    }
+}
+
 bool TutorialApplication::mouseMoved( const OIS::MouseEvent &evt ){ 
     deltaX = evt.state.X.rel;
     deltaY = -evt.state.Y.rel;
@@ -275,7 +392,6 @@ bool TutorialApplication::mouseMoved( const OIS::MouseEvent &evt ){
     if (yi > 90) yi = 90;
     if (yi < -90) yi = -90;
     //cout << "move: (" << deltaX << "," << deltaY << ")" << endl;
-    return true;
 }
 
 bool TutorialApplication::mousePressed( const OIS::MouseEvent &evt, OIS::MouseButtonID id ){
@@ -292,14 +408,40 @@ bool TutorialApplication::mousePressed( const OIS::MouseEvent &evt, OIS::MouseBu
         default:
             break;
     }
+    if(startUp)
+    {
+        startUp = false;
+        CEGUI::Window* starting = CEGUI::WindowManager::getSingleton().getWindow("StartingWindow");
+        starting->setVisible(false);
+    }
+    if(lost)
+    {
+        lost = false;
+        CEGUI::Window* gameOver = CEGUI::WindowManager::getSingleton().getWindow("GameOverWindow");
+        gameOver->setVisible(false);
+        CEGUI::Window* counter = CEGUI::WindowManager::getSingleton().getWindow("Counter");
+        counter->setText("Score: 0");
+    }
+    if(CEGUI::System::getSingleton().injectMouseButtonDown(convertButton(id))) return true;
+    mCameraMan->injectMouseDown(evt, id);
     return true;
 }
 
-bool TutorialApplication::mouseReleased( const OIS::MouseEvent &arg, OIS::MouseButtonID id ){
+bool TutorialApplication::mouseReleased( const OIS::MouseEvent &evt, OIS::MouseButtonID id ){
+    if(CEGUI::System::getSingleton().injectMouseButtonUp(convertButton(id))) return true;
+    mCameraMan->injectMouseUp(evt, id);
     return true;
 }
 
-
+bool TutorialApplication::soundSwitch(void)
+{
+    if(soundIs)
+       sound.turnOff();
+    else
+        sound.turnOn();
+    soundIs = !soundIs;
+    return true;
+}
 
 #if OGRE_PLATFORM == OGRE_PLATFORM_WIN32
 #define WIN32_LEAN_AND_MEAN

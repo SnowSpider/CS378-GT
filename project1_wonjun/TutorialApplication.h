@@ -1,5 +1,5 @@
 /*
------------------------------------------------------------------------------
+----------------------------------------v-------------------------------------
 Filename:    TutorialApplication.h
 -----------------------------------------------------------------------------
 
@@ -20,6 +20,9 @@ This source file is part of the
 #include "BaseApplication.h"
 #include "GameObject.h"
 #include "SoundManager.h"
+#include <CEGUI/CEGUI.h>
+#include <CEGUI/RendererModules/Ogre/CEGUIOgreRenderer.h>
+
 
 using namespace std;
 
@@ -34,7 +37,6 @@ private:
     GameObject myBall;
     SoundManager sound;
     bool ready;
-    int score;
     
 public:
     float speed_default;
@@ -44,6 +46,12 @@ public:
     virtual ~TutorialApplication(void);
 
 protected:
+    CEGUI::OgreRenderer* mRenderer;
+    int score;
+    int highScore;
+    bool soundIs;
+    bool startUp;
+    bool lost;
     virtual void createScene(void);
     
     // Ogre::FrameListener
@@ -51,12 +59,14 @@ protected:
     virtual bool frameRenderingQueued(const Ogre::FrameEvent &evt);
     
     // OIS::KeyListener
-    //virtual bool keyPressed( const OIS::KeyEvent &evt );
-    //virtual bool keyReleased( const OIS::KeyEvent &evt );
+    virtual bool keyPressed( const OIS::KeyEvent &evt );
+    virtual bool keyReleased( const OIS::KeyEvent &evt );
     // OIS::MouseListener
     virtual bool mouseMoved( const OIS::MouseEvent &evt );
     virtual bool mousePressed( const OIS::MouseEvent &evt, OIS::MouseButtonID id );
     virtual bool mouseReleased( const OIS::MouseEvent &evt, OIS::MouseButtonID id );
+
+    bool soundSwitch(void);
 };
 
 #endif // #ifndef __TutorialApplication_h_
