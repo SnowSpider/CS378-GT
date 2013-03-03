@@ -21,7 +21,6 @@ GameObject::GameObject(Ogre::SceneManager* scnMgr, Simulator* sim, btVector3 pos
     ball->setMaterialName(mat);
     ball->setCastShadows(true);
     rootNode->attachObject(ball);
-    rootNode->scale(0.1f, 0.1f, 0.1f);
     rootNode->setPosition(pos.x(), pos.y(), pos.z());
     direction = btVector3(0.0f, 0.0f, 0.0f);
     speed = 0.0f;
@@ -65,37 +64,27 @@ void GameObject::setPosition(btVector3 pos){
 }
 
 void GameObject::updateTransform(){
-    Ogre::Vector3 pos = rootNode->getPosition(); //std::cout << "a" << std::endl;
-    tr.setOrigin(btVector3(pos.x, pos.y, pos.z)); //std::cout << "b" << std::endl;
-    Ogre::Quaternion qt = rootNode->getOrientation(); //std::cout << "c" << std::endl;
-    tr.setRotation(btQuaternion(qt.x, qt.y, qt.z, qt.w)); //std::cout << "d" << std::endl;
+    Ogre::Vector3 pos = rootNode->getPosition();
+    tr.setOrigin(btVector3(pos.x, pos.y, pos.z));
+    Ogre::Quaternion qt = rootNode->getOrientation();
+    tr.setRotation(btQuaternion(qt.x, qt.y, qt.z, qt.w));
     if (motionState){
-        motionState->updateTransform(tr); //std::cout << "e" << std::endl;
+        motionState->updateTransform(tr);
     }
-    //std::cout << "f" << std::endl;
 }
 
 void GameObject::addToSimulator(){
     // using motionstate is recommended, it provides interpolation capabilities, and only synchronizes 'active' objects 
-    updateTransform(); std::cout << "A" << std::endl;
-    std::cout << motionState << std::endl;
-    std::cout << "A2" << std::endl;
+    updateTransform();
     motionState = new OgreMotionState(tr, rootNode);
-    std::cout << "B" << std::endl;
     // rigidbody is dynamic if and only if mass is non zero, otherwise static
     if (mass != 0.0f){
         shape->calculateLocalInertia(mass, inertia);
-        std::cout << "C" << std::endl;
     }
-    std::cout << "D" << std::endl;
     btRigidBody::btRigidBodyConstructionInfo rbInfo(mass, motionState, shape, inertia);
-    std::cout << "E" << std::endl;
-    rbInfo.m_restitution = 0.5;
-    std::cout << "F" << std::endl;
+    rbInfo.m_restitution = 0.9;
     body = new btRigidBody(rbInfo);
-    std::cout << "G" << std::endl;
     simulator->addObject(this);
-    std::cout << "H" << std::endl;
 }
 
 

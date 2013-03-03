@@ -24,6 +24,7 @@ This source file is part of the
 #include "GameObject.h"
 #include "SoundManager.h"
 
+#include <vector>
 
 using namespace std;
 
@@ -34,11 +35,10 @@ private:
     int deltaY;
     int xi;
     int yi;
-    GameObject myPaddle;
-    GameObject myBall;
     SoundManager sound;
     bool ready;
     Simulator simulator;
+    vector<GameObject> m_objects; 
     
 public:
     float speed_default;

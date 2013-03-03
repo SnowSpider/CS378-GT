@@ -17,11 +17,14 @@ This source file is part of the
 #ifndef __TutorialApplication_h_
 #define __TutorialApplication_h_
 
+#include <CEGUI/CEGUI.h>
+#include <CEGUI/RendererModules/Ogre/CEGUIOgreRenderer.h>
+
 #include "BaseApplication.h"
 #include "GameObject.h"
 #include "SoundManager.h"
-#include <CEGUI/CEGUI.h>
-#include <CEGUI/RendererModules/Ogre/CEGUIOgreRenderer.h>
+
+#include <vector>
 
 using namespace std;
 
@@ -37,6 +40,7 @@ private:
     SoundManager sound;
     bool ready;
     Simulator simulator;
+    vector<GameObject> m_objects; 
     
 public:
     float speed_default;
