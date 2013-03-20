@@ -23,6 +23,7 @@ This source file is part of the
 #include "BaseApplication.h"
 #include "GameObject.h"
 #include "SoundManager.h"
+#include "SinglePlayer.h"
 
 #include <vector>
 

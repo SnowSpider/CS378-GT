@@ -75,7 +75,7 @@ void TutorialApplication::createScene(void)
     tempObject = GameObject(mSceneMgr, &simulator, btVector3(0,0,210), "cube.mesh", "MyMaterials/wood1");
     tempObject.scale(0.2, 0.2, 0.01);
     tempObject.mass = 1.0f;
-    tempObject.shape = new btStaticPlaneShape(btVector3(0,0,-1), 1);
+    tempObject.shape = new btStaticPlaneShape(btVector3(0,0,-1), 0);
     tempObject.addToSimulator();
     m_objects.push_back(tempObject);
     
@@ -89,42 +89,42 @@ void TutorialApplication::createScene(void)
     // positive x plane
     Ogre::MeshManager::getSingleton().createPlane("plane_x_pos_in", Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME, plane_x_pos_in, 400.0f, 200.0f, 1, 1, true, 1, 1.0f, 1.0f, Ogre::Vector3::UNIT_Y);
     tempObject = GameObject(mSceneMgr, &simulator, btVector3(100,0,0), "plane_x_pos_in", "Examples/Rockwall");
-    tempObject.shape = new btStaticPlaneShape(btVector3(-1,0,0), 1);
+    tempObject.shape = new btStaticPlaneShape(btVector3(-1,0,0), 0);
     tempObject.addToSimulator();
     m_objects.push_back(tempObject);
     
     // negative x plane
     Ogre::MeshManager::getSingleton().createPlane("plane_x_neg_in", Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME, plane_x_neg_in, 400.0f, 200.0f, 1, 1, true, 1, 1.0f, 1.0f, Ogre::Vector3::UNIT_Y);
     tempObject = GameObject(mSceneMgr, &simulator, btVector3(-100,0,0), "plane_x_neg_in", "Examples/Rockwall");
-    tempObject.shape = new btStaticPlaneShape(btVector3(1,0,0), 1);
+    tempObject.shape = new btStaticPlaneShape(btVector3(1,0,0), 0);
     tempObject.addToSimulator();
     m_objects.push_back(tempObject);
     
     // positive y plane
     Ogre::MeshManager::getSingleton().createPlane("plane_y_pos_in", Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME, plane_y_pos_in, 400.0f, 200.0f, 1, 1, true, 1, 1.0f, 1.0f, Ogre::Vector3::UNIT_X);
     tempObject = GameObject(mSceneMgr, &simulator, btVector3(0,100,0), "plane_y_pos_in", "MyMaterials/wood2");
-    tempObject.shape = new btStaticPlaneShape(btVector3(0,-1,0), 1);
+    tempObject.shape = new btStaticPlaneShape(btVector3(0,-1,0), 0);
     tempObject.addToSimulator();
     m_objects.push_back(tempObject);
     
     // negative y plane
     Ogre::MeshManager::getSingleton().createPlane("plane_y_neg_in", Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME, plane_y_neg_in, 400.0f, 200.0f, 1, 1, true, 1, 1.0f, 1.0f, Ogre::Vector3::UNIT_X);
     tempObject = GameObject(mSceneMgr, &simulator, btVector3(0,-100,0), "plane_y_neg_in", "MyMaterials/wood2");
-    tempObject.shape = new btStaticPlaneShape(btVector3(0,1,0), 1);
+    tempObject.shape = new btStaticPlaneShape(btVector3(0,1,0), 0);
     tempObject.addToSimulator();
     m_objects.push_back(tempObject);
     
     // positive z plane
     Ogre::MeshManager::getSingleton().createPlane("plane_z_pos_in", Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME, plane_z_pos_in, 200.0f, 200.0f, 1, 1, true, 1, 1.0f, 1.0f, Ogre::Vector3::UNIT_Y);
     tempObject = GameObject(mSceneMgr, &simulator, btVector3(0,0,200), "plane_z_pos_in", "Examples/Rockwall");
-    tempObject.shape = new btStaticPlaneShape(btVector3(0,0,-1), 1);
+    tempObject.shape = new btStaticPlaneShape(btVector3(0,0,-1), 0);
     tempObject.addToSimulator();
     m_objects.push_back(tempObject);
     
     // negative z plane
     Ogre::MeshManager::getSingleton().createPlane("plane_z_neg_in", Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME, plane_z_neg_in, 200.0f, 200.0f, 1, 1, true, 1, 1.0f, 1.0f, Ogre::Vector3::UNIT_Y);
     tempObject = GameObject(mSceneMgr, &simulator, btVector3(0,0,-200), "plane_z_neg_in", "MyMaterials/buddha1");
-    tempObject.shape = new btStaticPlaneShape(btVector3(0,0,1), 1);
+    tempObject.shape = new btStaticPlaneShape(btVector3(0,0,1), 0);
     tempObject.addToSimulator();
     m_objects.push_back(tempObject);
 	
@@ -218,13 +218,13 @@ bool TutorialApplication::frameRenderingQueued(const Ogre::FrameEvent &evt){
         //myBall->simulator->stepSimulation(1);
         myBall->move(evt);
     }
-    cout << "1" << endl;
+    
     // Move the paddle
     myPaddle->direction = btVector3(deltaX, deltaY, 0);
     myPaddle->speed = sqrt(deltaX*deltaX + deltaY*deltaY);
     myPaddle->setPosition(btVector3(xi, yi, 210));
     //myPaddle->move(evt);
-    cout << "2" << endl;
+    
     if (myPaddle->position.x() > 90){
         myPaddle->setPosition(btVector3(90, myPaddle->position.y(), myPaddle->position.z()));
     }
@@ -237,7 +237,6 @@ bool TutorialApplication::frameRenderingQueued(const Ogre::FrameEvent &evt){
     if (myPaddle->position.y() < -90){
         myPaddle->setPosition(btVector3(myPaddle->position.x(), -90, myPaddle->position.z()));
     }
-    cout << "3" << endl;
     
     //cout << myPaddle->direction << endl;
     //cout << myPaddle->speed << endl;
@@ -361,7 +360,7 @@ bool TutorialApplication::frameRenderingQueued(const Ogre::FrameEvent &evt){
 
     if(mWindow->isClosed())
         return false;
- 
+    
     if(mShutDown)
         return false;
  
