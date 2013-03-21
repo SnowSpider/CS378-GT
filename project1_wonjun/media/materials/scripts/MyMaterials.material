@@ -32,6 +32,21 @@ material MyMaterials/wood2
     }
 }
 
+material MyMaterials/wood3
+{
+    technique
+    {
+        pass
+        {
+            texture_unit
+            {
+                texture wood3.png
+                scale 0.5 0.5
+            }
+        }   
+    }
+}
+
 material MyMaterials/buddha1
 {
     technique

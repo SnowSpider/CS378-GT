@@ -26,7 +26,7 @@ material MyMaterials/wood2
             texture_unit
             {
                 texture wood2.png
-                scale 2 2
+                scale 0.5 0.5
             }
         }   
     }

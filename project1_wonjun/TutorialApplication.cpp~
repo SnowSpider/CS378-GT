@@ -65,7 +65,7 @@ void TutorialApplication::createScene(void)
     GameObject tempObject;
     
     // Create game objects
-    tempObject = GameObject(mSceneMgr, &simulator, btVector3(0,0,0), "sphere.mesh", "Examples/BumpyMetal"); 
+    tempObject = GameObject(mSceneMgr, &simulator, btVector3(0,0,0), "sphere.mesh", "Examples/PlasmaShit"); 
     tempObject.scale(0.1, 0.1, 0.1);
     tempObject.mass = 1.0f; 
     tempObject.shape = new btSphereShape(10.0f);
@@ -133,7 +133,7 @@ void TutorialApplication::createScene(void)
     light->setPosition(75.0f, 75.0f, 75.0f);
     light->setDiffuseColour(1,1,1);
     
-    //CEGUI SHIT(Stuff Hard to Improve Technically)
+    //CEGUI S  HIT(Stuff Hard to Improve Technically)
     CEGUI::Imageset::setDefaultResourceGroup("Imagesets");
     CEGUI::Font::setDefaultResourceGroup("Fonts");
     CEGUI::Scheme::setDefaultResourceGroup("Schemes");
@@ -259,7 +259,6 @@ bool TutorialApplication::frameRenderingQueued(const Ogre::FrameEvent &evt){
         myBall->direction += (-2.0 * (btVector3(-1,0,0).dot(myBall->direction)) * btVector3(-1,0,0));
         //cout << "hit!" << endl;
 	    sound.PlaySound("boink1_cx65377.wav");
-	    myBall->speed -= 10;
     }
     
     // The ball hits the negative x plane
@@ -268,7 +267,6 @@ bool TutorialApplication::frameRenderingQueued(const Ogre::FrameEvent &evt){
         myBall->direction += (-2.0 * (btVector3(1,0,0).dot(myBall->direction)) * btVector3(1,0,0));
         //cout << "hit!" << endl;
 	    sound.PlaySound("boink1_cx65377.wav");
-	    myBall->speed -= 10;
     }
     
     // The ball hits the positive y plane
@@ -277,7 +275,6 @@ bool TutorialApplication::frameRenderingQueued(const Ogre::FrameEvent &evt){
         myBall->direction += (-2.0 * (btVector3(0,-1,0).dot(myBall->direction)) * btVector3(0,-1,0));
         //cout << "hit!" << endl;
 	    sound.PlaySound("boink1_cx65377.wav");
-	    myBall->speed -= 10;
     }
     
     // The ball hits the negative y plane
@@ -286,7 +283,6 @@ bool TutorialApplication::frameRenderingQueued(const Ogre::FrameEvent &evt){
         myBall->direction += (-2.0 * (btVector3(0,1,0).dot(myBall->direction)) * btVector3(0,1,0));
         //cout << "hit!" << endl;
 	    sound.PlaySound("boink1_cx65377.wav");
-	    myBall->speed -= 10;
     }
     
     // The ball hits the positive z plane
@@ -519,8 +515,6 @@ extern "C" {
             std::cerr << "An exception has occured: " << e.getFullDescription().c_str() << std::endl;
 #endif
         }
-        
-        app.go();
  
         return 0;
     }

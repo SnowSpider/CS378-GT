@@ -525,6 +525,21 @@ material Examples/WaterStream
 	}
 }
 
+material Examples/PlasmaShit
+{
+	technique
+	{
+		pass
+		{
+			texture_unit
+			{
+				texture PlasmaShit.jpg
+				env_map spherical
+			}
+		}
+	}
+}
+
 material Examples/Flare
 {
 	technique
