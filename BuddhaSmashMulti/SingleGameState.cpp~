@@ -110,7 +110,7 @@ void SingleGameState::createScene()
     
     // Create game objects
     tempObject = GameObject(m_pSceneMgr, &simulator, btVector3(0,0,0), "sphere.mesh", "Examples/PlasmaShit"); 
-    tempObject.rootNode->attachObject(mSceneMgr->createParticleSystem("Smoke", "Examples/Smoke"));
+    tempObject.rootNode->attachObject(m_pSceneMgr->createParticleSystem("Smoke", "Examples/Smoke"));
     tempObject.scale(0.1, 0.1, 0.1);
     tempObject.mass = 1.0f; 
     tempObject.shape = new btSphereShape(10.0f);
@@ -262,6 +262,7 @@ bool SingleGameState::keyPressed(const OIS::KeyEvent &keyEventRef)
     if(OgreFramework::getSingletonPtr()->m_pKeyboard->isKeyDown(OIS::KC_ESCAPE))
     {
         pushAppState(findByName("PauseState"));
+        OgreFramework::getSingletonPtr()->m_pTrayMgr->showCursor();
         return true;
     }
  
@@ -369,6 +370,7 @@ bool SingleGameState::mousePressed(const OIS::MouseEvent &evt, OIS::MouseButtonI
             if (ready){
                 ready = false;
             }
+            OgreFramework::getSingletonPtr()->m_pTrayMgr->hideCursor();
             break;
         case OIS::MB_Right: 
             m_bRMouseDown = true;

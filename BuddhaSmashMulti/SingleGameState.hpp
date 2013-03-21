@@ -23,14 +23,6 @@ using namespace std;
 
 //|||||||||||||||||||||||||||||||||||||||||||||||
  
-enum QueryFlags
-{
-    OGRE_HEAD_MASK	= 1<<0,
-    CUBE_MASK		= 1<<1
-};
-
-//|||||||||||||||||||||||||||||||||||||||||||||||
- 
 class SingleGameState : public AppState
 {
 public:

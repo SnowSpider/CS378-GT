@@ -57,8 +57,8 @@ am_OgreApp_OBJECTS = OgreApp-AdvancedOgreFramework.$(OBJEXT) \
 	OgreApp-AppStateManager.$(OBJEXT) OgreApp-DemoApp.$(OBJEXT) \
 	OgreApp-DotSceneLoader.$(OBJEXT) OgreApp-GameObject.$(OBJEXT) \
 	OgreApp-main.$(OBJEXT) OgreApp-MenuState.$(OBJEXT) \
-	OgreApp-PauseState.$(OBJEXT) OgreApp-Simulator.$(OBJEXT) \
-	OgreApp-SingleGameState.$(OBJEXT) \
+	OgreApp-MultiGameState.$(OBJEXT) OgreApp-PauseState.$(OBJEXT) \
+	OgreApp-Simulator.$(OBJEXT) OgreApp-SingleGameState.$(OBJEXT) \
 	OgreApp-SoundManager.$(OBJEXT)
 OgreApp_OBJECTS = $(am_OgreApp_OBJECTS)
 am__DEPENDENCIES_1 =
@@ -102,12 +102,12 @@ distuninstallcheck_listfiles = find . -type f -print
 am__distuninstallcheck_listfiles = $(distuninstallcheck_listfiles) \
   | sed 's|^\./|$(prefix)/|' | grep -v '$(infodir)/dir$$'
 distcleancheck_listfiles = find . -type f -print
-ACLOCAL = ${SHELL} /v/filer4b/v38q001/wlee/CS378_GT_2013/BuddhaSmashMulti/missing --run aclocal-1.11
+ACLOCAL = ${SHELL} /v/filer4b/v38q001/wlee/CS378-GT/BuddhaSmashMulti/missing --run aclocal-1.11
 AMTAR = $${TAR-tar}
 AR = ar
-AUTOCONF = ${SHELL} /v/filer4b/v38q001/wlee/CS378_GT_2013/BuddhaSmashMulti/missing --run autoconf
-AUTOHEADER = ${SHELL} /v/filer4b/v38q001/wlee/CS378_GT_2013/BuddhaSmashMulti/missing --run autoheader
-AUTOMAKE = ${SHELL} /v/filer4b/v38q001/wlee/CS378_GT_2013/BuddhaSmashMulti/missing --run automake-1.11
+AUTOCONF = ${SHELL} /v/filer4b/v38q001/wlee/CS378-GT/BuddhaSmashMulti/missing --run autoconf
+AUTOHEADER = ${SHELL} /v/filer4b/v38q001/wlee/CS378-GT/BuddhaSmashMulti/missing --run autoheader
+AUTOMAKE = ${SHELL} /v/filer4b/v38q001/wlee/CS378-GT/BuddhaSmashMulti/missing --run automake-1.11
 AWK = gawk
 BULLET_CFLAGS = 
 BULLET_LIBS = 
@@ -150,7 +150,7 @@ LIBTOOL = $(SHELL) $(top_builddir)/libtool
 LIPO = 
 LN_S = ln -s
 LTLIBOBJS = 
-MAKEINFO = ${SHELL} /v/filer4b/v38q001/wlee/CS378_GT_2013/BuddhaSmashMulti/missing --run makeinfo
+MAKEINFO = ${SHELL} /v/filer4b/v38q001/wlee/CS378-GT/BuddhaSmashMulti/missing --run makeinfo
 MANIFEST_TOOL = :
 MKDIR_P = /bin/mkdir -p
 NM = /usr/bin/nm -B
@@ -184,10 +184,10 @@ SET_MAKE =
 SHELL = /bin/bash
 STRIP = strip
 VERSION = 0.1
-abs_builddir = /v/filer4b/v38q001/wlee/CS378_GT_2013/BuddhaSmashMulti
-abs_srcdir = /v/filer4b/v38q001/wlee/CS378_GT_2013/BuddhaSmashMulti
-abs_top_builddir = /v/filer4b/v38q001/wlee/CS378_GT_2013/BuddhaSmashMulti
-abs_top_srcdir = /v/filer4b/v38q001/wlee/CS378_GT_2013/BuddhaSmashMulti
+abs_builddir = /v/filer4b/v38q001/wlee/CS378-GT/BuddhaSmashMulti
+abs_srcdir = /v/filer4b/v38q001/wlee/CS378-GT/BuddhaSmashMulti
+abs_top_builddir = /v/filer4b/v38q001/wlee/CS378-GT/BuddhaSmashMulti
+abs_top_srcdir = /v/filer4b/v38q001/wlee/CS378-GT/BuddhaSmashMulti
 ac_ct_AR = ar
 ac_ct_CC = gcc
 ac_ct_CXX = g++
@@ -219,7 +219,7 @@ host_vendor = unknown
 htmldir = ${docdir}
 includedir = ${prefix}/include
 infodir = ${datarootdir}/info
-install_sh = ${SHELL} /v/filer4b/v38q001/wlee/CS378_GT_2013/BuddhaSmashMulti/install-sh
+install_sh = ${SHELL} /v/filer4b/v38q001/wlee/CS378-GT/BuddhaSmashMulti/install-sh
 libdir = ${exec_prefix}/lib
 libexecdir = ${exec_prefix}/libexec
 localedir = ${datarootdir}/locale
@@ -241,9 +241,9 @@ target_alias =
 top_build_prefix = 
 top_builddir = .
 top_srcdir = .
-noinst_HEADERS = AdvancedOgreFramework.hpp AppState.hpp AppStateManager.hpp DemoApp.hpp DotSceneLoader.hpp GameObject.h MenuState.hpp OgreMotionState.h PauseState.hpp Simulator.h SingleGameState.hpp SoundManager.h rapidxml.hpp
+noinst_HEADERS = AdvancedOgreFramework.hpp AppState.hpp AppStateManager.hpp DemoApp.hpp DotSceneLoader.hpp GameObject.h MenuState.hpp MultiGameState.hpp OgreMotionState.h PauseState.hpp Simulator.h SingleGameState.hpp SoundManager.h rapidxml.hpp
 OgreApp_CPPFLAGS = -I$(top_srcdir)
-OgreApp_SOURCES = AdvancedOgreFramework.cpp AppStateManager.cpp DemoApp.cpp DotSceneLoader.cpp GameObject.cpp main.cpp MenuState.cpp PauseState.cpp Simulator.cpp SingleGameState.cpp SoundManager.cpp
+OgreApp_SOURCES = AdvancedOgreFramework.cpp AppStateManager.cpp DemoApp.cpp DotSceneLoader.cpp GameObject.cpp main.cpp MenuState.cpp MultiGameState.cpp PauseState.cpp Simulator.cpp SingleGameState.cpp SoundManager.cpp
 OgreApp_CXXFLAGS = $(OGRE_CFLAGS) $(OGRE_TERRAIN_CFLAGS) $(OIS_CFLAGS) $(bullet_CFLAGS) $(CEGUI_CFLAGS) $(CEGUI_OGRE_CFLAGS) $(sdl_CFLAGS) $(SDL_net_CFLAGS)
 OgreApp_LDADD = $(OGRE_LIBS) $(OGRE_TERRAIN_LIBS) $(OIS_LIBS) $(bullet_LIBS) $(CEGUI_LIBS) $(CEGUI_OGRE_LIBS) $(sdl_LIBS) $(SDL_net_LIBS)
 EXTRA_DIST = buildit makeit
@@ -361,6 +361,7 @@ include ./$(DEPDIR)/OgreApp-DemoApp.Po
 include ./$(DEPDIR)/OgreApp-DotSceneLoader.Po
 include ./$(DEPDIR)/OgreApp-GameObject.Po
 include ./$(DEPDIR)/OgreApp-MenuState.Po
+include ./$(DEPDIR)/OgreApp-MultiGameState.Po
 include ./$(DEPDIR)/OgreApp-PauseState.Po
 include ./$(DEPDIR)/OgreApp-Simulator.Po
 include ./$(DEPDIR)/OgreApp-SingleGameState.Po
@@ -485,6 +486,20 @@ OgreApp-MenuState.obj: MenuState.cpp
 #	source='MenuState.cpp' object='OgreApp-MenuState.obj' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
 #	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(OgreApp_CPPFLAGS) $(CPPFLAGS) $(OgreApp_CXXFLAGS) $(CXXFLAGS) -c -o OgreApp-MenuState.obj `if test -f 'MenuState.cpp'; then $(CYGPATH_W) 'MenuState.cpp'; else $(CYGPATH_W) '$(srcdir)/MenuState.cpp'; fi`
+
+OgreApp-MultiGameState.o: MultiGameState.cpp
+	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(OgreApp_CPPFLAGS) $(CPPFLAGS) $(OgreApp_CXXFLAGS) $(CXXFLAGS) -MT OgreApp-MultiGameState.o -MD -MP -MF $(DEPDIR)/OgreApp-MultiGameState.Tpo -c -o OgreApp-MultiGameState.o `test -f 'MultiGameState.cpp' || echo '$(srcdir)/'`MultiGameState.cpp
+	$(am__mv) $(DEPDIR)/OgreApp-MultiGameState.Tpo $(DEPDIR)/OgreApp-MultiGameState.Po
+#	source='MultiGameState.cpp' object='OgreApp-MultiGameState.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
+#	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(OgreApp_CPPFLAGS) $(CPPFLAGS) $(OgreApp_CXXFLAGS) $(CXXFLAGS) -c -o OgreApp-MultiGameState.o `test -f 'MultiGameState.cpp' || echo '$(srcdir)/'`MultiGameState.cpp
+
+OgreApp-MultiGameState.obj: MultiGameState.cpp
+	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(OgreApp_CPPFLAGS) $(CPPFLAGS) $(OgreApp_CXXFLAGS) $(CXXFLAGS) -MT OgreApp-MultiGameState.obj -MD -MP -MF $(DEPDIR)/OgreApp-MultiGameState.Tpo -c -o OgreApp-MultiGameState.obj `if test -f 'MultiGameState.cpp'; then $(CYGPATH_W) 'MultiGameState.cpp'; else $(CYGPATH_W) '$(srcdir)/MultiGameState.cpp'; fi`
+	$(am__mv) $(DEPDIR)/OgreApp-MultiGameState.Tpo $(DEPDIR)/OgreApp-MultiGameState.Po
+#	source='MultiGameState.cpp' object='OgreApp-MultiGameState.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
+#	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(OgreApp_CPPFLAGS) $(CPPFLAGS) $(OgreApp_CXXFLAGS) $(CXXFLAGS) -c -o OgreApp-MultiGameState.obj `if test -f 'MultiGameState.cpp'; then $(CYGPATH_W) 'MultiGameState.cpp'; else $(CYGPATH_W) '$(srcdir)/MultiGameState.cpp'; fi`
 
 OgreApp-PauseState.o: PauseState.cpp
 	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(OgreApp_CPPFLAGS) $(CPPFLAGS) $(OgreApp_CXXFLAGS) $(CXXFLAGS) -MT OgreApp-PauseState.o -MD -MP -MF $(DEPDIR)/OgreApp-PauseState.Tpo -c -o OgreApp-PauseState.o `test -f 'PauseState.cpp' || echo '$(srcdir)/'`PauseState.cpp

@@ -126,4 +126,7 @@ void MenuState::buttonHit(OgreBites::Button *button)
         m_bQuit = true;
     else if(button->getName() == "SingleBtn")
         changeAppState(findByName("SingleGameState"));
+    else if(button->getName() == "MultiBtn")
+        changeAppState(findByName("MultiGameState"));
+    
 }

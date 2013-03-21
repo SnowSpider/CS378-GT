@@ -31,7 +31,7 @@ enum QueryFlags
 
 //|||||||||||||||||||||||||||||||||||||||||||||||
  
-class SingleGameState : public AppState, public Ogre::FrameListener
+class SingleGameState : public AppState
 {
 public:
 	SingleGameState();
@@ -59,10 +59,7 @@ public:
         void itemSelected(OgreBites::SelectMenu* menu);
  
 	void update(double timeSinceLastFrame);
-    
-    // Ogre::FrameListener
-    virtual bool frameRenderingQueued(const Ogre::FrameEvent& evt);
-    
+ 
 private:
 	Ogre::SceneNode*		m_pOgreHeadNode;
 	Ogre::Entity*			m_pOgreHeadEntity;

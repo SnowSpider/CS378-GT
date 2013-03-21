@@ -57,8 +57,8 @@ am_OgreApp_OBJECTS = OgreApp-AdvancedOgreFramework.$(OBJEXT) \
 	OgreApp-AppStateManager.$(OBJEXT) OgreApp-DemoApp.$(OBJEXT) \
 	OgreApp-DotSceneLoader.$(OBJEXT) OgreApp-GameObject.$(OBJEXT) \
 	OgreApp-main.$(OBJEXT) OgreApp-MenuState.$(OBJEXT) \
-	OgreApp-PauseState.$(OBJEXT) OgreApp-Simulator.$(OBJEXT) \
-	OgreApp-SingleGameState.$(OBJEXT) \
+	OgreApp-MultiGameState.$(OBJEXT) OgreApp-PauseState.$(OBJEXT) \
+	OgreApp-Simulator.$(OBJEXT) OgreApp-SingleGameState.$(OBJEXT) \
 	OgreApp-SoundManager.$(OBJEXT)
 OgreApp_OBJECTS = $(am_OgreApp_OBJECTS)
 am__DEPENDENCIES_1 =
@@ -241,9 +241,9 @@ target_alias = @target_alias@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
-noinst_HEADERS = AdvancedOgreFramework.hpp AppState.hpp AppStateManager.hpp DemoApp.hpp DotSceneLoader.hpp GameObject.h MenuState.hpp OgreMotionState.h PauseState.hpp Simulator.h SingleGameState.hpp SoundManager.h rapidxml.hpp
+noinst_HEADERS = AdvancedOgreFramework.hpp AppState.hpp AppStateManager.hpp DemoApp.hpp DotSceneLoader.hpp GameObject.h MenuState.hpp MultiGameState.hpp OgreMotionState.h PauseState.hpp Simulator.h SingleGameState.hpp SoundManager.h rapidxml.hpp
 OgreApp_CPPFLAGS = -I$(top_srcdir)
-OgreApp_SOURCES = AdvancedOgreFramework.cpp AppStateManager.cpp DemoApp.cpp DotSceneLoader.cpp GameObject.cpp main.cpp MenuState.cpp PauseState.cpp Simulator.cpp SingleGameState.cpp SoundManager.cpp
+OgreApp_SOURCES = AdvancedOgreFramework.cpp AppStateManager.cpp DemoApp.cpp DotSceneLoader.cpp GameObject.cpp main.cpp MenuState.cpp MultiGameState.cpp PauseState.cpp Simulator.cpp SingleGameState.cpp SoundManager.cpp
 OgreApp_CXXFLAGS = $(OGRE_CFLAGS) $(OGRE_TERRAIN_CFLAGS) $(OIS_CFLAGS) $(bullet_CFLAGS) $(CEGUI_CFLAGS) $(CEGUI_OGRE_CFLAGS) $(sdl_CFLAGS) $(SDL_net_CFLAGS)
 OgreApp_LDADD = $(OGRE_LIBS) $(OGRE_TERRAIN_LIBS) $(OIS_LIBS) $(bullet_LIBS) $(CEGUI_LIBS) $(CEGUI_OGRE_LIBS) $(sdl_LIBS) $(SDL_net_LIBS)
 EXTRA_DIST = buildit makeit
@@ -361,6 +361,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/OgreApp-DotSceneLoader.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/OgreApp-GameObject.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/OgreApp-MenuState.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/OgreApp-MultiGameState.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/OgreApp-PauseState.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/OgreApp-Simulator.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/OgreApp-SingleGameState.Po@am__quote@
@@ -485,6 +486,20 @@ OgreApp-MenuState.obj: MenuState.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='MenuState.cpp' object='OgreApp-MenuState.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(OgreApp_CPPFLAGS) $(CPPFLAGS) $(OgreApp_CXXFLAGS) $(CXXFLAGS) -c -o OgreApp-MenuState.obj `if test -f 'MenuState.cpp'; then $(CYGPATH_W) 'MenuState.cpp'; else $(CYGPATH_W) '$(srcdir)/MenuState.cpp'; fi`
+
+OgreApp-MultiGameState.o: MultiGameState.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(OgreApp_CPPFLAGS) $(CPPFLAGS) $(OgreApp_CXXFLAGS) $(CXXFLAGS) -MT OgreApp-MultiGameState.o -MD -MP -MF $(DEPDIR)/OgreApp-MultiGameState.Tpo -c -o OgreApp-MultiGameState.o `test -f 'MultiGameState.cpp' || echo '$(srcdir)/'`MultiGameState.cpp
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/OgreApp-MultiGameState.Tpo $(DEPDIR)/OgreApp-MultiGameState.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='MultiGameState.cpp' object='OgreApp-MultiGameState.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(OgreApp_CPPFLAGS) $(CPPFLAGS) $(OgreApp_CXXFLAGS) $(CXXFLAGS) -c -o OgreApp-MultiGameState.o `test -f 'MultiGameState.cpp' || echo '$(srcdir)/'`MultiGameState.cpp
+
+OgreApp-MultiGameState.obj: MultiGameState.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(OgreApp_CPPFLAGS) $(CPPFLAGS) $(OgreApp_CXXFLAGS) $(CXXFLAGS) -MT OgreApp-MultiGameState.obj -MD -MP -MF $(DEPDIR)/OgreApp-MultiGameState.Tpo -c -o OgreApp-MultiGameState.obj `if test -f 'MultiGameState.cpp'; then $(CYGPATH_W) 'MultiGameState.cpp'; else $(CYGPATH_W) '$(srcdir)/MultiGameState.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/OgreApp-MultiGameState.Tpo $(DEPDIR)/OgreApp-MultiGameState.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='MultiGameState.cpp' object='OgreApp-MultiGameState.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(OgreApp_CPPFLAGS) $(CPPFLAGS) $(OgreApp_CXXFLAGS) $(CXXFLAGS) -c -o OgreApp-MultiGameState.obj `if test -f 'MultiGameState.cpp'; then $(CYGPATH_W) 'MultiGameState.cpp'; else $(CYGPATH_W) '$(srcdir)/MultiGameState.cpp'; fi`
 
 OgreApp-PauseState.o: PauseState.cpp
 @am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(OgreApp_CPPFLAGS) $(CPPFLAGS) $(OgreApp_CXXFLAGS) $(CXXFLAGS) -MT OgreApp-PauseState.o -MD -MP -MF $(DEPDIR)/OgreApp-PauseState.Tpo -c -o OgreApp-PauseState.o `test -f 'PauseState.cpp' || echo '$(srcdir)/'`PauseState.cpp

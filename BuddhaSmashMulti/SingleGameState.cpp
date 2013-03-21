@@ -262,6 +262,7 @@ bool SingleGameState::keyPressed(const OIS::KeyEvent &keyEventRef)
     if(OgreFramework::getSingletonPtr()->m_pKeyboard->isKeyDown(OIS::KC_ESCAPE))
     {
         pushAppState(findByName("PauseState"));
+        OgreFramework::getSingletonPtr()->m_pTrayMgr->showCursor();
         return true;
     }
  
@@ -369,6 +370,7 @@ bool SingleGameState::mousePressed(const OIS::MouseEvent &evt, OIS::MouseButtonI
             if (ready){
                 ready = false;
             }
+            OgreFramework::getSingletonPtr()->m_pTrayMgr->hideCursor();
             break;
         case OIS::MB_Right: 
             m_bRMouseDown = true;
@@ -703,7 +705,7 @@ void SingleGameState::buildGUI()
     OgreFramework::getSingletonPtr()->m_pTrayMgr->showFrameStats(OgreBites::TL_BOTTOMLEFT);
     OgreFramework::getSingletonPtr()->m_pTrayMgr->showLogo(OgreBites::TL_BOTTOMRIGHT);
     OgreFramework::getSingletonPtr()->m_pTrayMgr->createLabel(OgreBites::TL_TOP, "GameLbl", "Singleplayer Game mode", 250);
-    OgreFramework::getSingletonPtr()->m_pTrayMgr->showCursor();
+    //OgreFramework::getSingletonPtr()->m_pTrayMgr->showCursor();
  
     Ogre::StringVector items;
     items.push_back("cam.pX");

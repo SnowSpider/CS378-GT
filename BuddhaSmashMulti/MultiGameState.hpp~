@@ -9,12 +9,12 @@
  
 //|||||||||||||||||||||||||||||||||||||||||||||||
  
-class MultiGameState : public AppState
+class PauseState : public AppState
 {
 public:
-    MultiGameState();
+    PauseState();
  
-    DECLARE_APPSTATE_CLASS(MultiGameState)
+    DECLARE_APPSTATE_CLASS(PauseState)
  
     void enter();
     void createScene();

@@ -3,9 +3,8 @@
 #include "DemoApp.hpp"
  
 #include "MenuState.hpp"
-#include "GameState.hpp"
 #include "SingleGameState.hpp"
-//#include "MultiGameState.hpp"
+#include "MultiGameState.hpp"
 #include "PauseState.hpp"
  
 //|||||||||||||||||||||||||||||||||||||||||||||||

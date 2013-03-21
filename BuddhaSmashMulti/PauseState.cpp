@@ -69,6 +69,7 @@ bool PauseState::keyPressed(const OIS::KeyEvent &keyEventRef)
 {
     if(OgreFramework::getSingletonPtr()->m_pKeyboard->isKeyDown(OIS::KC_ESCAPE) && !m_bQuestionActive)
     {
+        OgreFramework::getSingletonPtr()->m_pTrayMgr->hideCursor();
         m_bQuit = true;
         return true;
     }
