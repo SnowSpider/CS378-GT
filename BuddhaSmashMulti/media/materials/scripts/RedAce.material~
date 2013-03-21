@@ -1,0 +1,14 @@
+material RedAce/OgreLogo
+{
+    technique
+    {
+        pass
+        {
+            texture_unit
+            {
+                texture buddha1.png
+                scale 1 1 
+            }
+        }   
+    }
+}

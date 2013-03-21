@@ -102,14 +102,14 @@ void TutorialApplication::createScene(void)
     
     // positive y plane
     Ogre::MeshManager::getSingleton().createPlane("plane_y_pos_in", Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME, plane_y_pos_in, 400.0f, 200.0f, 1, 1, true, 1, 1.0f, 1.0f, Ogre::Vector3::UNIT_X);
-    tempObject = GameObject(mSceneMgr, &simulator, btVector3(0,100,0), "plane_y_pos_in", "MyMaterials/wood2");
+    tempObject = GameObject(mSceneMgr, &simulator, btVector3(0,100,0), "plane_y_pos_in", "MyMaterials/wood3");
     tempObject.shape = new btStaticPlaneShape(btVector3(0,-1,0), 0);
     tempObject.addToSimulator();
     m_objects.push_back(tempObject);
     
     // negative y plane
     Ogre::MeshManager::getSingleton().createPlane("plane_y_neg_in", Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME, plane_y_neg_in, 400.0f, 200.0f, 1, 1, true, 1, 1.0f, 1.0f, Ogre::Vector3::UNIT_X);
-    tempObject = GameObject(mSceneMgr, &simulator, btVector3(0,-100,0), "plane_y_neg_in", "MyMaterials/wood2");
+    tempObject = GameObject(mSceneMgr, &simulator, btVector3(0,-100,0), "plane_y_neg_in", "MyMaterials/wood3");
     tempObject.shape = new btStaticPlaneShape(btVector3(0,1,0), 0);
     tempObject.addToSimulator();
     m_objects.push_back(tempObject);
@@ -133,7 +133,7 @@ void TutorialApplication::createScene(void)
     light->setPosition(75.0f, 75.0f, 75.0f);
     light->setDiffuseColour(1,1,1);
     
-    //CEGUI S  HIT(Stuff Hard to Improve Technically)
+    //CEGUI SHIT(Stuff Hard to Improve Technically)
     CEGUI::Imageset::setDefaultResourceGroup("Imagesets");
     CEGUI::Font::setDefaultResourceGroup("Fonts");
     CEGUI::Scheme::setDefaultResourceGroup("Schemes");

@@ -133,7 +133,7 @@ void TutorialApplication::createScene(void)
     light->setPosition(75.0f, 75.0f, 75.0f);
     light->setDiffuseColour(1,1,1);
     
-    //CEGUI S  HIT(Stuff Hard to Improve Technically)
+    //CEGUI SHIT(Stuff Hard to Improve Technically)
     CEGUI::Imageset::setDefaultResourceGroup("Imagesets");
     CEGUI::Font::setDefaultResourceGroup("Fonts");
     CEGUI::Scheme::setDefaultResourceGroup("Schemes");
