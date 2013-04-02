@@ -69,7 +69,7 @@ bool PauseState::keyPressed(const OIS::KeyEvent &keyEventRef)
 {
     if(OgreFramework::getSingletonPtr()->m_pKeyboard->isKeyDown(OIS::KC_ESCAPE) && !m_bQuestionActive)
     {
-        OgreFramework::getSingletonPtr()->m_pTrayMgr->showCursor();
+        OgreFramework::getSingletonPtr()->m_pTrayMgr->hideCursor();
         m_bQuit = true;
         return true;
     }
@@ -135,7 +135,7 @@ void PauseState::buttonHit(OgreBites::Button *button)
     }
     else if(button->getName() == "BackToSingleGameBtn")
     {
-        //popAllAndPushAppState(findByName("SingleGameState"));
+        popAllAndPushAppState(findByName("SingleGameState"));
         m_bQuit = true;
     }
     else if(button->getName() == "BackToMenuBtn")

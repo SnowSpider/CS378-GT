@@ -27,7 +27,7 @@ void MultiGameState::enter()
 {
     OgreFramework::getSingletonPtr()->m_pLog->logMessage("Entering MultiGameState...");
  
-    m_pSceneMgr = OgreFramework::getSingletonPtr()->m_pRoot->createSceneManager(ST_GENERIC, "PauseSceneMgr");
+    m_pSceneMgr = OgreFramework::getSingletonPtr()->m_pRoot->createSceneManager(ST_GENERIC, "MultiGameSceneMgr");
     m_pSceneMgr->setAmbientLight(Ogre::ColourValue(0.7f, 0.7f, 0.7f));
  
     m_pCamera = m_pSceneMgr->createCamera("PauseCam");

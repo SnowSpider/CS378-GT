@@ -77,7 +77,8 @@ private:
     int deltaY;
     int xi;
     int yi;
-    GameObject myPaddle;
+    GameObject hostPaddle;
+    GameObject clientPaddle;
     GameObject myBall;
     SoundManager sound;
     bool ready;

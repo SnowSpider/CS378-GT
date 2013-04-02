@@ -213,7 +213,7 @@ void HostGameState::createScene()
     
     // positive z plane
     Ogre::MeshManager::getSingleton().createPlane("plane_z_pos_in", Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME, plane_z_pos_in, 200.0f, 200.0f, 1, 1, true, 1, 1.0f, 1.0f, Ogre::Vector3::UNIT_Y);
-    tempObject = GameObject(m_pSceneMgr, &simulator, btVector3(0,0,200), "plane_z_pos_in", "Examples/Rockwall");
+    tempObject = GameObject(m_pSceneMgr, &simulator, btVector3(0,0,200), "plane_z_pos_in", "Examples/buddha1");
     tempObject.shape = new btStaticPlaneShape(btVector3(0,0,-1), 0);
     tempObject.addToSimulator();
     m_objects.push_back(tempObject);
@@ -561,7 +561,7 @@ void HostGameState::update(double timeSinceLastFrame)
     
     // stuff from Assignment 2
     GameObject* myBall = &m_objects[0];
-    GameObject* myPaddle = &m_objects[1];
+    GameObject* hostPaddle = &m_objects[1];
     GameObject* myWall_x_pos = &m_objects[2];
     GameObject* myWall_x_neg = &m_objects[3];
     GameObject* myWall_y_pos = &m_objects[4];
@@ -580,26 +580,26 @@ void HostGameState::update(double timeSinceLastFrame)
     }
     
     // Move the paddle
-    myPaddle->direction = btVector3(deltaX, deltaY, 0);
-    myPaddle->speed = sqrt(deltaX*deltaX + deltaY*deltaY);
-    myPaddle->setPosition(btVector3(xi, yi, 210));
-    //myPaddle->move(evt);
+    hostPaddle->direction = btVector3(deltaX, deltaY, 0);
+    hostPaddle->speed = sqrt(deltaX*deltaX + deltaY*deltaY);
+    hostPaddle->setPosition(btVector3(xi, yi, 210));
+    //hostPaddle->move(evt);
     
-    if (myPaddle->position.x() > 90){
-        myPaddle->setPosition(btVector3(90, myPaddle->position.y(), myPaddle->position.z()));
+    if (hostPaddle->position.x() > 90){
+        hostPaddle->setPosition(btVector3(90, hostPaddle->position.y(), hostPaddle->position.z()));
     }
-    if (myPaddle->position.x() < -90){
-        myPaddle->setPosition(btVector3(-90, myPaddle->position.y(), myPaddle->position.z()));
+    if (hostPaddle->position.x() < -90){
+        hostPaddle->setPosition(btVector3(-90, hostPaddle->position.y(), hostPaddle->position.z()));
     }
-    if (myPaddle->position.y() > 90){
-        myPaddle->setPosition(btVector3(myPaddle->position.x(), 90, myPaddle->position.z()));
+    if (hostPaddle->position.y() > 90){
+        hostPaddle->setPosition(btVector3(hostPaddle->position.x(), 90, hostPaddle->position.z()));
     }
-    if (myPaddle->position.y() < -90){
-        myPaddle->setPosition(btVector3(myPaddle->position.x(), -90, myPaddle->position.z()));
+    if (hostPaddle->position.y() < -90){
+        hostPaddle->setPosition(btVector3(hostPaddle->position.x(), -90, hostPaddle->position.z()));
     }
     
-    //cout << myPaddle->direction << endl;
-    //cout << myPaddle->speed << endl;
+    //cout << hostPaddle->direction << endl;
+    //cout << hostPaddle->speed << endl;
     
     /*
     Reflection vector formula:
@@ -649,8 +649,8 @@ void HostGameState::update(double timeSinceLastFrame)
     else if (myBall->position.z() > 190 || myBall->nextPosition.z() > 190){
         myBall->setPosition(btVector3(myBall->position.x(), myBall->position.y(), 190));
         myBall->direction += (-2.0 * (btVector3(0,0,-1).dot(myBall->direction)) * btVector3(0,0,-1));
-        if (abs(myPaddle->position.x() - myBall->position.x()) <= 25 && abs(myPaddle->position.y() - myBall->position.y()) <= 25){
-            myBall->direction += (0.2 * myPaddle->direction);
+        if (abs(hostPaddle->position.x() - myBall->position.x()) <= 25 && abs(hostPaddle->position.y() - myBall->position.y()) <= 25){
+            myBall->direction += (0.2 * hostPaddle->direction);
             myBall->direction.normalize();
             score += myBall->speed;
             myBall->speed += increment;
@@ -663,8 +663,8 @@ void HostGameState::update(double timeSinceLastFrame)
             //cout << "HIT" << endl;
             sound.PlaySound("boink1_cx65377.wav");
         }
-        else if (abs(myPaddle->nextPosition.x() - myBall->nextPosition.x()) <= 25 && abs(myPaddle->nextPosition.y() - myBall->nextPosition.y()) <= 25){
-            myBall->direction += (0.2 * myPaddle->direction);
+        else if (abs(hostPaddle->nextPosition.x() - myBall->nextPosition.x()) <= 25 && abs(hostPaddle->nextPosition.y() - myBall->nextPosition.y()) <= 25){
+            myBall->direction += (0.2 * hostPaddle->direction);
             myBall->direction.normalize();
             score += myBall->speed;
             myBall->speed += increment;

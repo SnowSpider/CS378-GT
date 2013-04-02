@@ -5,6 +5,7 @@
  
 //|||||||||||||||||||||||||||||||||||||||||||||||
  
+#include "AppState.hpp"
  
 #include "DotSceneLoader.hpp"
  

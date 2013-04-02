@@ -386,28 +386,6 @@ bool ClientGameState::mouseMoved(const OIS::MouseEvent &evt)
     */
 }
 
-CEGUI::MouseButton convertButton(OIS::MouseButtonID buttonID)
-{
-    switch (buttonID)
-    {
-    case OIS::MB_Left:
-        return CEGUI::LeftButton;
-        break;
- 
-    case OIS::MB_Right:
-        return CEGUI::RightButton;
-        break;
- 
-    case OIS::MB_Middle:
-        return CEGUI::MiddleButton;
-        break;
- 
-    default:
-        return CEGUI::LeftButton;
-        break;
-    }
-}
-
 //|||||||||||||||||||||||||||||||||||||||||||||||
  
 bool ClientGameState::mousePressed(const OIS::MouseEvent &evt, OIS::MouseButtonID id)
@@ -447,7 +425,6 @@ bool ClientGameState::mousePressed(const OIS::MouseEvent &evt, OIS::MouseButtonI
         CEGUI::Window* counter = CEGUI::WindowManager::getSingleton().getWindow("Counter");
         counter->setText("Score: 0");
     }
-    if(CEGUI::System::getSingleton().injectMouseButtonDown(convertButton(id))) return true;
     //mCameraMan->injectMouseDown(evt, id);
     return true;
 }
@@ -466,8 +443,6 @@ bool ClientGameState::mouseReleased(const OIS::MouseEvent &evt, OIS::MouseButton
     {
         m_bRMouseDown = false;
     }
-    
-    if(CEGUI::System::getSingleton().injectMouseButtonUp(convertButton(id))) return true;
  
     return true;
 }
@@ -586,7 +561,7 @@ void ClientGameState::update(double timeSinceLastFrame)
     
     // stuff from Assignment 2
     GameObject* myBall = &m_objects[0];
-    GameObject* myPaddle = &m_objects[1];
+    GameObject* clientPaddle = &m_objects[1];
     GameObject* myWall_x_pos = &m_objects[2];
     GameObject* myWall_x_neg = &m_objects[3];
     GameObject* myWall_y_pos = &m_objects[4];
@@ -605,26 +580,26 @@ void ClientGameState::update(double timeSinceLastFrame)
     }
     
     // Move the paddle
-    myPaddle->direction = btVector3(deltaX, deltaY, 0);
-    myPaddle->speed = sqrt(deltaX*deltaX + deltaY*deltaY);
-    myPaddle->setPosition(btVector3(xi, yi, 210));
-    //myPaddle->move(evt);
+    clientPaddle->direction = btVector3(deltaX, deltaY, 0);
+    clientPaddle->speed = sqrt(deltaX*deltaX + deltaY*deltaY);
+    clientPaddle->setPosition(btVector3(xi, yi, 210));
+    //clientPaddle->move(evt);
     
-    if (myPaddle->position.x() > 90){
-        myPaddle->setPosition(btVector3(90, myPaddle->position.y(), myPaddle->position.z()));
+    if (clientPaddle->position.x() > 90){
+        clientPaddle->setPosition(btVector3(90, clientPaddle->position.y(), clientPaddle->position.z()));
     }
-    if (myPaddle->position.x() < -90){
-        myPaddle->setPosition(btVector3(-90, myPaddle->position.y(), myPaddle->position.z()));
+    if (clientPaddle->position.x() < -90){
+        clientPaddle->setPosition(btVector3(-90, clientPaddle->position.y(), clientPaddle->position.z()));
     }
-    if (myPaddle->position.y() > 90){
-        myPaddle->setPosition(btVector3(myPaddle->position.x(), 90, myPaddle->position.z()));
+    if (clientPaddle->position.y() > 90){
+        clientPaddle->setPosition(btVector3(clientPaddle->position.x(), 90, clientPaddle->position.z()));
     }
-    if (myPaddle->position.y() < -90){
-        myPaddle->setPosition(btVector3(myPaddle->position.x(), -90, myPaddle->position.z()));
+    if (clientPaddle->position.y() < -90){
+        clientPaddle->setPosition(btVector3(clientPaddle->position.x(), -90, clientPaddle->position.z()));
     }
     
-    //cout << myPaddle->direction << endl;
-    //cout << myPaddle->speed << endl;
+    //cout << clientPaddle->direction << endl;
+    //cout << clientPaddle->speed << endl;
     
     /*
     Reflection vector formula:
@@ -674,8 +649,8 @@ void ClientGameState::update(double timeSinceLastFrame)
     else if (myBall->position.z() > 190 || myBall->nextPosition.z() > 190){
         myBall->setPosition(btVector3(myBall->position.x(), myBall->position.y(), 190));
         myBall->direction += (-2.0 * (btVector3(0,0,-1).dot(myBall->direction)) * btVector3(0,0,-1));
-        if (abs(myPaddle->position.x() - myBall->position.x()) <= 25 && abs(myPaddle->position.y() - myBall->position.y()) <= 25){
-            myBall->direction += (0.2 * myPaddle->direction);
+        if (abs(clientPaddle->position.x() - myBall->position.x()) <= 25 && abs(clientPaddle->position.y() - myBall->position.y()) <= 25){
+            myBall->direction += (0.2 * clientPaddle->direction);
             myBall->direction.normalize();
             score += myBall->speed;
             myBall->speed += increment;
@@ -688,8 +663,8 @@ void ClientGameState::update(double timeSinceLastFrame)
             //cout << "HIT" << endl;
             sound.PlaySound("boink1_cx65377.wav");
         }
-        else if (abs(myPaddle->nextPosition.x() - myBall->nextPosition.x()) <= 25 && abs(myPaddle->nextPosition.y() - myBall->nextPosition.y()) <= 25){
-            myBall->direction += (0.2 * myPaddle->direction);
+        else if (abs(clientPaddle->nextPosition.x() - myBall->nextPosition.x()) <= 25 && abs(clientPaddle->nextPosition.y() - myBall->nextPosition.y()) <= 25){
+            myBall->direction += (0.2 * clientPaddle->direction);
             myBall->direction.normalize();
             score += myBall->speed;
             myBall->speed += increment;
