@@ -41,8 +41,9 @@ void MultiGameState::enter()
     OgreFramework::getSingletonPtr()->m_pTrayMgr->showCursor();
     OgreFramework::getSingletonPtr()->m_pTrayMgr->createButton(OgreBites::TL_CENTER, "CreateRoomBtn", "Create Room", 250);
     OgreFramework::getSingletonPtr()->m_pTrayMgr->createButton(OgreBites::TL_CENTER, "JoinBtn", "Join", 250);
+    OgreFramework::getSingletonPtr()->m_pTrayMgr->createButton(OgreBites::TL_CENTER, "BackToMenuBtn", "Return to Menu", 250);
     OgreFramework::getSingletonPtr()->m_pTrayMgr->createButton(OgreBites::TL_CENTER, "ExitBtn", "Exit AdvancedOgreFramework", 250);
-    OgreFramework::getSingletonPtr()->m_pTrayMgr->createLabel(OgreBites::TL_TOP, "PauseLbl", "Pause mode", 250);
+    OgreFramework::getSingletonPtr()->m_pTrayMgr->createLabel(OgreBites::TL_TOP, "MultiLbl", "Multiplayer mode", 250);
  
     m_bQuit = false;
  
@@ -136,57 +137,65 @@ void MultiGameState::buttonHit(OgreBites::Button *button)
         OgreFramework::getSingletonPtr()->m_pTrayMgr->showYesNoDialog("Sure?", "Really leave?");
         m_bQuestionActive = true;
     }
+    else if(button->getName() == "BackToMenuBtn")
+    {
+        popAllAndPushAppState(findByName("MenuState"));
+    }
     else if(button->getName() == "CreateRoomBtn")
     {
         // Create a room
-	SDL_Init(SDL_INIT_EVERYTHING);
-	SDLNet_Init();
+	    SDL_Init(SDL_INIT_EVERYTHING);
+	    SDLNet_Init();
 
-	IPaddress ip;
-	SDLNet_ResolveHost(&ip, NULL, 1234);
+	    IPaddress ip;
+	    SDLNet_ResolveHost(&ip, NULL, 1234);
 
-	TCPsocket server = SDLNet_TCP_Open(&ip);
-	TCPsocket client;
+	    TCPsocket server = SDLNet_TCP_Open(&ip);
+	    TCPsocket client;
 
-	const char* text = "HELLO CLIENT!\n";
+	    const char* text = "HELLO CLIENT!\n";
 
-	while(1)
-	{
-		client = SDLNet_TCP_Accept(server);
-		if(client)
-		{
-			//communicate with client
-			SDLNet_TCP_Send(client, text, strlen(text)+1);
-			SDLNet_TCP_Close(client);
-			break;
-		}
-	}
-	SDLNet_TCP_Close(server);		
+	    while(1)
+	    {
+		    client = SDLNet_TCP_Accept(server);
+		    if(client)
+		    {
+			    //communicate with client
+			    SDLNet_TCP_Send(client, text, strlen(text)+1);
+			    SDLNet_TCP_Close(client);
+			    break;
+		    }
+	    }
+	    SDLNet_TCP_Close(server);		
 
-	SDLNet_Quit();
-	SDL_Quit();
+	    SDLNet_Quit();
+	    SDL_Quit();
 	
     }
     else if(button->getName() == "JoinBtn")
     {
+        popAllAndPushAppState(findByName("JoinState"));
+        
+        /*
         // Join an existing room
-	SDL_Init(SDL_INIT_EVERYTHING);
-	SDLNet_Init();
+	    SDL_Init(SDL_INIT_EVERYTHING);
+	    SDLNet_Init();
 
-	IPaddress ip;
-	SDLNet_ResolveHost(&ip, "128.83.120.190", 1234);
+	    IPaddress ip;
+	    SDLNet_ResolveHost(&ip, "128.83.120.190", 1234);
 
-	TCPsocket client = SDLNet_TCP_Open(&ip);
+	    TCPsocket client = SDLNet_TCP_Open(&ip);
 
-	char text[100];
-	SDLNet_TCP_Recv(client,text,100);
-	std::cout << text;
+	    char text[100];
+	    SDLNet_TCP_Recv(client,text,100);
+	    std::cout << text;
 
-	SDLNet_TCP_Close(client);		
+	    SDLNet_TCP_Close(client);		
 
-	SDLNet_Quit();
-	SDL_Quit();
-    }     
+	    SDLNet_Quit();
+	    SDL_Quit();
+	    */
+    }
 }
  
 //|||||||||||||||||||||||||||||||||||||||||||||||

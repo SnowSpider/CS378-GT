@@ -2,10 +2,24 @@
 #include <OgreEntity.h>
 #include <OgreSceneManager.h>
 
+#include <string.h>
+
+#include <iostream>
+using namespace std;
+
 int id = 0;
 
+string convertInt(int number)
+{
+   stringstream ss;//create a stringstream
+   ss << number;//add number to the stream
+   return ss.str();//return a string with the contents of the stream
+}
+
 GameObject::GameObject(Ogre::SceneManager* scnMgr, Simulator* sim, btVector3 pos, char* mesh, char* mat){
-    name = "GameObject_"+id;
+    //name = "GameObject_";
+    string s = "GameObject_";
+    name = s.append(convertInt(id));
     id += 1;
     sceneMgr = scnMgr;
     simulator = sim;

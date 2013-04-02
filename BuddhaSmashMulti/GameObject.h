@@ -32,8 +32,6 @@ class GameObject {
     btVector3 nextPosition; // expected position in the next frame
     btVector3 direction;
     float speed;
-    //GameObject(){}
-    
     
     GameObject(){}
     GameObject(Ogre::SceneManager* scnMgr, Simulator* sim, btVector3 pos, char* mesh, char* mat);

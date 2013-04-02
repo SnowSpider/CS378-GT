@@ -93,9 +93,60 @@ void SingleGameState::exit()
 {
     OgreFramework::getSingletonPtr()->m_pLog->logMessage("Leaving SingleGameState...");
  
+    /*
     m_pSceneMgr->destroyCamera(m_pCamera);
-    if(m_pSceneMgr)
+    if(m_pSceneMgr){
         OgreFramework::getSingletonPtr()->m_pRoot->destroySceneManager(m_pSceneMgr);
+    }
+    */
+    
+    sound.close();
+    //m_pSceneMgr->destroyCamera(m_pCamera);
+    
+    /*
+    cout << "0" << endl;
+    cout << "m_objects.size() = " << m_objects.size() << endl;
+    for(int i=0;i<m_objects.size();i++){
+        cout << "01" << endl;
+        m_objects[i].rootNode->removeAndDestroyAllChildren(); cout << "1" << endl;
+        m_objects[i].sceneMgr->destroySceneNode(m_objects[i].rootNode); cout << "2" << endl;
+    }
+    cout << "4" << endl;
+    
+    
+    cout << "0" << endl;
+    m_pSceneMgr->getRootSceneNode()->removeAndDestroyAllChildren();cout << "1" << endl;
+    //m_pSceneMgr->destroySceneNode(m_pSceneMgr->getRootSceneNode());cout << "2" << endl;
+    if(mRenderer){
+        mRenderer->destroySystem(); cout << "22" << endl;
+    }
+    OgreFramework::getSingletonPtr()->m_pRoot->destroySceneManager(m_pSceneMgr);cout << "3" << endl;
+    
+    //m_pSceneMgr->clearScene();cout << "3" << endl;
+    //m_pSceneMgr->destroyAllCameras();cout << "4" << endl;
+    m_objects.clear();cout << "5" << endl;
+    
+    //OgreFramework::getSingletonPtr()->m_pRoot->destroySceneManager(m_pSceneMgr);cout << "6" << endl;
+    */
+    Node::ChildNodeIterator it = m_pSceneMgr->getRootSceneNode()->getChildIterator();
+    while( it.hasMoreElements() ){
+        cout << "name: " << it.getNext()->getName() << endl;
+        m_pSceneMgr->destroyEntity(it.getNext()->getName());
+        //m_pSceneMgr->destroySceneNode(it.getNext()->getName());
+    }
+    m_pSceneMgr->getRootSceneNode()->removeAndDestroyAllChildren();cout << "1" << endl;
+    //m_pSceneMgr->destroySceneNode(m_pSceneMgr->getRootSceneNode());cout << "2" << endl;
+    m_pSceneMgr->clearScene();cout << "3" << endl;
+    m_pSceneMgr->destroyAllCameras();cout << "4" << endl;
+    OgreFramework::getSingletonPtr()->m_pRoot->destroySceneManager(m_pSceneMgr);cout << "5" << endl;
+    /*
+    if(mRenderer){
+        mRenderer->destroySystem(); cout << "22" << endl;
+    }
+    */
+    //CEGUI::System::getSingleton().destroy();cout << "6" << endl;
+    mRenderer->destroySystem();cout << "7" << endl;
+    //delete mRenderer;
 }
 
 void SingleGameState::createScene()
@@ -118,6 +169,7 @@ void SingleGameState::createScene()
     m_objects.push_back(tempObject);
     
     tempObject = GameObject(m_pSceneMgr, &simulator, btVector3(0,0,210), "cube.mesh", "MyMaterials/wood1");
+    
     tempObject.scale(0.2, 0.2, 0.01);
     tempObject.mass = 1.0f;
     tempObject.shape = new btStaticPlaneShape(btVector3(0,0,-1), 0);
@@ -293,7 +345,7 @@ bool SingleGameState::keyPressed(const OIS::KeyEvent &keyEventRef)
  
     if(!m_bSettingsMode || (m_bSettingsMode && !OgreFramework::getSingletonPtr()->m_pKeyboard->isKeyDown(OIS::KC_O)))
         OgreFramework::getSingletonPtr()->keyPressed(keyEventRef);
- 
+    
     return true;
 }
  
@@ -705,7 +757,7 @@ void SingleGameState::buildGUI()
     OgreFramework::getSingletonPtr()->m_pTrayMgr->showFrameStats(OgreBites::TL_BOTTOMLEFT);
     OgreFramework::getSingletonPtr()->m_pTrayMgr->showLogo(OgreBites::TL_BOTTOMRIGHT);
     OgreFramework::getSingletonPtr()->m_pTrayMgr->createLabel(OgreBites::TL_TOP, "GameLbl", "Singleplayer Game mode", 250);
-    OgreFramework::getSingletonPtr()->m_pTrayMgr->showCursor();
+    //OgreFramework::getSingletonPtr()->m_pTrayMgr->showCursor();
  
     Ogre::StringVector items;
     items.push_back("cam.pX");
