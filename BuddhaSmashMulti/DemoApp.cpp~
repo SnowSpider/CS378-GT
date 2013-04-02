@@ -5,6 +5,7 @@
 #include "MenuState.hpp"
 #include "SingleGameState.hpp"
 #include "MultiGameState.hpp"
+#include "JoinState.hpp"
 #include "PauseState.hpp"
  
 //|||||||||||||||||||||||||||||||||||||||||||||||

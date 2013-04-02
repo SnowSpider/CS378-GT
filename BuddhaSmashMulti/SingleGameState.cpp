@@ -386,28 +386,6 @@ bool SingleGameState::mouseMoved(const OIS::MouseEvent &evt)
     */
 }
 
-CEGUI::MouseButton convertButton(OIS::MouseButtonID buttonID)
-{
-    switch (buttonID)
-    {
-    case OIS::MB_Left:
-        return CEGUI::LeftButton;
-        break;
- 
-    case OIS::MB_Right:
-        return CEGUI::RightButton;
-        break;
- 
-    case OIS::MB_Middle:
-        return CEGUI::MiddleButton;
-        break;
- 
-    default:
-        return CEGUI::LeftButton;
-        break;
-    }
-}
-
 //|||||||||||||||||||||||||||||||||||||||||||||||
  
 bool SingleGameState::mousePressed(const OIS::MouseEvent &evt, OIS::MouseButtonID id)
@@ -447,7 +425,7 @@ bool SingleGameState::mousePressed(const OIS::MouseEvent &evt, OIS::MouseButtonI
         CEGUI::Window* counter = CEGUI::WindowManager::getSingleton().getWindow("Counter");
         counter->setText("Score: 0");
     }
-    if(CEGUI::System::getSingleton().injectMouseButtonDown(convertButton(id))) return true;
+
     //mCameraMan->injectMouseDown(evt, id);
     return true;
 }
@@ -467,7 +445,7 @@ bool SingleGameState::mouseReleased(const OIS::MouseEvent &evt, OIS::MouseButton
         m_bRMouseDown = false;
     }
     
-    if(CEGUI::System::getSingleton().injectMouseButtonUp(convertButton(id))) return true;
+
  
     return true;
 }
