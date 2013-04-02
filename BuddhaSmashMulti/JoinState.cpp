@@ -41,7 +41,7 @@ void JoinState::enter()
     OgreFramework::getSingletonPtr()->m_pTrayMgr->showCursor();
     
     OgreFramework::getSingletonPtr()->m_pTrayMgr->createButton(OgreBites::TL_BOTTOM, "ConnectBtn", "Connect", 250);
-    OgreFramework::getSingletonPtr()->m_pTrayMgr->createButton(OgreBites::TL_BOTTOM, "CencelBtn", "Cancel", 250);
+    OgreFramework::getSingletonPtr()->m_pTrayMgr->createButton(OgreBites::TL_BOTTOM, "CancelBtn", "Cancel", 250);
     OgreFramework::getSingletonPtr()->m_pTrayMgr->createLabel(OgreBites::TL_TOP, "MultiLbl", "Type the IP address", 250);
  
     m_bQuit = false;
@@ -162,7 +162,7 @@ void JoinState::update(double timeSinceLastFrame)
  
 void JoinState::buttonHit(OgreBites::Button *button)
 {
-    if(button->getName() == "CencelBtn")
+    if(button->getName() == "CancelBtn")
     {
         popAllAndPushAppState(findByName("MultiGameState"));
     }

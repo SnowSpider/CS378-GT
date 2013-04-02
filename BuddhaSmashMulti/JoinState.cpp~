@@ -51,7 +51,6 @@ void JoinState::enter()
 
 void JoinState::createScene()
 {
-    cout << "1" << endl;
     mRenderer = &CEGUI::OgreRenderer::bootstrapSystem();
     
     //CEGUI SHIT(Stuff Hard to Improve Technically)
