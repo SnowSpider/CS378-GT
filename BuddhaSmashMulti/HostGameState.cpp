@@ -86,21 +86,26 @@ void HostGameState::enter()
     // Wait for a connection, send data and term 
     quit = 0;
     
-    
-    // This check the sd if there is a pending connection.
-    // If there is one, accept that, and open a new socket for communicating 
-    if ((csd = SDLNet_TCP_Accept(sd)))
-    {
-	    // Now we can communicate with the client using csd socket
-	    // sd will remain opened waiting other connections 
+    while(true){
+        // This check the sd if there is a pending connection.
+        // If there is one, accept that, and open a new socket for communicating 
+        if ((csd = SDLNet_TCP_Accept(sd)))
+        {
+	        // Now we can communicate with the client using csd socket
+	        // sd will remain opened waiting other connections 
 
-	    // Get the remote address 
-	    if ((remoteIP = SDLNet_TCP_GetPeerAddress(csd)))
-		    // Print the address, converting in the host format 
-		    printf("Host connected: %x %d\n", SDLNet_Read32(&remoteIP->host), SDLNet_Read16(&remoteIP->port));
-	    else
-		    fprintf(stderr, "SDLNet_TCP_GetPeerAddress: %s\n", SDLNet_GetError());
+	        // Get the remote address 
+	        if ((remoteIP = SDLNet_TCP_GetPeerAddress(csd))){
+	            // Print the address, converting in the host format 
+		        printf("Host connected: %x %d\n", SDLNet_Read32(&remoteIP->host), SDLNet_Read16(&remoteIP->port));
+		        break;
+	        }
+	        else{
+                fprintf(stderr, "SDLNet_TCP_GetPeerAddress: %s\n", SDLNet_GetError());
+            }
+        }
     }
+        
     
     // Connect : end
     
