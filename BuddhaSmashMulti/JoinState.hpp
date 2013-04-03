@@ -14,6 +14,9 @@
 using namespace std; 
 
 #include "EditString.h"
+
+#include <iostream>
+#include <fstream>
  
 //|||||||||||||||||||||||||||||||||||||||||||||||
  

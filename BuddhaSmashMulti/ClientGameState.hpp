@@ -19,6 +19,13 @@
 #include <vector>
 using namespace std;
 
+#include <SDL.h>
+#include <SDL_net.h>
+#include <cstring>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
 #define GRAVITY 9.80665
 
 //|||||||||||||||||||||||||||||||||||||||||||||||
@@ -77,9 +84,9 @@ private:
     int deltaY;
     int xi;
     int yi;
-    GameObject hostPaddle;
-    GameObject clientPaddle;
-    GameObject myBall;
+    GameObject* hostPaddle;
+    GameObject* clientPaddle;
+    GameObject* myBall;
     SoundManager sound;
     bool ready;
     Simulator simulator;
@@ -92,6 +99,15 @@ private:
     bool soundIs;
     bool startUp;
     bool lost;
+    
+    IPaddress ip;		// Server address 
+    TCPsocket sd;		// Socket descriptor 
+    int quit, len;
+    btVector3* buffer; // client paddle position
+    string targetAddress;
+    
+    
+    
 };
  
 //|||||||||||||||||||||||||||||||||||||||||||||||

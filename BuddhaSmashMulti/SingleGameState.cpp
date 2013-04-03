@@ -151,6 +151,9 @@ void SingleGameState::exit()
 
 void SingleGameState::createScene()
 {
+
+    //cout << "sizeof(btVector3*) = " << sizeof(btVector3*) << endl;
+    
     mRenderer = &CEGUI::OgreRenderer::bootstrapSystem();
     
     // Create SoundManager
@@ -282,7 +285,7 @@ void SingleGameState::createScene()
     float r2 = (rand() % 100);
     float r3 = (rand() % 100);
     
-    GameObject* myBall = &m_objects[0];
+    myBall = &m_objects[0];
     myBall->tr = btTransform(btMatrix3x3(1,0,0,0,1,0,0,0,1),btVector3(r1, r2, -500));
     myBall->updateTransform();
     
@@ -563,8 +566,8 @@ void SingleGameState::update(double timeSinceLastFrame)
     moveCamera();
     
     // stuff from Assignment 2
-    GameObject* myBall = &m_objects[0];
-    GameObject* myPaddle = &m_objects[1];
+    myBall = &m_objects[0];
+    myPaddle = &m_objects[1];
     GameObject* myWall_x_pos = &m_objects[2];
     GameObject* myWall_x_neg = &m_objects[3];
     GameObject* myWall_y_pos = &m_objects[4];
@@ -726,7 +729,6 @@ void SingleGameState::update(double timeSinceLastFrame)
     */
     
     //Need to capture/update each device
-    OgreFramework::getSingletonPtr()->m_pKeyboard->capture();
     OgreFramework::getSingletonPtr()->m_pKeyboard->capture();
 }
 

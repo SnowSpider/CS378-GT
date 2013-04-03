@@ -151,6 +151,9 @@ void SingleGameState::exit()
 
 void SingleGameState::createScene()
 {
+
+    cout << "sizeof(btVector3*) = " << sizeof(btVector3*) << endl;
+    
     mRenderer = &CEGUI::OgreRenderer::bootstrapSystem();
     
     // Create SoundManager
@@ -282,7 +285,7 @@ void SingleGameState::createScene()
     float r2 = (rand() % 100);
     float r3 = (rand() % 100);
     
-    GameObject* myBall = &m_objects[0];
+    myBall = &m_objects[0];
     myBall->tr = btTransform(btMatrix3x3(1,0,0,0,1,0,0,0,1),btVector3(r1, r2, -500));
     myBall->updateTransform();
     
@@ -386,28 +389,6 @@ bool SingleGameState::mouseMoved(const OIS::MouseEvent &evt)
     */
 }
 
-CEGUI::MouseButton convertButton(OIS::MouseButtonID buttonID)
-{
-    switch (buttonID)
-    {
-    case OIS::MB_Left:
-        return CEGUI::LeftButton;
-        break;
- 
-    case OIS::MB_Right:
-        return CEGUI::RightButton;
-        break;
- 
-    case OIS::MB_Middle:
-        return CEGUI::MiddleButton;
-        break;
- 
-    default:
-        return CEGUI::LeftButton;
-        break;
-    }
-}
-
 //|||||||||||||||||||||||||||||||||||||||||||||||
  
 bool SingleGameState::mousePressed(const OIS::MouseEvent &evt, OIS::MouseButtonID id)
@@ -447,7 +428,7 @@ bool SingleGameState::mousePressed(const OIS::MouseEvent &evt, OIS::MouseButtonI
         CEGUI::Window* counter = CEGUI::WindowManager::getSingleton().getWindow("Counter");
         counter->setText("Score: 0");
     }
-    if(CEGUI::System::getSingleton().injectMouseButtonDown(convertButton(id))) return true;
+
     //mCameraMan->injectMouseDown(evt, id);
     return true;
 }
@@ -467,7 +448,7 @@ bool SingleGameState::mouseReleased(const OIS::MouseEvent &evt, OIS::MouseButton
         m_bRMouseDown = false;
     }
     
-    if(CEGUI::System::getSingleton().injectMouseButtonUp(convertButton(id))) return true;
+
  
     return true;
 }
@@ -585,8 +566,8 @@ void SingleGameState::update(double timeSinceLastFrame)
     moveCamera();
     
     // stuff from Assignment 2
-    GameObject* myBall = &m_objects[0];
-    GameObject* myPaddle = &m_objects[1];
+    myBall = &m_objects[0];
+    myPaddle = &m_objects[1];
     GameObject* myWall_x_pos = &m_objects[2];
     GameObject* myWall_x_neg = &m_objects[3];
     GameObject* myWall_y_pos = &m_objects[4];
@@ -748,7 +729,6 @@ void SingleGameState::update(double timeSinceLastFrame)
     */
     
     //Need to capture/update each device
-    OgreFramework::getSingletonPtr()->m_pKeyboard->capture();
     OgreFramework::getSingletonPtr()->m_pKeyboard->capture();
 }
 

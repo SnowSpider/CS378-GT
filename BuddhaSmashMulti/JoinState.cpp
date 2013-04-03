@@ -110,6 +110,14 @@ bool JoinState::keyPressed(const OIS::KeyEvent &keyEventRef)
         starter->setText( targetAddress.getText() );
     }
     
+    // store target address in a txt file (cheater!)
+    ofstream myfile ("targetAddress.txt");
+    if (myfile.is_open()){
+        myfile << targetAddress.getText();
+        myfile.close();
+    }
+    else cout << "Unable to open file";
+
     
     OgreFramework::getSingletonPtr()->keyPressed(keyEventRef);
  
@@ -171,59 +179,7 @@ void JoinState::buttonHit(OgreBites::Button *button)
     }
     if(button->getName() == "ConnectBtn")
     {
-        // TODO
-	// targetAddress.getText()
-        // connect to the targetAddress (string)
-	SDL_Init(SDL_INIT_EVERYTHING);
-	IPaddress ip;		/* Server address */
-	TCPsocket sd;		/* Socket descriptor */
-	int quit, len;
-	char buffer[512];
- 
-	/* Simple parameter checking */
- 
-	if (SDLNet_Init() < 0)
-	{
-		fprintf(stderr, "SDLNet_Init: %s\n", SDLNet_GetError());
-		//exit(EXIT_FAILURE);
-	}
- 
-	/* Resolve the host we are connecting to */
-	if (SDLNet_ResolveHost(&ip, targetAddress.getText().c_str(), 1234) < 0)
-	{
-		fprintf(stderr, "SDLNet_ResolveHost: %s\n", SDLNet_GetError());
-		//exit(EXIT_FAILURE);
-	}
- 
-	/* Open a connection with the IP provided (listen on the host's port) */
-	if (!(sd = SDLNet_TCP_Open(&ip)))
-	{
-		fprintf(stderr, "SDLNet_TCP_Open: %s\n", SDLNet_GetError());
-		//exit(EXIT_FAILURE);
-	}
- 
-	/* Send messages */
-	quit = 0;
-	while (!quit)
-	{
-		printf("Write something:\n>");
-		scanf("%s", buffer);
- 
-		len = strlen(buffer) + 1;
-		if (SDLNet_TCP_Send(sd, (void *)buffer, len) < len)
-		{
-			fprintf(stderr, "SDLNet_TCP_Send: %s\n", SDLNet_GetError());
-			//exit(EXIT_FAILURE);
-		}
- 
-		if(strcmp(buffer, "exit") == 0)
-			quit = 1;
-		if(strcmp(buffer, "quit") == 0)
-			quit = 1;
-	}
- 
-	SDLNet_TCP_Close(sd);
-	SDLNet_Quit();
+        changeAppState(findByName("ClientGameState"));
     }
     
 }

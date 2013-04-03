@@ -50,7 +50,61 @@ HostGameState::HostGameState()
 void HostGameState::enter()
 {
     OgreFramework::getSingletonPtr()->m_pLog->logMessage("Entering HostGameState...");
- 
+    
+    // Connect : begin
+    
+    
+    // Create a room
+    SDL_Init(SDL_INIT_EVERYTHING);
+    /*
+    TCPsocket sd, csd; // Socket descriptor, Client socket descriptor 
+    IPaddress ip, *remoteIP;
+    int quit, quit2;
+    char buffer[512];
+    */
+    
+    if (SDLNet_Init() < 0)
+    {
+	    fprintf(stderr, "SDLNet_Init: %s\n", SDLNet_GetError());
+	    //exit(EXIT_FAILURE);
+    }
+
+    // Resolving the host using NULL make network interface to listen 
+    if (SDLNet_ResolveHost(&ip, NULL, 1234) < 0)
+    {
+	    fprintf(stderr, "SDLNet_ResolveHost: %s\n", SDLNet_GetError());
+	    //exit(EXIT_FAILURE);
+    }
+
+    // Open a connection with the IP provided (listen on the host's port) 
+    if (!(sd = SDLNet_TCP_Open(&ip)))
+    {
+	    fprintf(stderr, "SDLNet_TCP_Open: %s\n", SDLNet_GetError());
+	    //exit(EXIT_FAILURE);
+    }
+    
+    // Wait for a connection, send data and term 
+    quit = 0;
+    
+    
+    // This check the sd if there is a pending connection.
+    // If there is one, accept that, and open a new socket for communicating 
+    if ((csd = SDLNet_TCP_Accept(sd)))
+    {
+	    // Now we can communicate with the client using csd socket
+	    // sd will remain opened waiting other connections 
+
+	    // Get the remote address 
+	    if ((remoteIP = SDLNet_TCP_GetPeerAddress(csd)))
+		    // Print the address, converting in the host format 
+		    printf("Host connected: %x %d\n", SDLNet_Read32(&remoteIP->host), SDLNet_Read16(&remoteIP->port));
+	    else
+		    fprintf(stderr, "SDLNet_TCP_GetPeerAddress: %s\n", SDLNet_GetError());
+    }
+    
+    // Connect : end
+    
+    
     m_pSceneMgr = OgreFramework::getSingletonPtr()->m_pRoot->createSceneManager(ST_GENERIC, "GameSceneMgr");
     m_pSceneMgr->setAmbientLight(Ogre::ColourValue(0.7f, 0.7f, 0.7f));
  
@@ -93,60 +147,16 @@ void HostGameState::exit()
 {
     OgreFramework::getSingletonPtr()->m_pLog->logMessage("Leaving HostGameState...");
  
-    /*
     m_pSceneMgr->destroyCamera(m_pCamera);
-    if(m_pSceneMgr){
+    //m_pSceneMgr->destroyQuery(m_pRSQ);
+    if(m_pSceneMgr)
         OgreFramework::getSingletonPtr()->m_pRoot->destroySceneManager(m_pSceneMgr);
-    }
-    */
     
     sound.close();
-    //m_pSceneMgr->destroyCamera(m_pCamera);
     
-    /*
-    cout << "0" << endl;
-    cout << "m_objects.size() = " << m_objects.size() << endl;
-    for(int i=0;i<m_objects.size();i++){
-        cout << "01" << endl;
-        m_objects[i].rootNode->removeAndDestroyAllChildren(); cout << "1" << endl;
-        m_objects[i].sceneMgr->destroySceneNode(m_objects[i].rootNode); cout << "2" << endl;
-    }
-    cout << "4" << endl;
-    
-    
-    cout << "0" << endl;
-    m_pSceneMgr->getRootSceneNode()->removeAndDestroyAllChildren();cout << "1" << endl;
-    //m_pSceneMgr->destroySceneNode(m_pSceneMgr->getRootSceneNode());cout << "2" << endl;
-    if(mRenderer){
-        mRenderer->destroySystem(); cout << "22" << endl;
-    }
-    OgreFramework::getSingletonPtr()->m_pRoot->destroySceneManager(m_pSceneMgr);cout << "3" << endl;
-    
-    //m_pSceneMgr->clearScene();cout << "3" << endl;
-    //m_pSceneMgr->destroyAllCameras();cout << "4" << endl;
-    m_objects.clear();cout << "5" << endl;
-    
-    //OgreFramework::getSingletonPtr()->m_pRoot->destroySceneManager(m_pSceneMgr);cout << "6" << endl;
-    */
-    Node::ChildNodeIterator it = m_pSceneMgr->getRootSceneNode()->getChildIterator();
-    while( it.hasMoreElements() ){
-        cout << "name: " << it.getNext()->getName() << endl;
-        m_pSceneMgr->destroyEntity(it.getNext()->getName());
-        //m_pSceneMgr->destroySceneNode(it.getNext()->getName());
-    }
-    m_pSceneMgr->getRootSceneNode()->removeAndDestroyAllChildren();cout << "1" << endl;
-    //m_pSceneMgr->destroySceneNode(m_pSceneMgr->getRootSceneNode());cout << "2" << endl;
-    m_pSceneMgr->clearScene();cout << "3" << endl;
-    m_pSceneMgr->destroyAllCameras();cout << "4" << endl;
-    OgreFramework::getSingletonPtr()->m_pRoot->destroySceneManager(m_pSceneMgr);cout << "5" << endl;
-    /*
-    if(mRenderer){
-        mRenderer->destroySystem(); cout << "22" << endl;
-    }
-    */
-    //CEGUI::System::getSingleton().destroy();cout << "6" << endl;
-    mRenderer->destroySystem();cout << "7" << endl;
-    //delete mRenderer;
+    SDLNet_TCP_Close(csd);
+    SDLNet_TCP_Close(sd);
+    SDLNet_Quit(); 
 }
 
 void HostGameState::createScene()
@@ -160,6 +170,7 @@ void HostGameState::createScene()
     GameObject tempObject;
     
     // Create game objects
+    // Ball
     tempObject = GameObject(m_pSceneMgr, &simulator, btVector3(0,0,0), "sphere.mesh", "Examples/PlasmaShit"); 
     tempObject.rootNode->attachObject(m_pSceneMgr->createParticleSystem("Smoke", "Examples/Smoke"));
     tempObject.scale(0.1, 0.1, 0.1);
@@ -168,11 +179,19 @@ void HostGameState::createScene()
     tempObject.addToSimulator();
     m_objects.push_back(tempObject);
     
-    tempObject = GameObject(m_pSceneMgr, &simulator, btVector3(0,0,210), "cube.mesh", "MyMaterials/wood1");
-    
+    // Host's paddle
+    tempObject = GameObject(m_pSceneMgr, &simulator, btVector3(0,0,200), "cube.mesh", "MyMaterials/wood1");
     tempObject.scale(0.2, 0.2, 0.01);
     tempObject.mass = 1.0f;
     tempObject.shape = new btStaticPlaneShape(btVector3(0,0,-1), 0);
+    tempObject.addToSimulator();
+    m_objects.push_back(tempObject);
+    
+    // Client's paddle
+    tempObject = GameObject(m_pSceneMgr, &simulator, btVector3(0,0,-200), "cube.mesh", "MyMaterials/wood1");
+    tempObject.scale(0.2, 0.2, 0.01);
+    tempObject.mass = 1.0f;
+    tempObject.shape = new btStaticPlaneShape(btVector3(0,0,1), 0);
     tempObject.addToSimulator();
     m_objects.push_back(tempObject);
     
@@ -220,7 +239,7 @@ void HostGameState::createScene()
     
     // negative z plane
     Ogre::MeshManager::getSingleton().createPlane("plane_z_neg_in", Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME, plane_z_neg_in, 200.0f, 200.0f, 1, 1, true, 1, 1.0f, 1.0f, Ogre::Vector3::UNIT_Y);
-    tempObject = GameObject(m_pSceneMgr, &simulator, btVector3(0,0,-200), "plane_z_neg_in", "MyMaterials/buddha1");
+    tempObject = GameObject(m_pSceneMgr, &simulator, btVector3(0,0,-200), "plane_z_neg_in", "Examples/buddha1");
     tempObject.shape = new btStaticPlaneShape(btVector3(0,0,1), 0);
     tempObject.addToSimulator();
     m_objects.push_back(tempObject);
@@ -282,7 +301,7 @@ void HostGameState::createScene()
     float r2 = (rand() % 100);
     float r3 = (rand() % 100);
     
-    GameObject* myBall = &m_objects[0];
+    myBall = &m_objects[0];
     myBall->tr = btTransform(btMatrix3x3(1,0,0,0,1,0,0,0,1),btVector3(r1, r2, -500));
     myBall->updateTransform();
     
@@ -454,30 +473,6 @@ void HostGameState::onLeftPressed(const OIS::MouseEvent &evt)
         m_pCurrentObject->showBoundingBox(false);
         m_pCurrentEntity->getSubEntity(1)->setMaterial(m_pOgreHeadMat);
     }
-    
-    /*
-    Ogre::Ray mouseRay = m_pCamera->getCameraToViewportRay(OgreFramework::getSingletonPtr()->m_pMouse->getMouseState().X.abs / float(evt.state.width),
-        OgreFramework::getSingletonPtr()->m_pMouse->getMouseState().Y.abs / float(evt.state.height));
-    m_pRSQ->setRay(mouseRay);
-    m_pRSQ->setSortByDistance(true);
- 
-    Ogre::RaySceneQueryResult &result = m_pRSQ->execute();
-    Ogre::RaySceneQueryResult::iterator itr;
-    
-    for(itr = result.begin(); itr != result.end(); itr++)
-    {
-        if(itr->movable)
-        {
-            OgreFramework::getSingletonPtr()->m_pLog->logMessage("MovableName: " + itr->movable->getName());
-            m_pCurrentObject = m_pSceneMgr->getEntity(itr->movable->getName())->getParentSceneNode();
-            OgreFramework::getSingletonPtr()->m_pLog->logMessage("ObjName " + m_pCurrentObject->getName());
-            m_pCurrentObject->showBoundingBox(true);
-            m_pCurrentEntity = m_pSceneMgr->getEntity(itr->movable->getName());
-            m_pCurrentEntity->getSubEntity(1)->setMaterial(m_pOgreHeadMatHigh);
-            break;
-        }
-    }
-    */
 }
 
 void HostGameState::moveCamera()
@@ -526,13 +521,21 @@ void HostGameState::update(double timeSinceLastFrame)
 {
     m_FrameEvent.timeSinceLastFrame = timeSinceLastFrame / 1000.0;
     OgreFramework::getSingletonPtr()->m_pTrayMgr->frameRenderingQueued(m_FrameEvent);
- 
+    
+    len = sizeof(btVector3);
+    
+    if (SDLNet_TCP_Recv(csd, buffer, len) > 0) // you can receive anything here
+    {
+        std::memcpy(clientPaddle->position, buffer, sizeof(btVector3));
+    }
+    
+    
     if(m_bQuit == true)
     {
         popAppState();
         return;
     }
- 
+    /*
     if(!OgreFramework::getSingletonPtr()->m_pTrayMgr->isDialogVisible())
     {
         if(m_pDetailsPanel->isVisible())
@@ -550,7 +553,8 @@ void HostGameState::update(double timeSinceLastFrame)
                 m_pDetailsPanel->setParamValue(7, "Un-Buffered Input");
         }
     }
- 
+    */
+    
     m_MoveScale = m_MoveSpeed   * timeSinceLastFrame;
     m_RotScale  = m_RotateSpeed * timeSinceLastFrame;
  
@@ -560,14 +564,15 @@ void HostGameState::update(double timeSinceLastFrame)
     moveCamera();
     
     // stuff from Assignment 2
-    GameObject* myBall = &m_objects[0];
-    GameObject* hostPaddle = &m_objects[1];
-    GameObject* myWall_x_pos = &m_objects[2];
-    GameObject* myWall_x_neg = &m_objects[3];
-    GameObject* myWall_y_pos = &m_objects[4];
-    GameObject* myWall_y_neg = &m_objects[5];
-    GameObject* myWall_z_pos = &m_objects[6];
-    GameObject* myWall_z_neg = &m_objects[7];
+    myBall = &m_objects[0];
+    hostPaddle = &m_objects[1];
+    clientPaddle = &m_objects[2];
+    GameObject* myWall_x_pos = &m_objects[3];
+    GameObject* myWall_x_neg = &m_objects[4];
+    GameObject* myWall_y_pos = &m_objects[5];
+    GameObject* myWall_y_neg = &m_objects[6];
+    GameObject* myWall_z_pos = &m_objects[7];
+    GameObject* myWall_z_neg = &m_objects[8];
     
     // Apply gravity
     myBall->direction += btVector3(0, -(0.00001*GRAVITY), 0);
@@ -582,7 +587,7 @@ void HostGameState::update(double timeSinceLastFrame)
     // Move the paddle
     hostPaddle->direction = btVector3(deltaX, deltaY, 0);
     hostPaddle->speed = sqrt(deltaX*deltaX + deltaY*deltaY);
-    hostPaddle->setPosition(btVector3(xi, yi, 210));
+    hostPaddle->setPosition(btVector3(xi, yi, 200));
     //hostPaddle->move(evt);
     
     if (hostPaddle->position.x() > 90){
@@ -722,8 +727,21 @@ void HostGameState::update(double timeSinceLastFrame)
         return false;
     */
     
+    
+    // Send message
+    
+    len = sizeof(btVector3);
+    
+    buffer = &(hostPaddle->position);
+    
+    if (SDLNet_TCP_Send(sd, (void *)buffer, len) < len) // you can send anything here
+    {
+	    fprintf(stderr, "SDLNet_TCP_Send: %s\n", SDLNet_GetError());
+	    //exit(EXIT_FAILURE);
+    }
+    
+    
     //Need to capture/update each device
-    OgreFramework::getSingletonPtr()->m_pKeyboard->capture();
     OgreFramework::getSingletonPtr()->m_pKeyboard->capture();
 }
 
@@ -731,7 +749,7 @@ void HostGameState::buildGUI()
 {
     OgreFramework::getSingletonPtr()->m_pTrayMgr->showFrameStats(OgreBites::TL_BOTTOMLEFT);
     OgreFramework::getSingletonPtr()->m_pTrayMgr->showLogo(OgreBites::TL_BOTTOMRIGHT);
-    OgreFramework::getSingletonPtr()->m_pTrayMgr->createLabel(OgreBites::TL_TOP, "GameLbl", "Singleplayer Game mode", 250);
+    OgreFramework::getSingletonPtr()->m_pTrayMgr->createLabel(OgreBites::TL_TOP, "GameLbl", "Host Game mode", 250);
     //OgreFramework::getSingletonPtr()->m_pTrayMgr->showCursor();
  
     Ogre::StringVector items;
@@ -746,13 +764,6 @@ void HostGameState::buildGUI()
     
     m_pDetailsPanel = OgreFramework::getSingletonPtr()->m_pTrayMgr->createParamsPanel(OgreBites::TL_TOPLEFT, "DetailsPanel", 200, items);
     m_pDetailsPanel->show();
-    
-    /*
-    Ogre::String infoText = "[TAB] - Switch input mode\n\n[W] - Forward / Mode up\n[S] - Backwards/ Mode down\n[A] - Left\n";
-    infoText.append("[D] - Right\n\nPress [SHIFT] to move faster\n\n[O] - Toggle FPS / logo\n");
-    infoText.append("[Print] - Take screenshot\n\n[ESC] - Exit");
-    OgreFramework::getSingletonPtr()->m_pTrayMgr->createTextBox(OgreBites::TL_RIGHT, "InfoPanel", infoText, 300, 220);
-    */
     
     Ogre::StringVector chatModes;
     chatModes.push_back("Solid mode");

@@ -1117,8 +1117,9 @@ OgreApp-DemoApp.o: DemoApp.cpp DemoApp.hpp AdvancedOgreFramework.hpp \
  /usr/include/SDL/SDL_joystick.h /usr/include/SDL/SDL_quit.h \
  /usr/include/SDL/SDL_loadso.h /usr/include/SDL/SDL_timer.h \
  /usr/include/SDL/SDL_version.h /usr/include/SDL/SDL_audio.h \
- MultiGameState.hpp HostGameState.hpp ClientGameState.hpp JoinState.hpp \
- EditString.h /usr/include/OIS/OIS.h /usr/include/OIS/OISMouse.h \
+ MultiGameState.hpp HostGameState.hpp /usr/include/SDL/SDL_net.h \
+ /usr/include/SDL/SDL.h ClientGameState.hpp JoinState.hpp EditString.h \
+ /usr/include/OIS/OIS.h /usr/include/OIS/OISMouse.h \
  /usr/include/OIS/OISKeyboard.h /usr/include/OIS/OISJoyStick.h \
  /usr/include/OIS/OISMultiTouch.h /usr/include/OIS/OISInputManager.h \
  /usr/include/OIS/OISFactoryCreator.h /usr/include/OIS/OISException.h \
@@ -3700,6 +3701,10 @@ SoundManager.h:
 MultiGameState.hpp:
 
 HostGameState.hpp:
+
+/usr/include/SDL/SDL_net.h:
+
+/usr/include/SDL/SDL.h:
 
 ClientGameState.hpp:
 

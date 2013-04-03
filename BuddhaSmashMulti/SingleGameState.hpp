@@ -77,8 +77,8 @@ private:
     int deltaY;
     int xi;
     int yi;
-    GameObject myPaddle;
-    GameObject myBall;
+    GameObject* myPaddle;
+    GameObject* myBall;
     SoundManager sound;
     bool ready;
     Simulator simulator;
