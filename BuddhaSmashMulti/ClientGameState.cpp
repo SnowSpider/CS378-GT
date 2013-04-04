@@ -54,7 +54,6 @@ void ClientGameState::enter()
 {
     OgreFramework::getSingletonPtr()->m_pLog->logMessage("Entering ClientGameState...");
     
-    
     // Initialize SDL & SDL_net
     if (SDL_Init(0) == -1){
         cout << "SDL_Init: " << SDL_GetError() << "\n";
@@ -65,14 +64,24 @@ void ClientGameState::enter()
         cout << "SDLNet_Init: " << SDLNet_GetError() << "\n";
         //exit(2);
     }
-
+    
+    ifstream myfile ("targetAddress.txt");
+    if (myfile.is_open()) {
+        while ( myfile.good() ) {
+            getline (myfile,targetAddress);
+            cout << targetAddress << endl;
+        }
+        myfile.close();
+    }
+    else cout << "Unable to open file"; 
+    
+    
     // Get the server name
-    cout << "Server Name: ";
-    getline(cin, servername);
+    cout << "Server Name: " + targetAddress << endl;
     cout << "Port: " << PORT << "\n";
 
     // Try to resolve the host
-    if (SDLNet_ResolveHost(&ipaddress, servername.c_str(), PORT) == -1){
+    if (SDLNet_ResolveHost(&ipaddress, targetAddress.c_str(), PORT) == -1){
         cout << "SDLNet_ResolveHost: " << SDLNet_GetError() << "\nContinuing...\n";
     }
 
@@ -567,8 +576,9 @@ void ClientGameState::update(double timeSinceLastFrame)
     */
     
     // Get user input
-    cout << "Send: ";
-    getline(cin, msg);
+    //cout << "Send: ";
+    //getline(cin, msg);
+    msg = "Daniel sends his regards!";
 
     // Calculate the length and send it
     len = (int)(strlen(msg.c_str()));

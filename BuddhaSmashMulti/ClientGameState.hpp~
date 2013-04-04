@@ -28,6 +28,9 @@ using namespace std;
 
 #define GRAVITY 9.80665
 
+#define PORT 1234       // The port we are connecting to
+#define BUFFER 512      // Size of message buffer
+
 //|||||||||||||||||||||||||||||||||||||||||||||||
  
 class ClientGameState : public AppState
@@ -116,6 +119,8 @@ private:
     int result;
     unsigned short len;
     string msg;
+    
+    btVector3 pos_opponent;
     
 };
  

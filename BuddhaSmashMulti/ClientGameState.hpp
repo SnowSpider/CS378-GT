@@ -108,8 +108,10 @@ private:
     TCPsocket sd;		// Socket descriptor 
     int quit, len;
     btVector3* buffer; // client paddle position
-    string targetAddress;
+    
     */
+    
+    string targetAddress;
     
     // Variables
     const char *host;       // Where we store the host name
@@ -119,6 +121,8 @@ private:
     int result;
     unsigned short len;
     string msg;
+    
+    btVector3 pos_opponent;
     
 };
  

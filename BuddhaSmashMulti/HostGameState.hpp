@@ -126,6 +126,7 @@ private:
     unsigned short len;
     string msg;
 
+    btVector3 pos_opponent;
     
 };
  

@@ -15,10 +15,6 @@
  
 using namespace Ogre;
 
-#define PORT 1234       // The port we are connecting to
-#define BUFFER 512      // Size of message buffer
-#define MAXSOCKET 10    // Max number of clients to connect
-
 //|||||||||||||||||||||||||||||||||||||||||||||||
  
 HostGameState::HostGameState()
