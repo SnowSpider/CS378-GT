@@ -112,6 +112,9 @@ void HostGameState::enter()
     
     cout << "Awaiting clients...\n";
     
+    // Check for activity on the socket set
+    SDLNet_CheckSockets(socketset, 0);
+    
     while(true){
         if (SDLNet_SocketReady(tcpsock)){
             // Accept the connection, add it to our array and the socket set
@@ -603,9 +606,6 @@ void HostGameState::update(double timeSinceLastFrame)
         cout << "not received 2" << endl;
     }
     */
-    
-    // Check for activity on the socket set
-    SDLNet_CheckSockets(socketset, 0);
 
     // If there is activity
     /*
@@ -635,10 +635,11 @@ void HostGameState::update(double timeSinceLastFrame)
         }
     }
     */
+    len = (int)(sizeof(btVector3));
     for (i = 0; i < MAXSOCKET; i++){
         if (SDLNet_SocketReady(client[i])){
             // There is an incoming message
-            result = SDLNet_TCP_Recv(client[i], const_cast<btVector3*>(msg), BUFFER);
+            result = SDLNet_TCP_Recv(client[i], msg, min(BUFFER, (int)len));
             if (result < 0){
                 cout << "Client " << i << " disconnected.\n";
                 client[i] = NULL;

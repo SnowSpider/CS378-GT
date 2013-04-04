@@ -89,7 +89,6 @@ void ClientGameState::enter()
     if ((host = SDLNet_ResolveIP(&ipaddress)) == NULL){
         cout << "SDLNet_ResolveIP: " << SDLNet_GetError() << "\nContinuing...\n";
     }
-
     else{
         cout << "Connected to host: " << host << "\n";
     }
@@ -749,7 +748,7 @@ void ClientGameState::update(double timeSinceLastFrame)
     //cout << "Send: ";
     //getline(cin, msg);
     msg = &(clientPaddle->position);
-
+    
     // Calculate the length and send it
     len = (int)(sizeof(btVector3));
     result = SDLNet_TCP_Send(tcpsock, msg, min(BUFFER, (int)len));

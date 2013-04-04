@@ -635,16 +635,17 @@ void HostGameState::update(double timeSinceLastFrame)
         }
     }
     */
+    len = (int)(sizeof(btVector3));
     for (i = 0; i < MAXSOCKET; i++){
         if (SDLNet_SocketReady(client[i])){
             // There is an incoming message
-            result = SDLNet_TCP_Recv(client[i], const_cast<btVector3*>(msg), BUFFER);
+            result = SDLNet_TCP_Recv(client[i], msg, min(BUFFER, (int)len));
             if (result < 0){
                 cout << "Client " << i << " disconnected.\n";
                 client[i] = NULL;
             }
             else{
-                pos_opponent = btVector3(msg);
+                pos_opponent = btVector3(*msg);
                 clientPaddle->setPosition(pos_opponent);
             }
         }
