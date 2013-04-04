@@ -91,6 +91,9 @@ void ClientGameState::enter()
 	    fprintf(stderr, "SDLNet_ResolveHost: %s\n", SDLNet_GetError());
 	    //exit(EXIT_FAILURE);
     }
+    else{
+	    cout << targetAddress << endl;    	
+    }
  
     // Open a connection with the IP provided (listen on the host's port) 
     if (!(sd = SDLNet_TCP_Open(&ip)))
@@ -590,8 +593,9 @@ void ClientGameState::update(double timeSinceLastFrame)
     
     len = sizeof(btVector3);
     
-    if (SDLNet_TCP_Recv(sd, buffer, len) > 0) // you can receive anything here
+    if (SDLNet_SocketReady(sd) > 0) // you can receive anything here
     {
+	SDLNet_TCP_Recv(sd, buffer, len);
         std::memcpy(hostPaddle->position, buffer, sizeof(btVector3));
     }
     

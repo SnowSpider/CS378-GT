@@ -573,8 +573,9 @@ void HostGameState::update(double timeSinceLastFrame)
     
     len = sizeof(btVector3);
     
-    if (SDLNet_TCP_Recv(csd, buffer, len) > 0) // you can receive anything here
+    if (SDLNet_SocketReady(csd)) // you can receive anything here
     {
+	SDLNet_TCP_Recv(csd, buffer, len);
         std::memcpy(clientPaddle->position, buffer, sizeof(btVector3));
     }
     
@@ -738,7 +739,7 @@ void HostGameState::update(double timeSinceLastFrame)
     
     buffer = &(hostPaddle->position);
     
-    if (SDLNet_TCP_Send(sd, (void *)buffer, len) < len) // you can send anything here
+    if (SDLNet_TCP_Send(csd, (void *)buffer, len) < len) // you can send anything here
     {
 	    fprintf(stderr, "SDLNet_TCP_Send: %s\n", SDLNet_GetError());
 	    //exit(EXIT_FAILURE);
