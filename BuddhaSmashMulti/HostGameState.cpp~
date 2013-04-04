@@ -111,8 +111,11 @@ void HostGameState::enter()
     SDLNet_TCP_AddSocket(socketset, tcpsock);
     
     cout << "Awaiting clients...\n";
-    
+     
     while(true){
+        // Check for activity on the socket set
+        SDLNet_CheckSockets(socketset, 0);
+        
         if (SDLNet_SocketReady(tcpsock)){
             // Accept the connection, add it to our array and the socket set
             cout << "Client connected.\n";
@@ -603,9 +606,6 @@ void HostGameState::update(double timeSinceLastFrame)
         cout << "not received 2" << endl;
     }
     */
-    
-    // Check for activity on the socket set
-    SDLNet_CheckSockets(socketset, 0);
 
     // If there is activity
     /*
@@ -647,6 +647,8 @@ void HostGameState::update(double timeSinceLastFrame)
             else{
                 pos_opponent = btVector3(*msg);
                 clientPaddle->setPosition(pos_opponent);
+                cout << "receiving shit" << endl;
+                cout << "pos_opponent = (" << pos_opponent.x() << "," << pos_opponent.y() << "," << pos_opponent.z << ")" << endl;
             }
         }
     }

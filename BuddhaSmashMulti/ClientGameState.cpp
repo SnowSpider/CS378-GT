@@ -752,6 +752,12 @@ void ClientGameState::update(double timeSinceLastFrame)
     // Calculate the length and send it
     len = (int)(sizeof(btVector3));
     result = SDLNet_TCP_Send(tcpsock, msg, min(BUFFER, (int)len));
+    if (result == 0){
+        cout << "connection closed by peer" << endl; 
+    }
+    else if (result == -1){
+        cout << "error bitch!" << endl; 
+    }
     
     
     //Need to capture/update each device
