@@ -112,6 +112,17 @@ void HostGameState::enter()
     
     cout << "Awaiting clients...\n";
     
+    while(true){
+        if (SDLNet_SocketReady(tcpsock)){
+            // Accept the connection, add it to our array and the socket set
+            cout << "Client connected.\n";
+            new_tcpsock = SDLNet_TCP_Accept(tcpsock);
+            client[j] = new_tcpsock;
+            SDLNet_TCP_AddSocket(socketset, client[j]);
+            j++;
+            break;
+        }
+    }
 
     
     m_pSceneMgr = OgreFramework::getSingletonPtr()->m_pRoot->createSceneManager(ST_GENERIC, "GameSceneMgr");
@@ -597,6 +608,7 @@ void HostGameState::update(double timeSinceLastFrame)
     SDLNet_CheckSockets(socketset, 0);
 
     // If there is activity
+    /*
     if (SDLNet_SocketReady(tcpsock)){
         // Accept the connection, add it to our array and the socket set
         cout << "Client connected.\n";
@@ -605,8 +617,10 @@ void HostGameState::update(double timeSinceLastFrame)
         SDLNet_TCP_AddSocket(socketset, client[j]);
         j++;
     }
-
+    */    
+    
     // Check client sockets for activity
+    /*
     for (i = 0; i < MAXSOCKET; i++){
         if (SDLNet_SocketReady(client[i])){
             // There is an incoming message
@@ -620,7 +634,21 @@ void HostGameState::update(double timeSinceLastFrame)
             }
         }
     }
-
+    */
+    for (i = 0; i < MAXSOCKET; i++){
+        if (SDLNet_SocketReady(client[i])){
+            // There is an incoming message
+            result = SDLNet_TCP_Recv(client[i], const_cast<btVector3*>(msg), BUFFER);
+            if (result < 0){
+                cout << "Client " << i << " disconnected.\n";
+                client[i] = NULL;
+            }
+            else{
+                pos_opponent = btVector3(*msg);
+                clientPaddle->setPosition(pos_opponent);
+            }
+        }
+    }
     
     // Apply gravity
     myBall->direction += btVector3(0, -(0.00001*GRAVITY), 0);

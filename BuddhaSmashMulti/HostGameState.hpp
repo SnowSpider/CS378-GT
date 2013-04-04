@@ -124,7 +124,7 @@ private:
     SDLNet_SocketSet socketset;      // A set of sockets
     int i, j, result;
     unsigned short len;
-    string msg;
+    btVector3* msg;
 
     btVector3 pos_opponent;
     

@@ -575,18 +575,6 @@ void ClientGameState::update(double timeSinceLastFrame)
     }
     */
     
-    // Get user input
-    //cout << "Send: ";
-    //getline(cin, msg);
-    msg = "Daniel sends his regards!";
-
-    // Calculate the length and send it
-    len = (int)(strlen(msg.c_str()));
-    result = SDLNet_TCP_Send(tcpsock, msg.c_str(), min(BUFFER, (int)len));
-    cout << "Sent: (" << len << ") " << msg << "\n";
-
-    
-    
     // Apply gravity
     myBall->direction += btVector3(0, -(0.00001*GRAVITY), 0);
     myBall->direction.normalize();
@@ -757,7 +745,14 @@ void ClientGameState::update(double timeSinceLastFrame)
     }
     */
     
-    
+    // Get user input
+    //cout << "Send: ";
+    //getline(cin, msg);
+    msg = &(clientPaddle->position);
+
+    // Calculate the length and send it
+    len = (int)(sizeof(btVector3));
+    result = SDLNet_TCP_Send(tcpsock, msg, min(BUFFER, (int)len));
     
     
     //Need to capture/update each device
