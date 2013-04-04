@@ -100,9 +100,9 @@ void HostGameState::enter()
 		        printf("Host connected: %x %d\n", SDLNet_Read32(&remoteIP->host), SDLNet_Read16(&remoteIP->port));
 		        break;
 	        }
-		        
-	        else
-		        fprintf(stderr, "SDLNet_TCP_GetPeerAddress: %s\n", SDLNet_GetError());
+	        else{
+                fprintf(stderr, "SDLNet_TCP_GetPeerAddress: %s\n", SDLNet_GetError());
+            }
         }
     }
         

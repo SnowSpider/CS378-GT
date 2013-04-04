@@ -544,13 +544,6 @@ void ClientGameState::update(double timeSinceLastFrame)
     m_FrameEvent.timeSinceLastFrame = timeSinceLastFrame / 1000.0;
     OgreFramework::getSingletonPtr()->m_pTrayMgr->frameRenderingQueued(m_FrameEvent);
     
-    len = sizeof(btVector3);
-    
-    if (SDLNet_TCP_Recv(sd, buffer, len) > 0) // you can receive anything here
-    {
-        std::memcpy(hostPaddle->position, buffer, sizeof(btVector3));
-    }
-    
     if(m_bQuit == true)
     {
         popAppState();
@@ -594,6 +587,13 @@ void ClientGameState::update(double timeSinceLastFrame)
     GameObject* myWall_y_neg = &m_objects[6];
     GameObject* myWall_z_pos = &m_objects[7];
     GameObject* myWall_z_neg = &m_objects[8];
+    
+    len = sizeof(btVector3);
+    
+    if (SDLNet_TCP_Recv(sd, buffer, len) > 0) // you can receive anything here
+    {
+        std::memcpy(hostPaddle->position, buffer, sizeof(btVector3));
+    }
     
     // Apply gravity
     myBall->direction += btVector3(0, -(0.00001*GRAVITY), 0);

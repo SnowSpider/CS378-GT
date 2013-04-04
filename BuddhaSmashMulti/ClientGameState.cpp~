@@ -546,7 +546,7 @@ void ClientGameState::update(double timeSinceLastFrame)
     
     len = sizeof(btVector3);
     
-    if (SDLNet_TCP_Recv(csd, buffer, len) > 0) // you can receive anything here
+    if (SDLNet_TCP_Recv(sd, buffer, len) > 0) // you can receive anything here
     {
         std::memcpy(hostPaddle->position, buffer, sizeof(btVector3));
     }
