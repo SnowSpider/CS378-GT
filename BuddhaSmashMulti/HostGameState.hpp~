@@ -103,11 +103,25 @@ private:
     bool startUp;
     bool lost;
     
+    /*
     TCPsocket sd, csd; // Socket descriptor, Client socket descriptor 
     IPaddress ip, *remoteIP;
     int quit, quit2, len;
-    btVector3 buffer; // host paddle position
+    btVector3* buffer; // host paddle position
     string targetAddress;
+    */
+    
+    // Variables
+    const char *host;       // Where we store the host name
+    IPaddress ipaddress;    // The IP we will connect to
+    TCPsocket tcpsock;      // The server socket
+    TCPsocket new_tcpsock;  // A temp socket
+    TCPsocket client[MAXSOCKET];    // An array of sockets for the clients
+    SDLNet_SocketSet socketset;      // A set of sockets
+    int i, j, result;
+    unsigned short len;
+    string msg;
+
     
 };
  

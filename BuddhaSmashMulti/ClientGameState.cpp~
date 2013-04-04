@@ -14,6 +14,9 @@
 //|||||||||||||||||||||||||||||||||||||||||||||||
  
 using namespace Ogre;
+
+#define PORT 1234       // The port we are connecting to
+#define BUFFER 512      // Size of message buffer
  
 //|||||||||||||||||||||||||||||||||||||||||||||||
  
@@ -43,6 +46,9 @@ ClientGameState::ClientGameState()
     soundIs = true;
     startUp = true;
     lost = false;
+    
+    result = 0;
+    len = 0;
 }
  
 //|||||||||||||||||||||||||||||||||||||||||||||||
@@ -51,84 +57,44 @@ void ClientGameState::enter()
 {
     OgreFramework::getSingletonPtr()->m_pLog->logMessage("Entering ClientGameState...");
     
-    // Connect : begin
     
-    
-    // targetAddress.getText()
-    // connect to the targetAddress (string)
-    SDL_Init(SDL_INIT_EVERYTHING);
-    /*
-    IPaddress ip;		// Server address 
-    TCPsocket sd;		// Socket descriptor 
-    int quit, len;
-    char buffer[512];    
-    string targetAddress;
-    */
-    
-    ifstream myfile ("targetAddress.txt");
-    if (myfile.is_open()) {
-        while ( myfile.good() ) {
-            getline (myfile,targetAddress);
-            cout << targetAddress << endl;
-        }
-        myfile.close();
+    // Initialize SDL & SDL_net
+    if (SDL_Init(0) == -1){
+        cout << "SDL_Init: " << SDL_GetError() << "\n";
+        //exit(1);
     }
-    else cout << "Unable to open file"; 
 
-    
-    // Simple parameter checking 
- 
-    if (SDLNet_Init() < 0)
-    {
-	    fprintf(stderr, "SDLNet_Init: %s\n", SDLNet_GetError());
-	    //exit(EXIT_FAILURE);
+    if (SDLNet_Init() == -1){
+        cout << "SDLNet_Init: " << SDLNet_GetError() << "\n";
+        //exit(2);
     }
- 
-    // Resolve the host we are connecting to 
-    //if (SDLNet_ResolveHost(&ip, targetAddress.getText().c_str(), 1234) < 0)
-    if (SDLNet_ResolveHost(&ip, targetAddress.c_str(), 1234) < 0)
-    {
-	    fprintf(stderr, "SDLNet_ResolveHost: %s\n", SDLNet_GetError());
-	    //exit(EXIT_FAILURE);
+
+    // Get the server name
+    cout << "Server Name: ";
+    getline(cin, servername);
+    cout << "Port: " << PORT << "\n";
+
+    // Try to resolve the host
+    if (SDLNet_ResolveHost(&ipaddress, servername.c_str(), PORT) == -1){
+        cout << "SDLNet_ResolveHost: " << SDLNet_GetError() << "\nContinuing...\n";
     }
+
+    // Try to resolve the IP
+    if ((host = SDLNet_ResolveIP(&ipaddress)) == NULL){
+        cout << "SDLNet_ResolveIP: " << SDLNet_GetError() << "\nContinuing...\n";
+    }
+
     else{
-	    cout << targetAddress << endl;    	
+        cout << "Connected to host: " << host << "\n";
     }
- 
-    // Open a connection with the IP provided (listen on the host's port) 
-    if (!(sd = SDLNet_TCP_Open(&ip)))
-    {
-	    fprintf(stderr, "SDLNet_TCP_Open: %s\n", SDLNet_GetError());
-	    //exit(EXIT_FAILURE);
+
+    // Try to open the socket
+    tcpsock = SDLNet_TCP_Open(&ipaddress);
+    if (!tcpsock){
+        cout << "SDLNet_TCP_Open: " << SDLNet_GetError() << "\n";
+        //exit(3);
     }
- 
-    // Send messages
-    /*
-    quit = 0;
-    while (!quit)
-    {
-	    printf("Write something:\n>");
-	    scanf("%s", buffer);
- 
-	    len = strlen(buffer) + 1;
-	    if (SDLNet_TCP_Send(sd, (void *)buffer, len) < len) // you can send anything here
-	    {
-		    fprintf(stderr, "SDLNet_TCP_Send: %s\n", SDLNet_GetError());
-		    //exit(EXIT_FAILURE);
-	    }
- 
-	    if(strcmp(buffer, "exit") == 0)
-		    quit = 1;
-	    if(strcmp(buffer, "quit") == 0)
-		    quit = 1;
-    }
-    */
-    /*
-    SDLNet_TCP_Close(sd);
-    SDLNet_Quit();
-    */
-    // Connect : end
-    
+
     m_pSceneMgr = OgreFramework::getSingletonPtr()->m_pRoot->createSceneManager(ST_GENERIC, "GameSceneMgr");
     m_pSceneMgr->setAmbientLight(Ogre::ColourValue(0.7f, 0.7f, 0.7f));
  
@@ -178,8 +144,10 @@ void ClientGameState::exit()
     
     sound.close();
     
-    SDLNet_TCP_Close(sd);
+    //SDLNet_TCP_Close(sd);
     SDLNet_Quit();
+    SDL_Quit();
+
 }
 
 void ClientGameState::createScene()
@@ -591,12 +559,26 @@ void ClientGameState::update(double timeSinceLastFrame)
     GameObject* myWall_z_pos = &m_objects[7];
     GameObject* myWall_z_neg = &m_objects[8];
     
+    /*
     len = sizeof(btVector3);
     
-    if (SDLNet_TCP_Recv(sd, buffer, len) > 0) // you can receive anything here
+    if (SDLNet_SocketReady(sd) > 0) // you can receive anything here
     {
+	SDLNet_TCP_Recv(sd, buffer, len);
         std::memcpy(hostPaddle->position, buffer, sizeof(btVector3));
     }
+    */
+    
+    // Get user input
+    cout << "Send: ";
+    getline(cin, msg);
+
+    // Calculate the length and send it
+    len = (int)(strlen(msg.c_str()));
+    result = SDLNet_TCP_Send(tcpsock, msg.c_str(), min(BUFFER, (int)len));
+    cout << "Sent: (" << len << ") " << msg << "\n";
+
+    
     
     // Apply gravity
     myBall->direction += btVector3(0, -(0.00001*GRAVITY), 0);
@@ -756,17 +738,17 @@ void ClientGameState::update(double timeSinceLastFrame)
     */
     
     // Send message
-    
+    /*
     len = sizeof(btVector3);
     
     buffer = &(clientPaddle->position);
     
-    /*if (SDLNet_TCP_Send(sd, (void *)buffer, len) < len) // you can send anything here
+    if (SDLNet_TCP_Send(sd, (void *)buffer, len) < len) // you can send anything here
     {
 	    fprintf(stderr, "SDLNet_TCP_Send: %s\n", SDLNet_GetError());
 	    //exit(EXIT_FAILURE);
-    }*/
-
+    }
+    */
     
     
     

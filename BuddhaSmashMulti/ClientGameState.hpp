@@ -28,6 +28,9 @@ using namespace std;
 
 #define GRAVITY 9.80665
 
+#define PORT 1234       // The port we are connecting to
+#define BUFFER 512      // Size of message buffer
+
 //|||||||||||||||||||||||||||||||||||||||||||||||
  
 class ClientGameState : public AppState
@@ -100,13 +103,22 @@ private:
     bool startUp;
     bool lost;
     
+    /*
     IPaddress ip;		// Server address 
     TCPsocket sd;		// Socket descriptor 
     int quit, len;
     btVector3* buffer; // client paddle position
     string targetAddress;
+    */
     
-    
+    // Variables
+    const char *host;       // Where we store the host name
+    IPaddress ipaddress;    // The IP we will connect to
+    TCPsocket tcpsock;      // The socket to use
+    string servername;      // The server name
+    int result;
+    unsigned short len;
+    string msg;
     
 };
  
