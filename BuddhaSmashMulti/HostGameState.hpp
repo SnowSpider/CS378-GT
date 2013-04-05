@@ -123,8 +123,7 @@ private:
     TCPsocket client[MAXSOCKET];    // An array of sockets for the clients
     SDLNet_SocketSet socketset;      // A set of sockets
     int i, j, result;
-    unsigned short len;
-    btVector3* msg;
+    char data[BUFFER];
 
     btVector3 pos_opponent;
     

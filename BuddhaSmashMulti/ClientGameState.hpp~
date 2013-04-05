@@ -120,7 +120,7 @@ private:
     string servername;      // The server name
     int result;
     unsigned short len;
-    string msg;
+    char data[BUFFER];
     
     btVector3 pos_opponent;
     

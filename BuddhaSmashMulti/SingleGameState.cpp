@@ -151,7 +151,12 @@ void SingleGameState::exit()
 
 void SingleGameState::createScene()
 {
-
+    cout << "sizeof(double) = " << sizeof(double) << endl;
+    cout << "sizeof(int) = " << sizeof(int) << endl;
+    cout << "sizeof(long) = " << sizeof(long) << endl;
+    cout << "sizeof(float) = " << sizeof(float) << endl;
+    cout << "sizeof(char) = " << sizeof(char) << endl;
+    
     //cout << "sizeof(btVector3*) = " << sizeof(btVector3*) << endl;
     
     mRenderer = &CEGUI::OgreRenderer::bootstrapSystem();

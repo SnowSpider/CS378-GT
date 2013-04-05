@@ -47,7 +47,6 @@ HostGameState::HostGameState()
     i = 0;
     j = 0;
     result = 0;
-    len = 0;
     socketset = NULL;
 }
  
@@ -111,21 +110,6 @@ void HostGameState::enter()
     SDLNet_TCP_AddSocket(socketset, tcpsock);
     
     cout << "Awaiting clients...\n";
-     
-    while(true){
-        // Check for activity on the socket set
-        SDLNet_CheckSockets(socketset, 0);
-        
-        if (SDLNet_SocketReady(tcpsock)){
-            // Accept the connection, add it to our array and the socket set
-            cout << "Client connected.\n";
-            new_tcpsock = SDLNet_TCP_Accept(tcpsock);
-            client[j] = new_tcpsock;
-            SDLNet_TCP_AddSocket(socketset, client[j]);
-            j++;
-            break;
-        }
-    }
 
     
     m_pSceneMgr = OgreFramework::getSingletonPtr()->m_pRoot->createSceneManager(ST_GENERIC, "GameSceneMgr");
@@ -635,20 +619,37 @@ void HostGameState::update(double timeSinceLastFrame)
         }
     }
     */
-    len = (int)(sizeof(btVector3));
+    
+    // Check for activity on the socket set
+    SDLNet_CheckSockets(socketset, 0);
+    
+    if (SDLNet_SocketReady(tcpsock)){
+        // Accept the connection, add it to our array and the socket set
+        cout << "Client connected.\n";
+        new_tcpsock = SDLNet_TCP_Accept(tcpsock);
+        client[j] = new_tcpsock;
+        SDLNet_TCP_AddSocket(socketset, client[j]);
+        j++;
+    }
+    
+    // Check client sockets for activity
     for (i = 0; i < MAXSOCKET; i++){
         if (SDLNet_SocketReady(client[i])){
             // There is an incoming message
-            result = SDLNet_TCP_Recv(client[i], msg, min(BUFFER, (int)len));
-            if (result < 0){
+            result = SDLNet_TCP_Recv(client[i], data, BUFFER);
+            if (result == 0){
                 cout << "Client " << i << " disconnected.\n";
                 client[i] = NULL;
             }
+            else if (result == -1){
+                cout << "Error.\n";
+                client[i] = NULL;
+            }
             else{
-                pos_opponent = btVector3(*msg);
-                clientPaddle->setPosition(pos_opponent);
-                cout << "receiving shit" << endl;
-                cout << "pos_opponent = (" << pos_opponent.x() << "," << pos_opponent.y() << "," << pos_opponent.z << ")" << endl;
+                //pos_opponent = btVector3(*msg);
+                //clientPaddle->setPosition(pos_opponent);
+                cout << "Received: " << data << endl;
+                //cout << "pos_opponent = (" << pos_opponent.x() << "," << pos_opponent.y() << "," << pos_opponent.z() << ")" << endl;
             }
         }
     }
@@ -808,20 +809,30 @@ void HostGameState::update(double timeSinceLastFrame)
     
     
     // Send message
-    /*
-    len = sizeof(btVector3);
     
-    buffer = &(hostPaddle->position);
+    strcpy(data, "Hello Client!");
     
-    cout << "sending..." << endl;
-    if (SDLNet_TCP_Send(csd, (void *)buffer, len) < len) // you can send anything here
-    {
-        cout << "not sent" << endl;
-	    fprintf(stderr, "SDLNet_TCP_Send: %s\n", SDLNet_GetError());
-	    //exit(EXIT_FAILURE);
+    // Check client sockets for activity
+    for (i = 0; i < MAXSOCKET; i++){
+        if (SDLNet_SocketReady(client[i])){
+            // There is an incoming message
+            result = SDLNet_TCP_send(client[i], data, BUFFER);
+            if (result == 0){
+                cout << "Client " << i << " disconnected.\n";
+                client[i] = NULL;
+            }
+            else if (result == -1){
+                cout << "Error.\n";
+                client[i] = NULL;
+            }
+            else{
+                //pos_opponent = btVector3(*msg);
+                //clientPaddle->setPosition(pos_opponent);
+                cout << "Sent: " << data << endl;
+                //cout << "pos_opponent = (" << pos_opponent.x() << "," << pos_opponent.y() << "," << pos_opponent.z() << ")" << endl;
+            }
+        }
     }
-    cout << "sent" << endl;
-    */
     
     //Need to capture/update each device
     OgreFramework::getSingletonPtr()->m_pKeyboard->capture();

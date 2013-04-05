@@ -45,7 +45,6 @@ ClientGameState::ClientGameState()
     lost = false;
     
     result = 0;
-    len = 0;
 }
  
 //|||||||||||||||||||||||||||||||||||||||||||||||
@@ -564,15 +563,25 @@ void ClientGameState::update(double timeSinceLastFrame)
     GameObject* myWall_z_pos = &m_objects[7];
     GameObject* myWall_z_neg = &m_objects[8];
     
-    /*
-    len = sizeof(btVector3);
     
     if (SDLNet_SocketReady(sd) > 0) // you can receive anything here
     {
-	SDLNet_TCP_Recv(sd, buffer, len);
-        std::memcpy(hostPaddle->position, buffer, sizeof(btVector3));
+	    result = SDLNet_TCP_Recv(tcpsock, data, BUFFER);
+        if (result == 0){
+            cout << "Host disconnected.\n";
+            tcpsock = NULL;
+        }
+        else if (result == -1){
+            cout << "Error.\n";
+            tcpsock = NULL;
+        }
+        else{
+            //pos_opponent = btVector3(*msg);
+            //clientPaddle->setPosition(pos_opponent);
+            cout << "Received: " << data << endl;
+            //cout << "pos_opponent = (" << pos_opponent.x() << "," << pos_opponent.y() << "," << pos_opponent.z() << ")" << endl;
+        }
     }
-    */
     
     // Apply gravity
     myBall->direction += btVector3(0, -(0.00001*GRAVITY), 0);
@@ -747,16 +756,20 @@ void ClientGameState::update(double timeSinceLastFrame)
     // Get user input
     //cout << "Send: ";
     //getline(cin, msg);
-    msg = &(clientPaddle->position);
+    //msg = &(clientPaddle->position);
+    
+    strcpy(data, "Hello Host!");
     
     // Calculate the length and send it
-    len = (int)(sizeof(btVector3));
-    result = SDLNet_TCP_Send(tcpsock, msg, min(BUFFER, (int)len));
+    result = SDLNet_TCP_Send(tcpsock, data, BUFFER);
     if (result == 0){
         cout << "connection closed by peer" << endl; 
     }
     else if (result == -1){
-        cout << "error" << endl; 
+        cout << "error bitch!" << endl; 
+    }
+    else{
+        cout << "sent :" << data << endl; 
     }
     
     

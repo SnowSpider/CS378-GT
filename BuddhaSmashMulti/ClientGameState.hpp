@@ -119,8 +119,7 @@ private:
     TCPsocket tcpsock;      // The socket to use
     string servername;      // The server name
     int result;
-    unsigned short len;
-    btVector3* msg;
+    char data[BUFFER];
     
     btVector3 pos_opponent;
     
