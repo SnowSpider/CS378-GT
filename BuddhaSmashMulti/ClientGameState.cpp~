@@ -43,10 +43,8 @@ ClientGameState::ClientGameState()
     soundIs = true;
     startUp = true;
     lost = false;
-    multiStart = "0";
-    multiLost = "0";
-    oppStart = 0;
-    oppLost = 0;
+    oppStartLost = btVector3(0,0,0);
+    multiStartLost = btVector3(0,0,0);
     result = 0;
 }
  
@@ -116,7 +114,6 @@ void ClientGameState::enter()
     OgreFramework::getSingletonPtr()->m_pViewport->setCamera(m_pCamera);
     m_pCurrentObject = 0;
  
-    buildGUI();
  
     createScene();
 }
@@ -133,8 +130,7 @@ bool ClientGameState::pause()
 void ClientGameState::resume()
 {
     OgreFramework::getSingletonPtr()->m_pLog->logMessage("Resuming ClientGameState...");
- 
-    buildGUI();
+
  
     OgreFramework::getSingletonPtr()->m_pViewport->setCamera(m_pCamera);
     m_bQuit = false;
@@ -430,6 +426,7 @@ bool ClientGameState::mousePressed(const OIS::MouseEvent &evt, OIS::MouseButtonI
     if(startUp)
     {
         startUp = false;
+        multiStartLost.setX(1);
         CEGUI::Window* starting = CEGUI::WindowManager::getSingleton().getWindow("StartingWindow");
         starting->setVisible(false);
         CEGUI::Window* counter = CEGUI::WindowManager::getSingleton().getWindow("Counter");
@@ -438,6 +435,8 @@ bool ClientGameState::mousePressed(const OIS::MouseEvent &evt, OIS::MouseButtonI
     if(lost)
     {
         lost = false;
+        multiStartLost.setX(1);
+        multiStartLost.setY(0);
         CEGUI::Window* gameOver = CEGUI::WindowManager::getSingleton().getWindow("GameOverWindow");
         gameOver->setVisible(false);
         CEGUI::Window* counter = CEGUI::WindowManager::getSingleton().getWindow("Counter");
@@ -579,12 +578,11 @@ void ClientGameState::update(double timeSinceLastFrame)
             tcpsock = NULL;
         }
         else{
-            memcpy(oppStart, data, sizeof(char));
-            memcpy(oppLost, data+sizeof(char), sizeof(char));
-            memcpy(pos_opponent, data+sizeof(char)+sizeof(char), sizeof(btVector3));
-            memcpy(ballPos, data+sizeof(char)+sizeof(char)+sizeof(btVector3), sizeof(btVector3));
-            memcpy(ballDir, data+sizeof(char)+sizeof(char)+sizeof(btVector3)+sizeof(btVector3), sizeof(btVector3));
-            memcpy(ballNext, data+sizeof(char)+sizeof(char)+sizeof(btVector3)+sizeof(btVector3)+sizeof(btVector3), sizeof(btVector3));
+            memcpy(oppStartLost, data, sizeof(btVector3));
+            memcpy(pos_opponent, data+sizeof(btVector3), sizeof(btVector3));
+            memcpy(ballPos, data+(2*sizeof(btVector3)), sizeof(btVector3));
+            memcpy(ballDir, data+(3*sizeof(btVector3)), sizeof(btVector3));
+            memcpy(ballNext, data+(4*sizeof(btVector3)), sizeof(btVector3));
             hostPaddle->setPosition(pos_opponent);
             myBall->setPosition(ballPos);
             myBall->direction=ballDir;
@@ -592,13 +590,7 @@ void ClientGameState::update(double timeSinceLastFrame)
         }
     }
     
-    
-    // Move the ball
-    if (!ready){
-        //myBall->simulator->stepSimulation(1);
-        myBall->move(m_FrameEvent);
-    }
-    
+
     // Move the paddle
     clientPaddle->direction = btVector3(deltaX, deltaY, 0);
     clientPaddle->speed = sqrt(deltaX*deltaX + deltaY*deltaY);
@@ -617,21 +609,6 @@ void ClientGameState::update(double timeSinceLastFrame)
     if (clientPaddle->position.y() < -90){
         clientPaddle->setPosition(btVector3(clientPaddle->position.x(), -90, clientPaddle->position.z()));
     }
-    
-    //cout << clientPaddle->direction << endl;
-    //cout << clientPaddle->speed << endl;
-    
-    /*
-    Reflection vector formula:
-    
-    L = light
-    R = reflection
-    
-    R = 2(N dot L)N - L
-    
-    */
-    
-    //myBall->nextPosition.x() >= 90-myBall->position.x()
     
     // The ball hits the positive x plane
     if (myBall->position.x() > 90 || myBall->nextPosition.x() > 90){
@@ -694,6 +671,8 @@ void ClientGameState::update(double timeSinceLastFrame)
         else{
             //cout << "Score:" << score << "\nClick to restart" << endl;
             lost = true;
+            multiStartLost.setY(1);
+            multiStartLost.setX(0);
             if(score > highScore)
                 highScore = score;
             CEGUI::Window* gameOver = CEGUI::WindowManager::getSingleton().getWindow("GameOverWindow");
@@ -711,29 +690,16 @@ void ClientGameState::update(double timeSinceLastFrame)
             ready = true;
             float r1 = (rand() % 100);
             float r2 = (rand() % 100);
-            myBall->direction = btVector3(r1, r2, -1000);
-            myBall->direction.normalize();
-            myBall->speed = speed_default;
-            myBall->setPosition(btVector3(0,0,0));
         }
 	    
     }
     
-    /*
-    if(mWindow->isClosed())
-        return false;
-    
-    if(mShutDown)
-        return false;
-    */
-    
     // Send message
     
     //strcpy(data, "Hello Host!");
-    memcpy(data, multiStart, sizeof(char));
-    memcpy(data+sizeof(char), multiLost, sizeof(char));
-    memcpy(data+sizeof(char)+sizeof(char), clientPaddle->position, sizeof(btVector3));
-    memcpy(data+sizeof(char)+sizeof(char)+sizeof(btVector3), myBall->direction, sizeof(btVector3));
+    memcpy(data, multiStartLost, sizeof(btVector3));
+    memcpy(data+(sizeof(btVector3)), clientPaddle->position, sizeof(btVector3));
+    memcpy(data+(2*sizeof(btVector3)), myBall->direction, sizeof(btVector3));
     
     // Calculate the length and send it
     if(tcpsock != NULL){
@@ -751,35 +717,6 @@ void ClientGameState::update(double timeSinceLastFrame)
     
     //Need to capture/update each device
     OgreFramework::getSingletonPtr()->m_pKeyboard->capture();
-}
-
-void ClientGameState::buildGUI()
-{
-    /*
-    OgreFramework::getSingletonPtr()->m_pTrayMgr->showFrameStats(OgreBites::TL_BOTTOMLEFT);
-    OgreFramework::getSingletonPtr()->m_pTrayMgr->showLogo(OgreBites::TL_BOTTOMRIGHT);
-    OgreFramework::getSingletonPtr()->m_pTrayMgr->createLabel(OgreBites::TL_TOP, "GameLbl", "Client Game mode", 250);
-    //OgreFramework::getSingletonPtr()->m_pTrayMgr->showCursor();
- 
-    Ogre::StringVector items;
-    items.push_back("cam.pX");
-    items.push_back("cam.pY");
-    items.push_back("cam.pZ");
-    items.push_back("cam.oW");
-    items.push_back("cam.oX");
-    items.push_back("cam.oY");
-    items.push_back("cam.oZ");
-    items.push_back("Mode");
-    
-    m_pDetailsPanel = OgreFramework::getSingletonPtr()->m_pTrayMgr->createParamsPanel(OgreBites::TL_TOPLEFT, "DetailsPanel", 200, items);
-    m_pDetailsPanel->show();
-    
-    Ogre::StringVector chatModes;
-    chatModes.push_back("Solid mode");
-    chatModes.push_back("Wireframe mode");
-    chatModes.push_back("Point mode");
-    OgreFramework::getSingletonPtr()->m_pTrayMgr->createLongSelectMenu(OgreBites::TL_TOPRIGHT, "ChatModeSelMenu", "ChatMode", 200, 3, chatModes);
-    */
 }
 
 void ClientGameState::itemSelected(OgreBites::SelectMenu* menu)

@@ -96,6 +96,8 @@ private:
     GameObject* myBall;
     SoundManager sound;
     bool ready;
+    char *multiStart;
+    char *multiLost;
     Simulator simulator;
     vector<GameObject> m_objects; 
     float speed_default;

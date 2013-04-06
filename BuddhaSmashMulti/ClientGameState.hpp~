@@ -48,7 +48,6 @@ public:
  
 	void moveCamera();
 	void getInput();
-        void buildGUI();
  
 	bool keyPressed(const OIS::KeyEvent &keyEventRef);
 	bool keyReleased(const OIS::KeyEvent &keyEventRef);
@@ -92,8 +91,8 @@ private:
     GameObject* myBall;
     SoundManager sound;
     bool ready;
-    int *multiStart;
-    int *multiLost;
+    char *multiStart;
+    char *multiLost;
     Simulator simulator;
     vector<GameObject> m_objects; 
     float speed_default;
