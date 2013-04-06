@@ -43,10 +43,10 @@ ClientGameState::ClientGameState()
     soundIs = true;
     startUp = true;
     lost = false;
-    multiStart = 0;
-    multiLost = 0;
-    oppStart = 0;
-    oppLost = 0;
+    multiStart = "0";
+    multiLost = "0";
+    oppStart = "0";
+    oppLost = "0";
     result = 0;
 }
  
@@ -579,12 +579,12 @@ void ClientGameState::update(double timeSinceLastFrame)
             tcpsock = NULL;
         }
         else{
-            memcpy(oppStart, data, sizeof(int));
-            memcpy(oppLost, data+sizeof(int), sizeof(int));
-            memcpy(pos_opponent, data+sizeof(int)+sizeof(int), sizeof(btVector3));
-            memcpy(ballPos, data+sizeof(int)+sizeof(int)+sizeof(btVector3), sizeof(btVector3));
-            memcpy(ballDir, data+sizeof(int)+sizeof(int)+sizeof(btVector3)+sizeof(btVector3), sizeof(btVector3));
-            memcpy(ballNext, data+sizeof(int)+sizeof(int)+sizeof(btVector3)+sizeof(btVector3)+sizeof(btVector3), sizeof(btVector3));
+            memcpy(oppStart, data, sizeof(char));
+            memcpy(oppLost, data+sizeof(char), sizeof(char));
+            memcpy(pos_opponent, data+sizeof(char)+sizeof(char), sizeof(btVector3));
+            memcpy(ballPos, data+sizeof(char)+sizeof(char)+sizeof(btVector3), sizeof(btVector3));
+            memcpy(ballDir, data+sizeof(char)+sizeof(char)+sizeof(btVector3)+sizeof(btVector3), sizeof(btVector3));
+            memcpy(ballNext, data+sizeof(char)+sizeof(char)+sizeof(btVector3)+sizeof(btVector3)+sizeof(btVector3), sizeof(btVector3));
             hostPaddle->setPosition(pos_opponent);
             myBall->setPosition(ballPos);
             myBall->direction=ballDir;
@@ -730,10 +730,10 @@ void ClientGameState::update(double timeSinceLastFrame)
     // Send message
     
     //strcpy(data, "Hello Host!");
-    memcpy(data, multiStart, sizeof(int));
-    memcpy(data+sizeof(int), multiLost, sizeof(int));
-    memcpy(data+sizeof(int)+sizeof(int), clientPaddle->position, sizeof(btVector3));
-    memcpy(data+sizeof(int)+sizeof(int)+sizeof(btVector3), myBall->direction, sizeof(btVector3));
+    memcpy(data, multiStart, sizeof(char));
+    memcpy(data+sizeof(char), multiLost, sizeof(char));
+    memcpy(data+sizeof(char)+sizeof(char), clientPaddle->position, sizeof(btVector3));
+    memcpy(data+sizeof(char)+sizeof(char)+sizeof(btVector3), myBall->direction, sizeof(btVector3));
     
     // Calculate the length and send it
     if(tcpsock != NULL){

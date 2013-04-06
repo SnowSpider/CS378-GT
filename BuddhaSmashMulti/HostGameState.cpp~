@@ -43,14 +43,14 @@ HostGameState::HostGameState()
     soundIs = true;
     startUp = true;
     lost = false;
-    multiStart = 0;
-    multiLost = 0;
+    multiStart = "0";
+    multiLost = "0";
     i = 0;
     j = 0;
     result = 0;
     socketset = NULL;
-    oppStart = 0;
-    oppLost = 0;
+    oppStart = "0";
+    oppLost = "0";
 }
  
 //|||||||||||||||||||||||||||||||||||||||||||||||
@@ -531,6 +531,7 @@ void HostGameState::getInput()
 
 void HostGameState::update(double timeSinceLastFrame)
 {
+    printf("FUCKKK 0.0\n");
     m_FrameEvent.timeSinceLastFrame = timeSinceLastFrame / 1000.0;
     OgreFramework::getSingletonPtr()->m_pTrayMgr->frameRenderingQueued(m_FrameEvent);
     
@@ -578,52 +579,6 @@ void HostGameState::update(double timeSinceLastFrame)
     GameObject* myWall_z_pos = &m_objects[7];
     GameObject* myWall_z_neg = &m_objects[8];
     
-    /*
-    len = sizeof(btVector3);
-    buffer = &(hostPaddle->position);
-    
-    cout << "receiving..." << endl;
-    if (SDLNet_SocketReady(csd)) // you can receive anything here
-    {
-	    if (SDLNet_TCP_Recv(csd, buffer, len) > 0){
-	        std::memcpy(clientPaddle->position, buffer, sizeof(btVector3));
-	    }
-        cout << "received" << endl;
-    }
-    else{
-        cout << "not received 2" << endl;
-    }
-    */
-
-    // If there is activity
-    /*
-    if (SDLNet_SocketReady(tcpsock)){
-        // Accept the connection, add it to our array and the socket set
-        cout << "Client connected.\n";
-        new_tcpsock = SDLNet_TCP_Accept(tcpsock);
-        client[j] = new_tcpsock;
-        SDLNet_TCP_AddSocket(socketset, client[j]);
-        j++;
-    }
-    */    
-    
-    // Check client sockets for activity
-    /*
-    for (i = 0; i < MAXSOCKET; i++){
-        if (SDLNet_SocketReady(client[i])){
-            // There is an incoming message
-            result = SDLNet_TCP_Recv(client[i], const_cast<char *>(msg.c_str()), BUFFER);
-            if (result < 0){
-                cout << "Client " << i << " disconnected.\n";
-                client[i] = NULL;
-            }
-            else{
-                cout << "Received: " << msg.c_str() << "\n";
-            }
-        }
-    }
-    */
-    
     // Check for activity on the socket set
     SDLNet_CheckSockets(socketset, 0);
     
@@ -635,7 +590,6 @@ void HostGameState::update(double timeSinceLastFrame)
         SDLNet_TCP_AddSocket(socketset, client[j]);
         j++;
     }
-    
     // Check client sockets for activity
     for (i = 0; i < MAXSOCKET; i++){
         if (SDLNet_SocketReady(client[i])){
@@ -650,16 +604,15 @@ void HostGameState::update(double timeSinceLastFrame)
                 client[i] = NULL;
             }
             else{
-                memcpy(oppStart, data, sizeof(int));
-                memcpy(oppLost, data+sizeof(int), sizeof(int));
-                memcpy(pos_opponent, data+sizeof(int)+sizeof(int), sizeof(btVector3));
-                memcpy(ballDir, data+sizeof(int)+sizeof(int)+sizeof(btVector3), sizeof(btVector3));
+                memcpy(oppStart, data, sizeof(char));
+                memcpy(oppLost, data+sizeof(char), sizeof(char));
+                memcpy(pos_opponent, data+sizeof(char)+sizeof(char), sizeof(btVector3));
+                memcpy(ballDir, data+sizeof(char)+sizeof(char)+sizeof(btVector3), sizeof(btVector3));
                 clientPaddle->setPosition(pos_opponent);
                 myBall->direction=ballDir;
             }
         }
     }
-    
     // Apply gravity
     myBall->direction += btVector3(0, -(0.00001*GRAVITY), 0);
     myBall->direction.normalize();
@@ -815,14 +768,20 @@ void HostGameState::update(double timeSinceLastFrame)
     
     
     // Send message
-    
     //strcpy(data, "Hello Client!");
-    memcpy(data, multiStart, sizeof(int));
-    memcpy(data+sizeof(int), multiLost, sizeof(int));
-    memcpy(data+sizeof(int)+sizeof(int), hostPaddle->position, sizeof(btVector3));
-    memcpy(data+sizeof(int)+sizeof(int)+sizeof(btVector3), myBall->position, sizeof(btVector3));
-    memcpy(data+sizeof(int)+sizeof(int)+sizeof(btVector3)+sizeof(btVector3), myBall->direction, sizeof(btVector3));
-    
+    printf("FUCKKK 1\n");
+    memcpy(data, multiStart, sizeof(char));
+    printf("FUCKKK 2\n");
+    memcpy(data+sizeof(char), multiLost, sizeof(char));
+    printf("FUCKKK 3\n");
+    memcpy(data+sizeof(char)+sizeof(char), hostPaddle->position, sizeof(btVector3));
+    printf("FUCKKK 4\n");
+    memcpy(data+sizeof(char)+sizeof(char)+sizeof(btVector3), myBall->position, sizeof(btVector3));
+    printf("FUCKKK 5\n");
+    memcpy(data+sizeof(char)+sizeof(char)+sizeof(btVector3)+sizeof(btVector3), myBall->direction, sizeof(btVector3));
+    printf("FUCKKK 6\n");
+    memcpy(data+sizeof(char)+sizeof(char)+sizeof(btVector3)+sizeof(btVector3)+sizeof(btVector3), myBall->nextPosition, sizeof(btVector3));
+    printf("FUCKKK 7\n");
     // Check client sockets for activity
     for (i = 0; i < MAXSOCKET; i++){
         // There is an incoming message

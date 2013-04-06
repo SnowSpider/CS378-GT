@@ -123,11 +123,11 @@ private:
     int result;
     char data[BUFFER];
     
-    int *oppStart;
-    int *oppLost;
+    btVector3 oppStartLost;
     btVector3 pos_opponent;
     btVector3 ballPos;
     btVector3 ballDir;
+    btVector3 ballNext;
     
 };
  
