@@ -759,7 +759,7 @@ void ClientGameState::update(double timeSinceLastFrame)
     //msg = &(clientPaddle->position);
     
     //strcpy(data, "Hello Host!");
-    memcpy(data, , sizeof(btVector3));
+    memcpy(data, clientPaddle->position, sizeof(btVector3));
     
     // Calculate the length and send it
     if(tcpsock != NULL){
