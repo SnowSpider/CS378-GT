@@ -576,10 +576,10 @@ void ClientGameState::update(double timeSinceLastFrame)
             tcpsock = NULL;
         }
         else{
-            //pos_opponent = btVector3(*msg);
-            //clientPaddle->setPosition(pos_opponent);
-            cout << "Received: " << data << endl;
-            //cout << "pos_opponent = (" << pos_opponent.x() << "," << pos_opponent.y() << "," << pos_opponent.z() << ")" << endl;
+            memcpy(pos_opponent, data, sizeof(btVector3));
+            clientPaddle->setPosition(pos_opponent);
+            //cout << "Received: " << data << endl;
+            cout << "pos_opponent = (" << pos_opponent.x() << "," << pos_opponent.y() << "," << pos_opponent.z() << ")" << endl;
         }
     }
     
@@ -758,7 +758,8 @@ void ClientGameState::update(double timeSinceLastFrame)
     //getline(cin, msg);
     //msg = &(clientPaddle->position);
     
-    strcpy(data, "Hello Host!");
+    //strcpy(data, "Hello Host!");
+    memcpy(data, clientPaddle->position, sizeof(btVector3));
     
     // Calculate the length and send it
     if(tcpsock != NULL){
@@ -770,7 +771,7 @@ void ClientGameState::update(double timeSinceLastFrame)
             cout << "error bitch!" << endl; 
         }
         else{
-            cout << "sent :" << data << endl; 
+            //cout << "sent :" << data << endl; 
         }
     }
     

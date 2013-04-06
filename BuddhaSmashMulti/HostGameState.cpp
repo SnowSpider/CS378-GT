@@ -646,10 +646,10 @@ void HostGameState::update(double timeSinceLastFrame)
                 client[i] = NULL;
             }
             else{
-                //pos_opponent = btVector3(*msg);
-                //clientPaddle->setPosition(pos_opponent);
-                cout << "Received: " << data << endl;
-                //cout << "pos_opponent = (" << pos_opponent.x() << "," << pos_opponent.y() << "," << pos_opponent.z() << ")" << endl;
+                memcpy(pos_opponent, data, sizeof(btVector3));
+                clientPaddle->setPosition(pos_opponent);
+                //cout << "Received: " << data << endl;
+                cout << "pos_opponent = (" << pos_opponent.x() << "," << pos_opponent.y() << "," << pos_opponent.z() << ")" << endl;
             }
         }
     }
@@ -810,7 +810,8 @@ void HostGameState::update(double timeSinceLastFrame)
     
     // Send message
     
-    strcpy(data, "Hello Client!");
+    //strcpy(data, "Hello Client!");
+    memcpy(data, hostPaddle->position, sizeof(btVector3));
     
     // Check client sockets for activity
     for (i = 0; i < MAXSOCKET; i++){
@@ -826,10 +827,7 @@ void HostGameState::update(double timeSinceLastFrame)
                 client[i] = NULL;
             }
             else{
-                //pos_opponent = btVector3(*msg);
-                //clientPaddle->setPosition(pos_opponent);
-                cout << "Sent: " << data << endl;
-                //cout << "pos_opponent = (" << pos_opponent.x() << "," << pos_opponent.y() << "," << pos_opponent.z() << ")" << endl;
+                //cout << "Sent: " << data << endl;
             }
         }
     }
