@@ -440,7 +440,11 @@ bool ClientGameState::mousePressed(const OIS::MouseEvent &evt, OIS::MouseButtonI
         CEGUI::Window* gameOver = CEGUI::WindowManager::getSingleton().getWindow("GameOverWindow");
         gameOver->setVisible(false);
         CEGUI::Window* counter = CEGUI::WindowManager::getSingleton().getWindow("Counter");
-        counter->setText("Score: 0");
+            std::string shownScore;
+            std::stringstream out;
+            out << score;
+            shownScore = out.str();
+            counter->setText("Score: " + shownScore);
     }
     //mCameraMan->injectMouseDown(evt, id);
     return true;
@@ -611,7 +615,6 @@ void ClientGameState::update(double timeSinceLastFrame)
             shownHighScore = highOut.str();
             gameOver->setText("Your Score: " + shownScore + "\nOpponent Score: " + shownHighScore + "\nClick To Restart");
             gameOver->setVisible(true);
-            score = 0;
             ready = true;
             float r1 = (rand() % 100);
             float r2 = (rand() % 100);
@@ -713,7 +716,6 @@ void ClientGameState::update(double timeSinceLastFrame)
             shownHighScore = highOut.str();
             gameOver->setText("Your Score: " + shownScore + "\nOpponent Score: " + shownHighScore + "\nClick To Restart");
             gameOver->setVisible(true);
-            score = 0;
             ready = true;
             float r1 = (rand() % 100);
             float r2 = (rand() % 100);
