@@ -564,7 +564,7 @@ void ClientGameState::update(double timeSinceLastFrame)
     GameObject* myWall_z_neg = &m_objects[8];
     
     
-    if (SDLNet_SocketReady(tcpsock) > 0) // you can receive anything here
+    if (tcpsock != NULL) // you can receive anything here
     {
 	    result = SDLNet_TCP_Recv(tcpsock, data, BUFFER);
         if (result == 0){

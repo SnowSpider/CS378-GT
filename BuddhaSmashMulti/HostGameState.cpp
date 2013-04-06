@@ -648,7 +648,7 @@ void HostGameState::update(double timeSinceLastFrame)
             else{
                 //pos_opponent = btVector3(*msg);
                 //clientPaddle->setPosition(pos_opponent);
-                //cout << "Received: " << data << endl;
+                cout << "Received: " << data << endl;
                 //cout << "pos_opponent = (" << pos_opponent.x() << "," << pos_opponent.y() << "," << pos_opponent.z() << ")" << endl;
             }
         }
