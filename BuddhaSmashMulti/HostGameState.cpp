@@ -838,6 +838,7 @@ void HostGameState::update(double timeSinceLastFrame)
 
 void HostGameState::buildGUI()
 {
+    /*
     OgreFramework::getSingletonPtr()->m_pTrayMgr->showFrameStats(OgreBites::TL_BOTTOMLEFT);
     OgreFramework::getSingletonPtr()->m_pTrayMgr->showLogo(OgreBites::TL_BOTTOMRIGHT);
     OgreFramework::getSingletonPtr()->m_pTrayMgr->createLabel(OgreBites::TL_TOP, "GameLbl", "Host Game mode", 250);
@@ -861,6 +862,7 @@ void HostGameState::buildGUI()
     chatModes.push_back("Wireframe mode");
     chatModes.push_back("Point mode");
     OgreFramework::getSingletonPtr()->m_pTrayMgr->createLongSelectMenu(OgreBites::TL_TOPRIGHT, "ChatModeSelMenu", "ChatMode", 200, 3, chatModes);
+    */
 }
 
 void HostGameState::itemSelected(OgreBites::SelectMenu* menu)

@@ -741,22 +741,6 @@ void ClientGameState::update(double timeSinceLastFrame)
     */
     
     // Send message
-    /*
-    len = sizeof(btVector3);
-    
-    buffer = &(clientPaddle->position);
-    
-    if (SDLNet_TCP_Send(sd, (void *)buffer, len) < len) // you can send anything here
-    {
-	    fprintf(stderr, "SDLNet_TCP_Send: %s\n", SDLNet_GetError());
-	    //exit(EXIT_FAILURE);
-    }
-    */
-    
-    // Get user input
-    //cout << "Send: ";
-    //getline(cin, msg);
-    //msg = &(clientPaddle->position);
     
     //strcpy(data, "Hello Host!");
     memcpy(data, clientPaddle->position, sizeof(btVector3));
@@ -781,6 +765,7 @@ void ClientGameState::update(double timeSinceLastFrame)
 
 void ClientGameState::buildGUI()
 {
+    /*
     OgreFramework::getSingletonPtr()->m_pTrayMgr->showFrameStats(OgreBites::TL_BOTTOMLEFT);
     OgreFramework::getSingletonPtr()->m_pTrayMgr->showLogo(OgreBites::TL_BOTTOMRIGHT);
     OgreFramework::getSingletonPtr()->m_pTrayMgr->createLabel(OgreBites::TL_TOP, "GameLbl", "Client Game mode", 250);
@@ -804,6 +789,7 @@ void ClientGameState::buildGUI()
     chatModes.push_back("Wireframe mode");
     chatModes.push_back("Point mode");
     OgreFramework::getSingletonPtr()->m_pTrayMgr->createLongSelectMenu(OgreBites::TL_TOPRIGHT, "ChatModeSelMenu", "ChatMode", 200, 3, chatModes);
+    */
 }
 
 void ClientGameState::itemSelected(OgreBites::SelectMenu* menu)

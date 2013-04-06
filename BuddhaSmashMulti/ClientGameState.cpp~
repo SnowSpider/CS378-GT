@@ -577,7 +577,7 @@ void ClientGameState::update(double timeSinceLastFrame)
         }
         else{
             memcpy(pos_opponent, data, sizeof(btVector3));
-            clientPaddle->setPosition(pos_opponent);
+            hostPaddle->setPosition(pos_opponent);
             //cout << "Received: " << data << endl;
             cout << "pos_opponent = (" << pos_opponent.x() << "," << pos_opponent.y() << "," << pos_opponent.z() << ")" << endl;
         }
@@ -741,22 +741,6 @@ void ClientGameState::update(double timeSinceLastFrame)
     */
     
     // Send message
-    /*
-    len = sizeof(btVector3);
-    
-    buffer = &(clientPaddle->position);
-    
-    if (SDLNet_TCP_Send(sd, (void *)buffer, len) < len) // you can send anything here
-    {
-	    fprintf(stderr, "SDLNet_TCP_Send: %s\n", SDLNet_GetError());
-	    //exit(EXIT_FAILURE);
-    }
-    */
-    
-    // Get user input
-    //cout << "Send: ";
-    //getline(cin, msg);
-    //msg = &(clientPaddle->position);
     
     //strcpy(data, "Hello Host!");
     memcpy(data, clientPaddle->position, sizeof(btVector3));

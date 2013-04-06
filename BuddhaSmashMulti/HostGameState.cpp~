@@ -811,7 +811,7 @@ void HostGameState::update(double timeSinceLastFrame)
     // Send message
     
     //strcpy(data, "Hello Client!");
-    memcpy(data, , sizeof(btVector3));
+    memcpy(data, hostPaddle->position, sizeof(btVector3));
     
     // Check client sockets for activity
     for (i = 0; i < MAXSOCKET; i++){
