@@ -761,17 +761,18 @@ void ClientGameState::update(double timeSinceLastFrame)
     strcpy(data, "Hello Host!");
     
     // Calculate the length and send it
-    result = SDLNet_TCP_Send(tcpsock, data, BUFFER);
-    if (result == 0){
-        cout << "connection closed by peer" << endl; 
+    if(tcpsock != NULL){
+        result = SDLNet_TCP_Send(tcpsock, data, BUFFER);
+        if (result == 0){
+            cout << "connection closed by peer" << endl; 
+        }
+        else if (result == -1){
+            cout << "error bitch!" << endl; 
+        }
+        else{
+            cout << "sent :" << data << endl; 
+        }
     }
-    else if (result == -1){
-        cout << "error bitch!" << endl; 
-    }
-    else{
-        cout << "sent :" << data << endl; 
-    }
-    
     
     //Need to capture/update each device
     OgreFramework::getSingletonPtr()->m_pKeyboard->capture();

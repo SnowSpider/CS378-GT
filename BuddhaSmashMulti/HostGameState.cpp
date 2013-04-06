@@ -648,7 +648,7 @@ void HostGameState::update(double timeSinceLastFrame)
             else{
                 //pos_opponent = btVector3(*msg);
                 //clientPaddle->setPosition(pos_opponent);
-                cout << "Received: " << data << endl;
+                //cout << "Received: " << data << endl;
                 //cout << "pos_opponent = (" << pos_opponent.x() << "," << pos_opponent.y() << "," << pos_opponent.z() << ")" << endl;
             }
         }
@@ -814,8 +814,8 @@ void HostGameState::update(double timeSinceLastFrame)
     
     // Check client sockets for activity
     for (i = 0; i < MAXSOCKET; i++){
-        if (SDLNet_SocketReady(client[i])){
-            // There is an incoming message
+        // There is an incoming message
+        if(client[i] != NULL){
             result = SDLNet_TCP_Send(client[i], data, BUFFER);
             if (result == 0){
                 cout << "Client " << i << " disconnected.\n";
