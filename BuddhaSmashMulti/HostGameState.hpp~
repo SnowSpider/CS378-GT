@@ -96,6 +96,8 @@ private:
     GameObject* myBall;
     SoundManager sound;
     bool ready;
+    int *multiStart;
+    int *multiLost;
     Simulator simulator;
     vector<GameObject> m_objects; 
     float speed_default;
@@ -123,7 +125,6 @@ private:
     TCPsocket client[MAXSOCKET];    // An array of sockets for the clients
     SDLNet_SocketSet socketset;      // A set of sockets
     int i, j, result;
-    unsigned short len;
     char data[BUFFER];
 
     btVector3 pos_opponent;

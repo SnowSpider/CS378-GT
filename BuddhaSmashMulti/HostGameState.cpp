@@ -43,11 +43,14 @@ HostGameState::HostGameState()
     soundIs = true;
     startUp = true;
     lost = false;
-    
+    multiStart = 0;
+    multiLost = 0;
     i = 0;
     j = 0;
     result = 0;
     socketset = NULL;
+    oppStart = 0;
+    oppLost = 0;
 }
  
 //|||||||||||||||||||||||||||||||||||||||||||||||
@@ -443,6 +446,7 @@ bool HostGameState::mousePressed(const OIS::MouseEvent &evt, OIS::MouseButtonID 
         starting->setVisible(false);
         CEGUI::Window* counter = CEGUI::WindowManager::getSingleton().getWindow("Counter");
         counter->setText("Score: 0");
+
     }
     if(lost)
     {
@@ -646,10 +650,12 @@ void HostGameState::update(double timeSinceLastFrame)
                 client[i] = NULL;
             }
             else{
-                memcpy(pos_opponent, data, sizeof(btVector3));
+                memcpy(oppStart, data, sizeof(int));
+                memcpy(oppLost, data+sizeof(int), sizeof(int));
+                memcpy(pos_opponent, data+sizeof(int)+sizeof(int), sizeof(btVector3));
+                memcpy(ballDir, data+sizeof(int)+sizeof(int)+sizeof(btVector3), sizeof(btVector3));
                 clientPaddle->setPosition(pos_opponent);
-                //cout << "Received: " << data << endl;
-                cout << "pos_opponent = (" << pos_opponent.x() << "," << pos_opponent.y() << "," << pos_opponent.z() << ")" << endl;
+                myBall->direction=ballDir;
             }
         }
     }
@@ -811,7 +817,12 @@ void HostGameState::update(double timeSinceLastFrame)
     // Send message
     
     //strcpy(data, "Hello Client!");
-    memcpy(data, hostPaddle->position, sizeof(btVector3));
+    memcpy(data, multiStart, sizeof(int));
+    memcpy(data+sizeof(int), multiLost, sizeof(int));
+    memcpy(data+sizeof(int)+sizeof(int), hostPaddle->position, sizeof(btVector3));
+    memcpy(data+sizeof(int)+sizeof(int)+sizeof(btVector3), myBall->position, sizeof(btVector3));
+    memcpy(data+sizeof(int)+sizeof(int)+sizeof(btVector3)+sizeof(btVector3), myBall->direction, sizeof(btVector3));
+    memcpy(data+sizeof(int)+sizeof(int)+sizeof(btVector3)+sizeof(btVector3)+sizeof(btVector3), myBall->nextPosition, sizeof(btVector3));
     
     // Check client sockets for activity
     for (i = 0; i < MAXSOCKET; i++){

@@ -92,6 +92,8 @@ private:
     GameObject* myBall;
     SoundManager sound;
     bool ready;
+    int *multiStart;
+    int *multiLost;
     Simulator simulator;
     vector<GameObject> m_objects; 
     float speed_default;
@@ -121,7 +123,12 @@ private:
     int result;
     char data[BUFFER];
     
+    int *oppStart;
+    int *oppLost;
     btVector3 pos_opponent;
+    btVector3 ballPos;
+    btVector3 ballDir;
+    btVector3 ballNext;
     
 };
  

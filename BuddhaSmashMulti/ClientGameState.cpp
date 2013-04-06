@@ -43,7 +43,10 @@ ClientGameState::ClientGameState()
     soundIs = true;
     startUp = true;
     lost = false;
-    
+    multiStart = 0;
+    multiLost = 0;
+    oppStart = 0;
+    oppLost = 0;
     result = 0;
 }
  
@@ -576,16 +579,19 @@ void ClientGameState::update(double timeSinceLastFrame)
             tcpsock = NULL;
         }
         else{
-            memcpy(pos_opponent, data, sizeof(btVector3));
+            memcpy(oppStart, data, sizeof(int));
+            memcpy(oppLost, data+sizeof(int), sizeof(int));
+            memcpy(pos_opponent, data+sizeof(int)+sizeof(int), sizeof(btVector3));
+            memcpy(ballPos, data+sizeof(int)+sizeof(int)+sizeof(btVector3), sizeof(btVector3));
+            memcpy(ballDir, data+sizeof(int)+sizeof(int)+sizeof(btVector3)+sizeof(btVector3), sizeof(btVector3));
+            memcpy(ballNext, data+sizeof(int)+sizeof(int)+sizeof(btVector3)+sizeof(btVector3)+sizeof(btVector3), sizeof(btVector3));
             hostPaddle->setPosition(pos_opponent);
-            //cout << "Received: " << data << endl;
-            cout << "pos_opponent = (" << pos_opponent.x() << "," << pos_opponent.y() << "," << pos_opponent.z() << ")" << endl;
+            myBall->setPosition(ballPos);
+            myBall->direction=ballDir;
+            myBall->nextPosition=ballNext;
         }
     }
     
-    // Apply gravity
-    myBall->direction += btVector3(0, -(0.00001*GRAVITY), 0);
-    myBall->direction.normalize();
     
     // Move the ball
     if (!ready){
@@ -629,42 +635,26 @@ void ClientGameState::update(double timeSinceLastFrame)
     
     // The ball hits the positive x plane
     if (myBall->position.x() > 90 || myBall->nextPosition.x() > 90){
-        myBall->setPosition(btVector3(90, myBall->position.y(), myBall->position.z()));
-        myBall->direction += (-2.0 * (btVector3(-1,0,0).dot(myBall->direction)) * btVector3(-1,0,0));
-        //cout << "hit!" << endl;
 	    sound.PlaySound("boink1_cx65377.wav");
     }
     
     // The ball hits the negative x plane
     else if (myBall->position.x() < -90 || myBall->nextPosition.x() < -90){
-        myBall->setPosition(btVector3(-90, myBall->position.y(), myBall->position.z()));
-        myBall->direction += (-2.0 * (btVector3(1,0,0).dot(myBall->direction)) * btVector3(1,0,0));
-        //cout << "hit!" << endl;
 	    sound.PlaySound("boink1_cx65377.wav");
     }
     
     // The ball hits the positive y plane
     else if (myBall->position.y() > 90 || myBall->nextPosition.y() > 90){
-        myBall->setPosition(btVector3(myBall->position.x(), 90, myBall->position.z()));
-        myBall->direction += (-2.0 * (btVector3(0,-1,0).dot(myBall->direction)) * btVector3(0,-1,0));
-        //cout << "hit!" << endl;
 	    sound.PlaySound("boink1_cx65377.wav");
     }
     
     // The ball hits the negative y plane
     else if (myBall->position.y() < -90 || myBall->nextPosition.y() < -90){
-        myBall->setPosition(btVector3(myBall->position.x(), -90, myBall->position.z()));
-        myBall->direction += (-2.0 * (btVector3(0,1,0).dot(myBall->direction)) * btVector3(0,1,0));
-        //cout << "hit!" << endl;
 	    sound.PlaySound("boink1_cx65377.wav");
     }
     
     // The ball hits the positive z plane
     else if (myBall->position.z() > 190 || myBall->nextPosition.z() > 190){
-        myBall->setPosition(btVector3(myBall->position.x(), myBall->position.y(), 190));
-        myBall->direction += (-2.0 * (btVector3(0,0,-1).dot(myBall->direction)) * btVector3(0,0,-1));
-        //cout << "hit!" << endl;
-        
         sound.PlaySound("boink1_cx65377.wav");
 	    myBall->speed -= 10;
         
@@ -672,9 +662,6 @@ void ClientGameState::update(double timeSinceLastFrame)
     
     // The ball hits the negative z plane
     else if (myBall->position.z() < -190 || myBall->nextPosition.z() < -190){
-        myBall->setPosition(btVector3(myBall->position.x(), myBall->position.y(), -190));
-        myBall->direction += (-2.0 * (btVector3(0,0,1).dot(myBall->direction)) * btVector3(0,0,1));
-        //cout << "hit!" << endl;
         
         if (abs(clientPaddle->position.x() - myBall->position.x()) <= 25 && abs(clientPaddle->position.y() - myBall->position.y()) <= 25){
             myBall->direction += (0.2 * clientPaddle->direction);
@@ -743,7 +730,10 @@ void ClientGameState::update(double timeSinceLastFrame)
     // Send message
     
     //strcpy(data, "Hello Host!");
-    memcpy(data, clientPaddle->position, sizeof(btVector3));
+    memcpy(data, multiStart, sizeof(int));
+    memcpy(data+sizeof(int), multiLost, sizeof(int));
+    memcpy(data+sizeof(int)+sizeof(int), clientPaddle->position, sizeof(btVector3));
+    memcpy(data+sizeof(int)+sizeof(int)+sizeof(btVector3), myBall->direction, sizeof(btVector3));
     
     // Calculate the length and send it
     if(tcpsock != NULL){
