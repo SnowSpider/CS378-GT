@@ -596,8 +596,10 @@ void ClientGameState::update(double timeSinceLastFrame)
             lost = true;
             multiStartLost.setY(0);
             multiStartLost.setX(0);
-            if(score > highScore)
-                highScore = score;
+
+            score = (oppStartLost.z()*1000);
+            highScore = multiStartLost.z()*1000;
+
             CEGUI::Window* gameOver = CEGUI::WindowManager::getSingleton().getWindow("GameOverWindow");
             std::string shownScore;
             std::string shownHighScore;
@@ -607,7 +609,7 @@ void ClientGameState::update(double timeSinceLastFrame)
             highOut << highScore;
             shownScore = out.str();
             shownHighScore = highOut.str();
-            gameOver->setText("Game Over, Final Score: " + shownScore + "\nTop Score: " + shownHighScore + "\nClick To Restart");
+            gameOver->setText("Your Score: " + shownScore + "\nOpponent Score: " + shownHighScore + "\nClick To Restart");
             gameOver->setVisible(true);
             score = 0;
             ready = true;
@@ -667,7 +669,6 @@ void ClientGameState::update(double timeSinceLastFrame)
         if (abs(clientPaddle->position.x() - myBall->position.x()) <= 25 && abs(clientPaddle->position.y() - myBall->position.y()) <= 25){
             myBall->direction += (0.2 * clientPaddle->direction);
             myBall->direction.normalize();
-            score += myBall->speed;
             myBall->speed += increment;
             CEGUI::Window* counter = CEGUI::WindowManager::getSingleton().getWindow("Counter");
             std::string shownScore;
@@ -681,7 +682,6 @@ void ClientGameState::update(double timeSinceLastFrame)
         else if (abs(clientPaddle->nextPosition.x() - myBall->nextPosition.x()) <= 25 && abs(clientPaddle->nextPosition.y() - myBall->nextPosition.y()) <= 25){
             myBall->direction += (0.2 * clientPaddle->direction);
             myBall->direction.normalize();
-            score += myBall->speed;
             myBall->speed += increment;
             CEGUI::Window* counter = CEGUI::WindowManager::getSingleton().getWindow("Counter");
             std::string shownScore;
@@ -697,8 +697,11 @@ void ClientGameState::update(double timeSinceLastFrame)
             lost = true;
             multiStartLost.setY(1);
             multiStartLost.setX(0);
-            if(score > highScore)
-                highScore = score;
+            
+            multiStartLost.setZ(multiStartLost.z()+.0001);
+            score = (oppStartLost.z()*1000);
+            highScore = multiStartLost.z()*1000;
+
             CEGUI::Window* gameOver = CEGUI::WindowManager::getSingleton().getWindow("GameOverWindow");
             std::string shownScore;
             std::string shownHighScore;
@@ -708,7 +711,7 @@ void ClientGameState::update(double timeSinceLastFrame)
             highOut << highScore;
             shownScore = out.str();
             shownHighScore = highOut.str();
-            gameOver->setText("Game Over, Final Score: " + shownScore + "\nTop Score: " + shownHighScore + "\nClick To Restart");
+            gameOver->setText("Your Score: " + shownScore + "\nOpponent Score: " + shownHighScore + "\nClick To Restart");
             gameOver->setVisible(true);
             score = 0;
             ready = true;
