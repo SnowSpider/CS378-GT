@@ -590,7 +590,31 @@ void ClientGameState::update(double timeSinceLastFrame)
         }
     }
     
-
+    if(oppStartLost.y() == 1)
+    {
+            //cout << "Score:" << score << "\nClick to restart" << endl;
+            lost = true;
+            multiStartLost.setY(1);
+            multiStartLost.setX(0);
+            if(score > highScore)
+                highScore = score;
+            CEGUI::Window* gameOver = CEGUI::WindowManager::getSingleton().getWindow("GameOverWindow");
+            std::string shownScore;
+            std::string shownHighScore;
+            std::stringstream out;
+            std::stringstream highOut;
+            out << score;
+            highOut << highScore;
+            shownScore = out.str();
+            shownHighScore = highOut.str();
+            gameOver->setText("Game Over, Final Score: " + shownScore + "\nTop Score: " + shownHighScore + "\nClick To Restart");
+            gameOver->setVisible(true);
+            score = 0;
+            ready = true;
+            float r1 = (rand() % 100);
+            float r2 = (rand() % 100);
+    }
+    else{
     // Move the paddle
     clientPaddle->direction = btVector3(deltaX, deltaY, 0);
     clientPaddle->speed = sqrt(deltaX*deltaX + deltaY*deltaY);
@@ -692,6 +716,7 @@ void ClientGameState::update(double timeSinceLastFrame)
             float r2 = (rand() % 100);
         }
 	    
+    }
     }
     
     // Send message

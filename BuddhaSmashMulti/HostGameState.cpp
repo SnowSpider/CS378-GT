@@ -49,6 +49,7 @@ HostGameState::HostGameState()
     j = 0;
     result = 0;
     socketset = NULL;
+    isPlayer = false;
 }
  
 //|||||||||||||||||||||||||||||||||||||||||||||||
@@ -577,7 +578,7 @@ void HostGameState::update(double timeSinceLastFrame)
     
     // Check for activity on the socket set
     SDLNet_CheckSockets(socketset, 0);
-    bool isPlayer = false;
+
     if (SDLNet_SocketReady(tcpsock)){
         // Accept the connection, add it to our array and the socket set
         cout << "Client connected.\n";
@@ -604,8 +605,7 @@ void HostGameState::update(double timeSinceLastFrame)
                 memcpy(oppStartLost, data, sizeof(btVector3));
                 memcpy(pos_opponent, data+(sizeof(btVector3)), sizeof(btVector3));
                 memcpy(ballDir, data+(2*sizeof(btVector3)), sizeof(btVector3));
-                clientPaddle->setPosition(pos_opponent);
-                myBall->direction=ballDir;
+                clientPaddle->setPosition(pos_opponent);;
             }
         }
     }
@@ -614,7 +614,7 @@ void HostGameState::update(double timeSinceLastFrame)
     {
             //cout << "Score:" << score << "\nClick to restart" << endl;
             lost = true;
-            multiStartLost.setY(1);
+            multiStartLost.setY(0);
             multiStartLost.setX(0);
             if(score > highScore)
                 highScore = score;

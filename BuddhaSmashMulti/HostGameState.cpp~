@@ -604,11 +604,40 @@ void HostGameState::update(double timeSinceLastFrame)
                 memcpy(oppStartLost, data, sizeof(btVector3));
                 memcpy(pos_opponent, data+(sizeof(btVector3)), sizeof(btVector3));
                 memcpy(ballDir, data+(2*sizeof(btVector3)), sizeof(btVector3));
-                clientPaddle->setPosition(pos_opponent);
-                myBall->direction=ballDir;
+                clientPaddle->setPosition(pos_opponent);;
             }
         }
     }
+
+    if(oppStartLost.y() == 1)
+    {
+            //cout << "Score:" << score << "\nClick to restart" << endl;
+            lost = true;
+            multiStartLost.setY(1);
+            multiStartLost.setX(0);
+            if(score > highScore)
+                highScore = score;
+            CEGUI::Window* gameOver = CEGUI::WindowManager::getSingleton().getWindow("GameOverWindow");
+            std::string shownScore;
+            std::string shownHighScore;
+            std::stringstream out;
+            std::stringstream highOut;
+            out << score;
+            highOut << highScore;
+            shownScore = out.str();
+            shownHighScore = highOut.str();
+            gameOver->setText("Game Over, Final Score: " + shownScore + "\nTop Score: " + shownHighScore + "\nClick To Restart");
+            gameOver->setVisible(true);
+            score = 0;
+            ready = true;
+            float r1 = (rand() % 100);
+            float r2 = (rand() % 100);
+            myBall->direction = btVector3(r1, r2, -1000);
+            myBall->direction.normalize();
+            myBall->speed = speed_default;
+            myBall->setPosition(btVector3(0,0,0));
+    }
+    else{
     // Apply gravity
     myBall->direction += btVector3(0, -(0.00001*GRAVITY), 0);
     myBall->direction.normalize();
@@ -755,7 +784,7 @@ void HostGameState::update(double timeSinceLastFrame)
 	    sound.PlaySound("boink1_cx65377.wav");
 	    myBall->speed -= 10;
     }
-    
+    }
     /*
     if(mWindow->isClosed())
         return false;

@@ -124,7 +124,7 @@ private:
     SDLNet_SocketSet socketset;      // A set of sockets
     int i, j, result;
     char data[BUFFER];
-
+    bool isPlayer;
     btVector3 oppStartLost;
     btVector3 pos_opponent;
     btVector3 ballDir;

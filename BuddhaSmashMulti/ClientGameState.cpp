@@ -594,7 +594,7 @@ void ClientGameState::update(double timeSinceLastFrame)
     {
             //cout << "Score:" << score << "\nClick to restart" << endl;
             lost = true;
-            multiStartLost.setY(1);
+            multiStartLost.setY(0);
             multiStartLost.setX(0);
             if(score > highScore)
                 highScore = score;
