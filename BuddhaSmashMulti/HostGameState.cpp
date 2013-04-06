@@ -617,8 +617,8 @@ void HostGameState::update(double timeSinceLastFrame)
             multiStartLost.setY(0);
             multiStartLost.setX(0);
 
-            score = (oppStartLost.z()*1000);
-            highScore = multiStartLost.z()*1000;
+            score = (oppStartLost.z()*100);
+            highScore = multiStartLost.z()*100;
 
             CEGUI::Window* gameOver = CEGUI::WindowManager::getSingleton().getWindow("GameOverWindow");
             std::string shownScore;
@@ -753,9 +753,9 @@ void HostGameState::update(double timeSinceLastFrame)
             multiStartLost.setY(1);
             multiStartLost.setX(0);
 
-            multiStartLost.setZ(multiStartLost.z()+.0001);
-            score = (oppStartLost.z()*1000);
-            highScore = multiStartLost.z()*1000;
+            multiStartLost.setZ(multiStartLost.z()+.01);
+            score = (oppStartLost.z()*100);
+            highScore = multiStartLost.z()*100;
 
             CEGUI::Window* gameOver = CEGUI::WindowManager::getSingleton().getWindow("GameOverWindow");
             std::string shownScore;

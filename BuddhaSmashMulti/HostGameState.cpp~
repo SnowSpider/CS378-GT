@@ -753,7 +753,7 @@ void HostGameState::update(double timeSinceLastFrame)
             multiStartLost.setY(1);
             multiStartLost.setX(0);
 
-            multiStartLost.setZ(multiStartLost.z()+.0001)
+            multiStartLost.setZ(multiStartLost.z()+.0001);
             score = (oppStartLost.z()*1000);
             highScore = multiStartLost.z()*1000;
 
