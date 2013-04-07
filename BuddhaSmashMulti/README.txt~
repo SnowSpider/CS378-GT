@@ -4,6 +4,8 @@ Daniel Moreno drm2472 drmoreno
 Wonjun Lee wl4337 wlee
 Howard Fu hef79 howardfu
 
+To build & run:
+
 ./buildit
 ./makeit
 ./OgreApp
