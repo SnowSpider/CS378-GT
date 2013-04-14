@@ -1,0 +1,47 @@
+//|||||||||||||||||||||||||||||||||||||||||||||||
+ 
+#ifndef HOST_GAME_STATE_HPP
+#define HOST_GAME_STATE_HPP
+ 
+//|||||||||||||||||||||||||||||||||||||||||||||||
+ 
+#include "GameState.hpp"
+
+//|||||||||||||||||||||||||||||||||||||||||||||||
+ 
+class HostGameState : public GameState
+{
+public:
+	HostGameState();
+ 
+	DECLARE_APPSTATE_CLASS(HostGameState)
+ 
+	void enter();
+	void createScene();
+	void exit();
+	bool pause();
+	void resume();
+ 
+	void moveCamera();
+	void getInput();
+    void buildGUI();
+ 
+	bool keyPressed(const OIS::KeyEvent &keyEventRef);
+	bool keyReleased(const OIS::KeyEvent &keyEventRef);
+ 
+	bool mouseMoved(const OIS::MouseEvent &arg);
+	bool mousePressed(const OIS::MouseEvent &arg, OIS::MouseButtonID id);
+	bool mouseReleased(const OIS::MouseEvent &arg, OIS::MouseButtonID id);
+ 
+	void onLeftPressed(const OIS::MouseEvent &evt);
+    void itemSelected(OgreBites::SelectMenu* menu);
+ 
+	void update(double timeSinceLastFrame);
+    
+};
+ 
+//|||||||||||||||||||||||||||||||||||||||||||||||
+ 
+#endif
+ 
+//|||||||||||||||||||||||||||||||||||||||||||||||

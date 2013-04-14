@@ -11,6 +11,9 @@
 
 #include <btBulletCollisionCommon.h>
 
+#include <string.h>
+#include "Planet.h"
+
 //|||||||||||||||||||||||||||||||||||||||||||||||
  
 using namespace Ogre;
@@ -19,15 +22,15 @@ using namespace Ogre;
  
 SingleGameState::SingleGameState()
 {
-    m_MoveSpeed		= 0.1f;
-    m_RotateSpeed	= 0.3f;
+    m_MoveSpeed        = 50.0f;
+    m_RotateSpeed    = 0.3f;
  
     m_bLMouseDown       = false;
     m_bRMouseDown       = false;
     m_bQuit             = false;
     m_bSettingsMode     = false;
  
-    m_pDetailsPanel	= 0;
+    m_pDetailsPanel    = 0;
     
     // stuff from Assignment 2
     deltaX = 0;
@@ -55,7 +58,7 @@ void SingleGameState::enter()
     m_pSceneMgr->setAmbientLight(Ogre::ColourValue(0.7f, 0.7f, 0.7f));
  
     m_pCamera = m_pSceneMgr->createCamera("GameCamera");
-    m_pCamera->setPosition(0,0,450); 
+    m_pCamera->setPosition(0,0,20000); 
     m_pCamera->lookAt(Vector3(0, 0, 0));
     m_pCamera->setNearClipDistance(5);
  
@@ -158,7 +161,6 @@ void SingleGameState::createScene()
     cout << "sizeof(char) = " << sizeof(char) << endl;
     cout << "sizeof(btVector3) = " << sizeof(btVector3) << endl;
     
-    
     //cout << "sizeof(btVector3*) = " << sizeof(btVector3*) << endl;
     
     mRenderer = &CEGUI::OgreRenderer::bootstrapSystem();
@@ -170,74 +172,24 @@ void SingleGameState::createScene()
     GameObject tempObject;
     
     // Create game objects
-    tempObject = GameObject(m_pSceneMgr, &simulator, btVector3(0,0,0), "sphere.mesh", "Examples/PlasmaShit"); 
-    tempObject.rootNode->attachObject(m_pSceneMgr->createParticleSystem("Smoke", "Examples/Smoke"));
-    tempObject.scale(0.1, 0.1, 0.1);
-    tempObject.mass = 1.0f; 
-    tempObject.shape = new btSphereShape(10.0f);
-    tempObject.addToSimulator();
-    m_objects.push_back(tempObject);
     
-    tempObject = GameObject(m_pSceneMgr, &simulator, btVector3(0,0,210), "cube.mesh", "MyMaterials/wood1");
+    // Earth
+    Planet earth( btVector3(0,0,0), //center
+                  btVector3(0,0,1), //axis
+                  btVector3(0,1,0), //longitude_zero
+                  6371,
+                  3);
+    earth.init();
+    //earth.createOgreMesh("earth");
     
-    tempObject.scale(0.2, 0.2, 0.01);
-    tempObject.mass = 1.0f;
-    tempObject.shape = new btStaticPlaneShape(btVector3(0,0,-1), 0);
-    tempObject.addToSimulator();
-    m_objects.push_back(tempObject);
+    earth.createManualObjects(m_pSceneMgr);
     
-    Ogre::Plane plane_x_pos_in(Ogre::Vector3::NEGATIVE_UNIT_X, 0);
-    Ogre::Plane plane_x_neg_in(Ogre::Vector3::UNIT_X, 0);
-    Ogre::Plane plane_y_pos_in(Ogre::Vector3::NEGATIVE_UNIT_Y, 0);
-    Ogre::Plane plane_y_neg_in(Ogre::Vector3::UNIT_Y, 0);
-    Ogre::Plane plane_z_pos_in(Ogre::Vector3::NEGATIVE_UNIT_Z, 0);
-    Ogre::Plane plane_z_neg_in(Ogre::Vector3::UNIT_Z, 0);
     
-    // positive x plane
-    Ogre::MeshManager::getSingleton().createPlane("plane_x_pos_in", Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME, plane_x_pos_in, 400.0f, 200.0f, 1, 1, true, 1, 1.0f, 1.0f, Ogre::Vector3::UNIT_Y);
-    tempObject = GameObject(m_pSceneMgr, &simulator, btVector3(100,0,0), "plane_x_pos_in", "Examples/Rockwall");
-    tempObject.shape = new btStaticPlaneShape(btVector3(-1,0,0), 0);
-    tempObject.addToSimulator();
-    m_objects.push_back(tempObject);
     
-    // negative x plane
-    Ogre::MeshManager::getSingleton().createPlane("plane_x_neg_in", Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME, plane_x_neg_in, 400.0f, 200.0f, 1, 1, true, 1, 1.0f, 1.0f, Ogre::Vector3::UNIT_Y);
-    tempObject = GameObject(m_pSceneMgr, &simulator, btVector3(-100,0,0), "plane_x_neg_in", "Examples/Rockwall");
-    tempObject.shape = new btStaticPlaneShape(btVector3(1,0,0), 0);
-    tempObject.addToSimulator();
-    m_objects.push_back(tempObject);
     
-    // positive y plane
-    Ogre::MeshManager::getSingleton().createPlane("plane_y_pos_in", Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME, plane_y_pos_in, 400.0f, 200.0f, 1, 1, true, 1, 1.0f, 1.0f, Ogre::Vector3::UNIT_X);
-    tempObject = GameObject(m_pSceneMgr, &simulator, btVector3(0,100,0), "plane_y_pos_in", "MyMaterials/wood3");
-    tempObject.shape = new btStaticPlaneShape(btVector3(0,-1,0), 0);
-    tempObject.addToSimulator();
-    m_objects.push_back(tempObject);
-    
-    // negative y plane
-    Ogre::MeshManager::getSingleton().createPlane("plane_y_neg_in", Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME, plane_y_neg_in, 400.0f, 200.0f, 1, 1, true, 1, 1.0f, 1.0f, Ogre::Vector3::UNIT_X);
-    tempObject = GameObject(m_pSceneMgr, &simulator, btVector3(0,-100,0), "plane_y_neg_in", "MyMaterials/wood3");
-    tempObject.shape = new btStaticPlaneShape(btVector3(0,1,0), 0);
-    tempObject.addToSimulator();
-    m_objects.push_back(tempObject);
-    
-    // positive z plane
-    Ogre::MeshManager::getSingleton().createPlane("plane_z_pos_in", Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME, plane_z_pos_in, 200.0f, 200.0f, 1, 1, true, 1, 1.0f, 1.0f, Ogre::Vector3::UNIT_Y);
-    tempObject = GameObject(m_pSceneMgr, &simulator, btVector3(0,0,200), "plane_z_pos_in", "Examples/Rockwall");
-    tempObject.shape = new btStaticPlaneShape(btVector3(0,0,-1), 0);
-    tempObject.addToSimulator();
-    m_objects.push_back(tempObject);
-    
-    // negative z plane
-    Ogre::MeshManager::getSingleton().createPlane("plane_z_neg_in", Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME, plane_z_neg_in, 200.0f, 200.0f, 1, 1, true, 1, 1.0f, 1.0f, Ogre::Vector3::UNIT_Y);
-    tempObject = GameObject(m_pSceneMgr, &simulator, btVector3(0,0,-200), "plane_z_neg_in", "MyMaterials/buddha1");
-    tempObject.shape = new btStaticPlaneShape(btVector3(0,0,1), 0);
-    tempObject.addToSimulator();
-    m_objects.push_back(tempObject);
-	
     // Create a Light and set its position
     Ogre::Light* light = m_pSceneMgr->createLight("MainLight");
-    light->setPosition(75.0f, 75.0f, 75.0f);
+    light->setPosition(20000.0f, 20000.0f, 20000.0f);
     light->setDiffuseColour(1,1,1);
     
     //CEGUI SHIT(Stuff Hard to Improve Technically)
@@ -292,14 +244,6 @@ void SingleGameState::createScene()
     float r2 = (rand() % 100);
     float r3 = (rand() % 100);
     
-    myBall = &m_objects[0];
-    myBall->tr = btTransform(btMatrix3x3(1,0,0,0,1,0,0,0,1),btVector3(r1, r2, -500));
-    myBall->updateTransform();
-    
-    myBall->direction = btVector3(r1, r2, -500);
-    myBall->direction.normalize();
-    myBall->speed = speed_default;
-    myBall->setPosition(btVector3(0,0,0));
 }
 
 bool SingleGameState::keyPressed(const OIS::KeyEvent &keyEventRef)
@@ -324,7 +268,7 @@ bool SingleGameState::keyPressed(const OIS::KeyEvent &keyEventRef)
     if(OgreFramework::getSingletonPtr()->m_pKeyboard->isKeyDown(OIS::KC_ESCAPE))
     {
         pushAppState(findByName("PauseState"));
-        OgreFramework::getSingletonPtr()->m_pTrayMgr->showCursor();
+        //OgreFramework::getSingletonPtr()->m_pTrayMgr->showCursor();
         return true;
     }
  
@@ -382,18 +326,14 @@ bool SingleGameState::mouseMoved(const OIS::MouseEvent &evt)
     if (yi > 90) yi = 90;
     if (yi < -90) yi = -90;
     //cout << "move: (" << deltaX << "," << deltaY << ")" << endl;
-    return true;
     
-    /*
- 
     if(m_bRMouseDown)
     {
         m_pCamera->yaw(Degree(evt.state.X.rel * -0.1f));
         m_pCamera->pitch(Degree(evt.state.Y.rel * -0.1f));
     }
- 
+    
     return true;
-    */
 }
 
 //|||||||||||||||||||||||||||||||||||||||||||||||
@@ -410,7 +350,7 @@ bool SingleGameState::mousePressed(const OIS::MouseEvent &evt, OIS::MouseButtonI
             if (ready){
                 ready = false;
             }
-            OgreFramework::getSingletonPtr()->m_pTrayMgr->hideCursor();
+            //OgreFramework::getSingletonPtr()->m_pTrayMgr->hideCursor();
             break;
         case OIS::MB_Right: 
             m_bRMouseDown = true;
@@ -454,8 +394,6 @@ bool SingleGameState::mouseReleased(const OIS::MouseEvent &evt, OIS::MouseButton
     {
         m_bRMouseDown = false;
     }
-    
-
  
     return true;
 }
@@ -555,160 +493,7 @@ void SingleGameState::update(double timeSinceLastFrame)
     getInput();
     moveCamera();
     
-    // stuff from Assignment 2
-    myBall = &m_objects[0];
-    myPaddle = &m_objects[1];
-    GameObject* myWall_x_pos = &m_objects[2];
-    GameObject* myWall_x_neg = &m_objects[3];
-    GameObject* myWall_y_pos = &m_objects[4];
-    GameObject* myWall_y_neg = &m_objects[5];
-    GameObject* myWall_z_pos = &m_objects[6];
-    GameObject* myWall_z_neg = &m_objects[7];
     
-    // Apply gravity
-    myBall->direction += btVector3(0, -(0.00001*GRAVITY), 0);
-    myBall->direction.normalize();
-    
-    // Move the ball
-    if (!ready){
-        //myBall->simulator->stepSimulation(1);
-        myBall->move(m_FrameEvent);
-    }
-    
-    // Move the paddle
-    myPaddle->direction = btVector3(deltaX, deltaY, 0);
-    myPaddle->speed = sqrt(deltaX*deltaX + deltaY*deltaY);
-    myPaddle->setPosition(btVector3(xi, yi, 210));
-    //myPaddle->move(evt);
-    
-    if (myPaddle->position.x() > 90){
-        myPaddle->setPosition(btVector3(90, myPaddle->position.y(), myPaddle->position.z()));
-    }
-    if (myPaddle->position.x() < -90){
-        myPaddle->setPosition(btVector3(-90, myPaddle->position.y(), myPaddle->position.z()));
-    }
-    if (myPaddle->position.y() > 90){
-        myPaddle->setPosition(btVector3(myPaddle->position.x(), 90, myPaddle->position.z()));
-    }
-    if (myPaddle->position.y() < -90){
-        myPaddle->setPosition(btVector3(myPaddle->position.x(), -90, myPaddle->position.z()));
-    }
-    
-    //cout << myPaddle->direction << endl;
-    //cout << myPaddle->speed << endl;
-    
-    /*
-    Reflection vector formula:
-    
-    L = light
-    R = reflection
-    
-    R = 2(N dot L)N - L
-    
-    */
-    
-    //myBall->nextPosition.x() >= 90-myBall->position.x()
-    
-    // The ball hits the positive x plane
-    if (myBall->position.x() > 90 || myBall->nextPosition.x() > 90){
-        myBall->setPosition(btVector3(90, myBall->position.y(), myBall->position.z()));
-        myBall->direction += (-2.0 * (btVector3(-1,0,0).dot(myBall->direction)) * btVector3(-1,0,0));
-        //cout << "hit!" << endl;
-	    sound.PlaySound("boink1_cx65377.wav");
-    }
-    
-    // The ball hits the negative x plane
-    else if (myBall->position.x() < -90 || myBall->nextPosition.x() < -90){
-        myBall->setPosition(btVector3(-90, myBall->position.y(), myBall->position.z()));
-        myBall->direction += (-2.0 * (btVector3(1,0,0).dot(myBall->direction)) * btVector3(1,0,0));
-        //cout << "hit!" << endl;
-	    sound.PlaySound("boink1_cx65377.wav");
-    }
-    
-    // The ball hits the positive y plane
-    else if (myBall->position.y() > 90 || myBall->nextPosition.y() > 90){
-        myBall->setPosition(btVector3(myBall->position.x(), 90, myBall->position.z()));
-        myBall->direction += (-2.0 * (btVector3(0,-1,0).dot(myBall->direction)) * btVector3(0,-1,0));
-        //cout << "hit!" << endl;
-	    sound.PlaySound("boink1_cx65377.wav");
-    }
-    
-    // The ball hits the negative y plane
-    else if (myBall->position.y() < -90 || myBall->nextPosition.y() < -90){
-        myBall->setPosition(btVector3(myBall->position.x(), -90, myBall->position.z()));
-        myBall->direction += (-2.0 * (btVector3(0,1,0).dot(myBall->direction)) * btVector3(0,1,0));
-        //cout << "hit!" << endl;
-	    sound.PlaySound("boink1_cx65377.wav");
-    }
-    
-    // The ball hits the positive z plane
-    else if (myBall->position.z() > 190 || myBall->nextPosition.z() > 190){
-        myBall->setPosition(btVector3(myBall->position.x(), myBall->position.y(), 190));
-        myBall->direction += (-2.0 * (btVector3(0,0,-1).dot(myBall->direction)) * btVector3(0,0,-1));
-        if (abs(myPaddle->position.x() - myBall->position.x()) <= 25 && abs(myPaddle->position.y() - myBall->position.y()) <= 25){
-            myBall->direction += (0.2 * myPaddle->direction);
-            myBall->direction.normalize();
-            score += myBall->speed;
-            myBall->speed += increment;
-            CEGUI::Window* counter = CEGUI::WindowManager::getSingleton().getWindow("Counter");
-            std::string shownScore;
-            std::stringstream out;
-            out << score;
-            shownScore = out.str();
-            counter->setText("Score: " + shownScore);
-            //cout << "HIT" << endl;
-            sound.PlaySound("boink1_cx65377.wav");
-        }
-        else if (abs(myPaddle->nextPosition.x() - myBall->nextPosition.x()) <= 25 && abs(myPaddle->nextPosition.y() - myBall->nextPosition.y()) <= 25){
-            myBall->direction += (0.2 * myPaddle->direction);
-            myBall->direction.normalize();
-            score += myBall->speed;
-            myBall->speed += increment;
-            CEGUI::Window* counter = CEGUI::WindowManager::getSingleton().getWindow("Counter");
-            std::string shownScore;
-            std::stringstream out;
-            out << score;
-            shownScore = out.str();
-            counter->setText("Score: " + shownScore);
-            //cout << "HIT" << endl;
-	        sound.PlaySound("boink1_cx65377.wav");
-        }
-        else{
-            //cout << "Score:" << score << "\nClick to restart" << endl;
-            lost = true;
-            if(score > highScore)
-                highScore = score;
-            CEGUI::Window* gameOver = CEGUI::WindowManager::getSingleton().getWindow("GameOverWindow");
-            std::string shownScore;
-            std::string shownHighScore;
-            std::stringstream out;
-            std::stringstream highOut;
-            out << score;
-            highOut << highScore;
-            shownScore = out.str();
-            shownHighScore = highOut.str();
-            gameOver->setText("Game Over, Final Score: " + shownScore + "\nTop Score: " + shownHighScore + "\nClick To Restart");
-            gameOver->setVisible(true);
-            score = 0;
-            ready = true;
-            float r1 = (rand() % 100);
-            float r2 = (rand() % 100);
-            myBall->direction = btVector3(r1, r2, -1000);
-            myBall->direction.normalize();
-            myBall->speed = speed_default;
-            myBall->setPosition(btVector3(0,0,0));
-        }
-        //cout << "hit!" << endl;
-    }
-    
-    // The ball hits the negative z plane
-    else if (myBall->position.z() < -190 || myBall->nextPosition.z() < -190){
-        myBall->setPosition(btVector3(myBall->position.x(), myBall->position.y(), -190));
-        myBall->direction += (-2.0 * (btVector3(0,0,1).dot(myBall->direction)) * btVector3(0,0,1));
-        //cout << "hit!" << endl;
-	    sound.PlaySound("boink1_cx65377.wav");
-	    myBall->speed -= 10;
-    }
     
     /*
     if(mWindow->isClosed())

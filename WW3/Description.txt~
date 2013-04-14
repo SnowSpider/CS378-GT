@@ -1,0 +1,52 @@
+Final Game Project Description
+
+Daniel Moreno drm2472 drmoreno
+Wonjun Lee wl4337 wlee
+Howard Fu hef79 howardfu
+
+Game Design:
+A real-time strategy game based off Battleship. The world is represented by a sphere instead of a flat board.
+The players will assume the roles of USA and USSR. The objective is to eliminate the other player's nuclear weapon platforms. 
+The games is divided into 2 phases: peace and war.
+During the peace phase, USA and USSR build ICBM silos in their territory. They can also build navy bases and air force bases (AFB). The buildings are invisible to the enemy.
+During the war phase, which is initiated when both players have declared war by pressing a button, they launch their missiles to destroy the other player's silos. The players cannot construct any more buildings or weapons. 
+The game ends when a player destroys the last enemy nuclear weapon platform. In order to "win" you need at least one weapon platform left.
+
+*** The World ***
+The game is played on a spherical world that can be rotated freely, like Google Earth. 
+Also the world is divided into hexagonal tiles, not rectangular, to ensure that it's radially symmetriacal from any angle.
+The planet's mesh file is created computationally for each game. 
+
+The world is constructed thus:
+1. Construct an icosahedron (12-sided platonic solid), defined by 20 vectors radiating from the origin.
+2. Each face, initially equilateral triangle, is divided into 4 triangles by adding a new vertex on each side. The new vertices are pushed out to approximate a sphere.
+3. Step 2 is recursively repeated until we are happy with the number of faces. The number will be quadrupled at each step.
+4. 6 neighboring faces are grouped together and outlined. 
+
+*** Trackball Rotation ***
+Keyboard input (WASD) will be converted to btVector3 and fed to the rotation matrix, then the 4x4 quaternion. This will allow free rotation.
+
+*** Tiles ***
+There will be "land" tiles and "water" tiles. "Land" tiles are occupied by different factions: USA, USSR and neutral. The players are unable to expand their territory; they can only lose tiles by nuclear attack. Buildings may be only built on the center of a tile, and a tile can only afford one building. When a nuclear warhead lands on a land tile, a crater decal will be applied to that tile.
+
+*** Construction ***
+During the peace phase, building icons will appear on the left hand side of the screen. The player can left-click on an icon to select a building and then click on one of his own tiles to build it. He can deselect the building by right-click. 
+Each construction will deduct a certain amount from the national treasure. 
+
+*** The Chess Pieces ***
+ICBM Silo: The missile thrower. They can hit anywhere on the Earth.
+Navy Base: Houses subs and destroyers. Ships must return to their base periodically to recharge their weapons.
+    Submarine: They must be located in a water tile adjacent to the land tile you want to destroy.
+    Destroyer: 
+Air Force Base: Houses bombers and fighters. Aeroplanes must return to their base periodically to recharge their weapons.
+    Bomber: They can hit anywhere on the Earth. 
+    Fighter: Shoots down enemy bombers. 
+SAM Site: Shoots down enemy areoplanes.
+Naval Mines: Mines are placed on water tiles to defend against the submarines.
+
+
+
+
+
+
+

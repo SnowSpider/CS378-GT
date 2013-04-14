@@ -1,437 +1,523 @@
 #include "Planet.h"
+using namespace Ogre;
 
-bool Planet::m_initStaticRes = false;
-int Planet::g_texTemplate;
-int Planet::g_texTileset;
-int Planet::g_texTilesetGrid;
+void Planet::init(){
+    // Clear the datastore
+    vertices.clear();
+    faces.clear();
+    cells.clear();
+    
+    // Compute the 3D vertices of an icosahedron
+    const float sqrt5 = sqrt (5.0f);
+    const float phi = (1.0f + sqrt5) * 0.5f;
+    const float cRadius = sqrt (10.0f + (2.0f * sqrt5)) / (4.0f * phi); // circumscribed radius
+    double a = (radius / cRadius) * 0.5;
+    double b = (radius / cRadius) / (2.0f * phi);
+    
+    PlanetVertex v0 ( 0,  b, -a);
+    PlanetVertex v1 ( b,  a,  0); 
+    PlanetVertex v2 (-b,  a,  0);
+    PlanetVertex v3 ( 0,  b,  a);
+    PlanetVertex v4 ( 0, -b,  a);
+    PlanetVertex v5 (-a,  0,  b);
+    PlanetVertex v6 ( 0, -b, -a);
+    PlanetVertex v7 ( a,  0, -b);
+    PlanetVertex v8 ( a,  0,  b);
+    PlanetVertex v9 (-a,  0, -b);
+    PlanetVertex v10( b, -a,  0);
+    PlanetVertex v11(-b, -a,  0); 
+    
+    // define rotation axis
+    btVector3 xAxis(1,0,0);
+    btVector3 yAxis(0,1,0);
+    btVector3 zAxis(0,0,1);
+    
+    // rotate everything
+    float offset = atan(b/a);
+    v0.rotate(zAxis, offset);
+    v1.rotate(zAxis, offset);
+    v2.rotate(zAxis, offset);
+    v3.rotate(zAxis, offset);
+    v4.rotate(zAxis, offset);
+    v5.rotate(zAxis, offset);
+    v6.rotate(zAxis, offset);
+    v7.rotate(zAxis, offset);
+    v8.rotate(zAxis, offset);
+    v9.rotate(zAxis, offset);
+    v10.rotate(zAxis, offset);
+    v11.rotate(zAxis, offset);
+    
+    // Start subdivision
+    subdivide (v0,  v1,  v2  , complexity);
+    subdivide (v3,  v2,  v1  , complexity);
+    subdivide (v3,  v4,  v5  , complexity);
+    subdivide (v3,  v8,  v4  , complexity);
+    subdivide (v0,  v6,  v7  , complexity);
+    subdivide (v0,  v9,  v6  , complexity);
+    subdivide (v4,  v10, v11 , complexity);
+    subdivide (v6,  v11, v10 , complexity); 
+    subdivide (v2,  v5,  v9  , complexity);
+    subdivide (v11, v9,  v5  , complexity);
+    subdivide (v1,  v7,  v8  , complexity);
+    subdivide (v10, v8,  v7  , complexity);
+    subdivide (v3,  v5,  v2  , complexity);
+    subdivide (v3,  v1,  v8  , complexity);
+    subdivide (v0,  v2,  v9  , complexity);
+    subdivide (v0,  v7,  v1  , complexity);
+    subdivide (v6,  v9,  v11 , complexity);
+    subdivide (v6,  v10, v7  , complexity);
+    subdivide (v4,  v11, v5  , complexity);
+    subdivide (v4,  v8,  v10 , complexity);
 
-float Planet::m_radius = 6371.0f;
-
-Cell::Cell( btVector3 p ) : m_vertPos( p ) {
-	m_terrain = Cell::Terrain_DESERT;
-	m_nrm = p.normalized();
+    // Fix the seam.
+    fixSeam();
+    
+    // Create cells.
+    genCells();
+    
+    // Debugging.
+    cout << "number of vertex = " << vertices.size() << endl;
+    cout << "number of face = " << faces.size() << endl;
+    cout << "number of cell = " << cells.size() << endl;
+    cout << "k = " << complexity << endl;
 }
 
-Face::Face( size_t a, size_t b, size_t c) : m_cellA(a), m_cellB(b), m_cellC(c) {
-	m_nbAB = NULL;
-	m_nbBC = NULL;
-	m_nbCA = NULL;
-	
-	// Mark newvert as uninitialized
-	m_tmp.m_newvert = std::string::npos;
+void Planet::subdivide(PlanetVertex& a, PlanetVertex& b, PlanetVertex& c, int k){
+    if(k==0){
+        //assign neighbors
+        bool aNew = true;
+        bool bNew = true;
+        bool cNew = true;
+        int aId, bId, cId;
+        
+        // OPT NOTE: This makes init() unbearably slow.
+        for(int i=0;i<vertices.size();i++){ 
+            PlanetVertex temp = vertices[i];
+            if(temp.equals(a)){
+                aNew = false;
+                aId = temp.id;
+            }
+            if(temp.equals(b)){
+                bNew = false;
+                bId = temp.id;
+            }
+            if(temp.equals(c)){
+                cNew = false;
+                cId = temp.id;
+            }
+        }
+        
+        if(aNew){
+            mapVertex(a);
+            vertices.add(a);
+            aId = vertices.currentId - 1;
+        }
+        if(bNew){
+            mapVertex(b);
+            vertices.add(b);
+            bId = vertices.currentId - 1;
+        }
+        if(cNew){
+            mapVertex(c);
+            vertices.add(c);
+            cId = vertices.currentId - 1;
+        }
+        
+        // OPT NOTE: Ugly.
+        vertices[aId].marry(vertices[bId]); 
+        vertices[bId].marry(vertices[cId]);
+        vertices[cId].marry(vertices[aId]);
+        
+        PlanetFace tempFace(vertices[aId], vertices[bId], vertices[cId]);
+        faces.add(tempFace);
+    }
+    else{
+        // Find edge midpoints.
+        PlanetVertex ab = midpointOnSphere (a, b);
+        PlanetVertex bc = midpointOnSphere (b, c);
+        PlanetVertex ca = midpointOnSphere (c, a);
+        
+        // Create 4 subdivided triangles and recurse.
+        subdivide ( a, ab, ca, k-1);
+        subdivide (ab,  b, bc, k-1);
+        subdivide (ca, bc,  c, k-1);
+        subdivide (ab, bc, ca, k-1);
+    }
 }
 
-btVector3 Face::getCenter( const std::vector<Cell> &cells ) {
-	btVector3 ret = cells[ m_cellA ].m_vertPos;
-	ret += cells[ m_cellB ].m_vertPos;
-	ret += cells[ m_cellC ].m_vertPos;
-	ret /= 3.0f;
-	return ret;
+void Planet::mapVertex(PlanetVertex& v){
+    btVector3 w(v[0], 0.0, v[2]); 
+    float latitude; 
+    latitude = v.angle(axis)/PI; 
+    float longitude; 
+    if(v[0]>0) longitude = (2.0*PI - w.angle(longitude_zero))/PI/2.0; 
+    else longitude = w.angle(longitude_zero)/PI/2.0; 
+    if(!(longitude>=0&&longitude<=1)) longitude = 0.0; //longitude is -1.#IND00
+    v.longitude = longitude;
+    v.latitude = latitude;
 }
 
-Planet::Planet( int subd_level ) : m_subdLevel(0) {
-	// build initial (level 0) mesh
-	buildLevel0();
-
-	// subdivide until desired level
-	while (m_subdLevel < subd_level) {
-		subdivide();
-	}
-
-	// planetize if we're at level 0
-	if (subd_level == 0) {
-		projectToSphere();
-	}
+void Planet::fixSeamHelper(PlanetFace& f){
+    PlanetVertex& a = vertices[f.v[0]];
+    PlanetVertex& b = vertices[f.v[1]];
+    PlanetVertex& c = vertices[f.v[2]];
+    
+    float aLongitude = a.longitude;
+    float bLongitude = b.longitude;
+    float cLongitude = c.longitude;
+    float aLatitude = a.latitude;
+    float bLatitude = b.latitude;
+    float cLatitude = c.latitude;
+    
+    // special cases for the poles
+    // PlanetFaces needs bool touchsPole. need repair.
+    
+    /*
+    if(aLongitude==0 && aLatitude==0){
+        
+    }
+    else if(bLongitude==0 && bLatitude==0){
+        
+    }
+    else if(cLongitude==0 && cLatitude==0){
+        
+    }
+    */
+    
+    /*
+    signed area = sum of 2-d cross product
+    U x V = Ux*Vy-Uy*Vx
+    http://howevangotburned.wordpress.com/2011/02/28/the-oddyssey-of-texturing-a-geodesic-dome/
+    */
+    
+    if( (cLongitude*bLatitude-cLatitude*bLongitude) +
+        (bLongitude*aLatitude-bLatitude*aLongitude) +
+        (aLongitude*cLatitude-aLatitude*cLongitude) < 0 ){ 
+        // Signed area is negative
+        if(c[0]<=0){
+            PlanetVertex newC(c);
+            newC.longitude++;
+            newC.positive = false;
+            vertices.add(newC);
+            f.v[2] = newC.id; //critical
+        }
+        if(b[0]<=0){
+            PlanetVertex newB(b);
+            newB.longitude++;
+            newB.positive = false;
+            vertices.add(newB);
+            f.v[1] = newB.id; //critical
+        }
+        if(a[0]<=0){
+            PlanetVertex newA(a);
+            newA.longitude++;
+            newA.positive = false;
+            vertices.add(newA);
+            f.v[0] = newA.id; //critical
+        }
+        f.positive = false;
+    }
 }
 
-//=============================
-// buildLevel0 -- builds the initial icosahedron
-// for the planet mesh
-//=============================
-void Planet::buildLevel0()
-{
-	// hard code an icosahedron (20 sided die)
-	m_cells.erase( m_cells.begin(), m_cells.end() );	
-	m_cells.push_back( Cell( btVector3( 0.723606f, 0.0f, 1.17082f )));
-	m_cells.push_back( Cell( btVector3( 0.0f, 1.17082f, 0.723606f )));
-	m_cells.push_back( Cell( btVector3( -0.723606f, 0.0f, 1.17082f )));
-	m_cells.push_back( Cell( btVector3( 0.0f, -1.17082f,  0.723606f )));
-	m_cells.push_back( Cell( btVector3( 0.723606f, 0.0f, -1.17082f )));
-	m_cells.push_back( Cell( btVector3( 0.0f, -1.17082f, -0.723606f )));
-	m_cells.push_back( Cell( btVector3( -0.723606f, 0.0f, -1.17082f )));
-	m_cells.push_back( Cell( btVector3( 0.0f, 1.17082f, -0.723606f )));
-	m_cells.push_back( Cell( btVector3( 1.17082f, -0.723606f, 0.0f )));
-	m_cells.push_back( Cell( btVector3( 1.17082f, 0.723606f, 0.0f )));
-	m_cells.push_back( Cell( btVector3( -1.17082f, 0.723606f, 0.0f )));
-	m_cells.push_back( Cell( btVector3( -1.17082f, -0.723606f,  0.0f )));
-
-	m_hexdual.push_back( Face( 5, 11, 6 ));
-	m_hexdual.push_back( Face( 1, 2, 0 ));
-	m_hexdual.push_back( Face( 0, 2, 3 ));
-	m_hexdual.push_back( Face( 5, 6, 4 ));
-	m_hexdual.push_back( Face( 4, 6, 7 ));
-	m_hexdual.push_back( Face( 9, 1, 0 ));
-	m_hexdual.push_back( Face( 10, 2, 1 ));
-	m_hexdual.push_back( Face( 2, 10, 11 ));
-	m_hexdual.push_back( Face( 11, 3, 2 ));
-	m_hexdual.push_back( Face( 8, 9, 0 ));
-	m_hexdual.push_back( Face( 0, 3, 8 ));
-	m_hexdual.push_back( Face( 11, 10, 6 ));
-	m_hexdual.push_back( Face( 4, 7, 9 ));
-	m_hexdual.push_back( Face( 9, 8, 4 ));
-	m_hexdual.push_back( Face( 7, 6, 10 ));
-	m_hexdual.push_back( Face( 1, 9, 7 ));
-	m_hexdual.push_back( Face( 10, 1, 7 ));
-	m_hexdual.push_back( Face( 5, 4, 8 ));
-	m_hexdual.push_back( Face( 3, 11, 5 ));
-	m_hexdual.push_back( Face( 8, 3, 5 ));	
-
-	// make planet sized
-	// projectToSphere();
-
-	// assign neighbors
-	findNeighbors();
+void Planet::fixSeam(){
+    for(int i=0;i<faces.size();i++){
+        fixSeamHelper( faces[i] );
+    }
 }
 
-// Used in subdivide
-void createTrisFromEdge( std::vector< std::pair< size_t, size_t > > &edgeDone,
-                         std::vector<Face> &trilist,
-                         Face &tri, Face &otherTri,
-                         size_t eA, size_t eB ) {
-	std::pair<size_t, size_t> eid( std::min( eA, eB ), std::max( eA, eB ) );
-	if (std::find( edgeDone.begin(), edgeDone.end(), eid ) == edgeDone.end() ) {
-		trilist.push_back( Face( eA, tri.m_tmp.m_newvert, otherTri.m_tmp.m_newvert ) );					
-		trilist.push_back( Face( tri.m_tmp.m_newvert, otherTri.m_tmp.m_newvert, eB ) );
-		edgeDone.push_back( eid );
-	}
+PlanetVertex Planet::midpointOnSphere (PlanetVertex& a, PlanetVertex& b){
+    btVector3 midpoint = (a + b) * 0.5;
+    btVector3 unitRadial = midpoint - center;
+    unitRadial.normalize();
+    PlanetVertex midPointOnSphere = center + (unitRadial * radius);
+    return midPointOnSphere;
 }
 
-//=============================
-// subdivide()
-// Perform sqrt(3) subdivision on
-// the mesh
-//=============================
-void Planet::subdivide() {
-	// Subdivide by creating two triangles in 
-	// the next level mesh for every edge in the
-	// src mesh. Keep track of which edges have
-	// already been handled
-	std::vector< std::pair< size_t, size_t > > edgeDone;
-
-	// The new mesh that will be created	
-	std::vector<Face> newHexdual;
-
-	// Go through each triangle in the old mesh and create
-	// a new vert at the center of each one
-	for (std::vector<Face>::iterator ti = m_hexdual.begin();
-		 ti != m_hexdual.end(); ti++ ) {
-		// Create a new vert at the center of the triangle
-		btVector3 pNewVert;
-		(*ti).m_tmp.m_newvert = m_cells.size();
-		pNewVert = (*ti).getCenter( m_cells );		
-
-		// add it to the list of cells
-		m_cells.push_back( Cell( pNewVert ) );
-	}
-
-	// Go through each triangle in the old mesh and create
-	// a new pair of triangles for each edge
-	for (std::vector<Face>::iterator ti = m_hexdual.begin();
-		 ti != m_hexdual.end(); ti++ ) {
-		Face &t = (*ti);
-
-		// Create a pair for edge AB
-		createTrisFromEdge( edgeDone, newHexdual, t, *(t.m_nbAB), t.m_cellA, t.m_cellB );
-
-		// Create a pair for edge BC
-		createTrisFromEdge( edgeDone, newHexdual, t, *(t.m_nbBC), t.m_cellB, t.m_cellC );
-		
-		// Create a pair for edge CA
-		createTrisFromEdge( edgeDone, newHexdual, t, *(t.m_nbCA), t.m_cellC, t.m_cellA );
-		
-	}
-
-	// replace the current set of cells with the dual
-	m_hexdual = newHexdual;
-
-	// find new neighbors
-	findNeighbors();
-
-	// reproject back to sphere
-	projectToSphere();
-
-	// note the subdivision
-	m_subdLevel++;
+PlanetVertex Planet::midpointOnSphere (PlanetVertex& a, PlanetVertex& b, PlanetVertex& c){
+    btVector3 midpoint = (a + b + c)/3.0;
+    btVector3 unitRadial = midpoint - center;
+    unitRadial.normalize();
+    PlanetVertex midPointOnSphere = center + (unitRadial * radius);
+    return midPointOnSphere;
 }
 
+/*
+void Planet::drawFace(PlanetFace& f){
+    PlanetVertex& a = vertices[f.v[0]]; 
+    PlanetVertex& b = vertices[f.v[1]]; 
+    PlanetVertex& c = vertices[f.v[2]]; 
+    
+    btVector3 triCenter = (a + b + c)/ 3.0f; // face center
+    btVector3 triNormal = triCenter - center; // face normal
+    
+    //glLoadName(f.id);
+    glBegin(GL_TRIANGLES);
+        glNormal3d(triNormal[0], triNormal[1], triNormal[2]); //Normal for lighting
+        glTexCoord2f(c.longitude, c.latitude);
+        glVertex3d(c[0], c[1], c[2]); //Vertex c
+        glTexCoord2f(b.longitude, b.latitude);
+        glVertex3d(b[0], b[1], b[2]); //Vertex b
+        glTexCoord2f(a.longitude, a.latitude);
+        glVertex3d(a[0], a[1], a[2]); //Vertex a
+    glEnd();
+}
+*/
 
-//=============================
-// findNeighbors() -- it would be more
-// efficent to just keep track of the neighbors
-// during subdivision, but this is easier
-//=============================
-bool edgeMatch( size_t a, size_t b,
-				size_t otherA, size_t otherB, size_t otherC ) {
-	if ( ((a==otherA) && (b==otherB)) ||
-		 ((a==otherB) && (b==otherC)) ||
-		 ((a==otherC) && (b==otherA)) ||
-		 ((b==otherA) && (a==otherB)) ||
-		 ((b==otherB) && (a==otherC)) ||
-		 ((b==otherC) && (a==otherA)) ) return true;
-	return false;
+/*
+void Planet::renderEarth(){
+    //glInitNames();
+    //cout << "Rendering...";
+    glEnable(GL_TEXTURE_2D);
+    glBindTexture(GL_TEXTURE_2D, texId_day);
+    
+    //blocky texture mapping
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST); 
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    
+    glColor3f(1.0f, 1.0f, 1.0f);
+    
+    for(int i=0;i<faces.size();i++){
+        drawFace( faces[i] );
+    }
+    glDisable(GL_TEXTURE_2D);
+}
+*/
+
+/*
+void Planet::renderWireframe(){
+    glColor3f(1.0,0.0,0.0);
+    for(int i=0;i<faces.size();i++){
+        PlanetVertex& a = vertices[faces[i].v[0]];
+        PlanetVertex& b = vertices[faces[i].v[1]];
+        PlanetVertex& c = vertices[faces[i].v[2]];
+        btVector3 triCenter = (a + b + c)/ 3.0f; 
+        btVector3 triNormal = triCenter - center; 
+        glBegin(GL_LINES);
+            glNormal3d(triNormal[0], triNormal[1], triNormal[2]); 
+            glVertex3d(c[0], c[1], c[2]); 
+            glVertex3d(b[0], b[1], b[2]); 
+            glVertex3d(a[0], a[1], a[2]); 
+            glVertex3d(c[0], c[1], c[2]); 
+        glEnd();
+    }
+}
+*/
+
+void Planet::genCells(){
+    for(int i=0;i<vertices.size();i++){
+        if(vertices[i].neighbors.size()>0){
+            //cout << "neighbors.size() = " << vertices[i].neighbors.size() << endl;
+            PlanetCell tempCell(vertices[i]);
+            std::vector<size_t> n = tempCell.neighbors;
+            PlanetVertex newVert;
+            for(int j=0;j<n.size();j++){
+                PlanetVertex currentNeighbor = vertices[n[j]];
+                newVert = midpointOnSphere(vertices[i], currentNeighbor);
+                mapVertex(newVert); //necessary for the sorting part
+                vertices.add(newVert); // NOT shared between cells
+                tempCell.paramVerts.push_back(vertices.currentId - 1);
+            }
+            for(int j=0;j<faces.size();j++){
+                if( vertices[faces[j].v[0]].equals(vertices[i]) || 
+                    vertices[faces[j].v[1]].equals(vertices[i]) || 
+                    vertices[faces[j].v[2]].equals(vertices[i]) ){
+                    //newVert = faces[j].center; //this variable is not updated
+                    newVert = midpointOnSphere( vertices[faces[j].v[0]], 
+                                                vertices[faces[j].v[1]], 
+                                                vertices[faces[j].v[2]] );
+                    mapVertex(newVert);
+                    vertices.add(newVert); //necessary for the sorting part
+                    tempCell.paramVerts.push_back(vertices.currentId - 1);
+                }
+            }
+            // Sort the paramVerts.
+            std::vector<size_t> x = tempCell.paramVerts;
+            std::vector<size_t> paramVerts_sorted;
+            size_t tempId;
+            int index = 0;
+            float min;
+            while(x.size()>0){
+                tempId = x[index];
+                x.erase(x.begin()+index);
+                paramVerts_sorted.push_back(tempId);
+                min = radius; //critical
+                for(int j=0;j<x.size();j++){
+                    float edgeLength = (vertices[tempId] - vertices[x[j]]).length();
+                    if(edgeLength < min){
+                        min = edgeLength;
+                        index = j;
+                    }
+                }
+            }
+            //At this point, paramVerts may have been sorted clockwise OR counterclockwise.
+            /*
+            signed area = sum of 2-d cross product
+            U x V = Ux*Vy-Uy*Vx
+            */
+            
+            
+            tempCell.paramVerts = paramVerts_sorted;
+            cells.add(tempCell);
+        }
+    }
 }
 
-bool _cmpAngle( Face *a, Face *b ) {
-	return a->m_tmp.m_angle < b->m_tmp.m_angle;
+/*
+void Planet::renderCellBoundary(PlanetCell& c){
+    std::vector<size_t> p = c.paramVerts;
+    btVector3 triCenter = vertices[c.centerId];
+    btVector3 triNormal = triCenter - center;
+    for(int j=0;j<p.size();j++){
+        glBegin(GL_LINES);
+        glNormal3d(triNormal[0], triNormal[1], triNormal[2]);
+        glVertex3d(vertices[p[j]][0], vertices[p[j]][1], vertices[p[j]][2]);
+        if(j+1==p.size()){
+            glVertex3d(vertices[p[0]][0], vertices[p[0]][1], vertices[p[0]][2]);
+        }
+        else{
+            glVertex3d(vertices[p[j+1]][0], vertices[p[j+1]][1], vertices[p[j+1]][2]);
+        }
+        glEnd();
+    }
+}
+*/
+
+PlanetCell& Planet::getCellAt(float longitude, float latitude){ //input in degrees
+    /*
+    First, the point normalized to a direction vector. 
+    The angle between the point and the hex center can be found by 
+    
+    acos( (n dot hexpos ) / planetRadius ). 
+    
+    Whichever hex has the smallest such angle contains the point. 
+    In my demo, checking every hex was fast enough even on a large subdivision level, 
+    for a game you would probably want to add an acceleration structure 
+    (perhaps as a 2D kd-tree in spherical coordinates).
+    */
+    longitude = longitude * PI / 180.0;
+    latitude = latitude * PI / 180.0;
+    
+    btVector3 targetRadial( center[0] + (radius * cos(longitude) * sin(latitude)),
+                       center[0] + (radius * sin(longitude) * sin(latitude)), 
+                       center[0] + (radius * cos(latitude)));
+    float min = PI;
+    float temp;
+    int tempId = -1;
+    for(int i=0;i<cells.size();i++){
+        temp = targetRadial.angle(vertices[cells[i].centerId]);
+        if(temp < min){
+            min = temp;
+            tempId = i;
+        }
+    }
+    return cells[tempId];
 }
 
-void Planet::findNeighbors() {
-	// Clear the Face list on the cells
-	for (std::vector<Cell>::iterator hi = m_cells.begin();
-		hi != m_cells.end(); hi++ ) {
-		(*hi).m_faces.erase( (*hi).m_faces.begin(), (*hi).m_faces.end() );
-	}
-
-	// Find edge adjacentcy -- slow and brute force. Should
-	// do this as part of the subdivide step if this were a
-	// non-prototype implementation.
-	for (std::vector<Face>::iterator ti = m_hexdual.begin();
-		ti != m_hexdual.end(); ti++) {
-		// find the neighbors for ti
-		for (std::vector<Face>::iterator tj = m_hexdual.begin();
-			tj != m_hexdual.end(); tj++) {
-
-			// Don't match ourselves
-			if (ti==tj) continue;
-
-			// Neighbor across edge AB
-			if ( edgeMatch( (*ti).m_cellA, (*ti).m_cellB,
-							(*tj).m_cellA, (*tj).m_cellB, (*tj).m_cellC ) ) {
-				(*ti).m_nbAB = &(*tj);
-			}
-
-			// Neighbor across edge BC
-			if ( edgeMatch( (*ti).m_cellB, (*ti).m_cellC,
-							(*tj).m_cellA, (*tj).m_cellB, (*tj).m_cellC ) ) {
-				(*ti).m_nbBC = &(*tj);
-			}
-
-			// Neighbor across edge CA
-			if ( edgeMatch( (*ti).m_cellC, (*ti).m_cellA,
-							(*tj).m_cellA, (*tj).m_cellB, (*tj).m_cellC ) ) {
-				(*ti).m_nbCA = &(*tj);
-			}
-		}
-
-
-		// Also as part of findNeighbors, set up the Face pointers
-		m_cells[(*ti).m_cellA].m_faces.push_back( &(*ti) );
-		m_cells[(*ti).m_cellB].m_faces.push_back( &(*ti) );
-		m_cells[(*ti).m_cellC].m_faces.push_back( &(*ti) );
-	}
-
-	// Now sort the Face list on the cells by the angle
-	// around the hex center
-	for (std::vector<Cell>::iterator hi = m_cells.begin();
-		hi != m_cells.end(); hi++ ) {
-		// assign angles 
-		for (std::vector<Face*>::iterator ti = (*hi).m_faces.begin();
-			  ti != (*hi).m_faces.end(); ti++ ) {
-			// arbitrarily use the first one as starting angle
-			// it doesn't matter		
-			btVector3 v1 = (*hi).m_faces.back()->getCenter( m_cells ) - (*hi).m_vertPos;			
-			btVector3 nrm = (*ti)->getCenter( m_cells );
-			btVector3 v2 = nrm - (*hi).m_vertPos;			
-			nrm.normalize();
-			v1.normalize();
-			v2.normalize();
-
-			float ang = acos( v1.dot(v2) );
-			float dir = nrm.dot( v1.cross(v2) );
-			if (dir < 0.0f) ang = M_PI + (M_PI - ang);
-
-			(*ti)->m_tmp.m_angle = ang;
-		}
-
-		// Sort them
-		std::sort( (*hi).m_faces.begin(), (*hi).m_faces.end(), _cmpAngle );
-	}
-	
+PlanetCell& Planet::getCellAt( btVector3 p ){
+    btVector3 targetRadial = p - center;
+    float minAngle = 2 * PI;
+    float currentAngle;
+    int bestCell;
+    for(int i=0;i<cells.size();i++){
+        currentAngle = targetRadial.angle(vertices[cells[i].centerId]);
+        if(currentAngle < minAngle){
+            minAngle = currentAngle;
+            bestCell = i;
+        }
+    }
+    return cells[bestCell];
 }
 
-//=============================
-// projectToSphere()
-//=============================
-void Planet::projectToSphere() {
-	for (std::vector<Cell>::iterator ti = m_cells.begin();
-		 ti != m_cells.end(); ti++ ) {
-		btVector3 p = (*ti).m_vertPos;
-		p.normalize();
-		p *= m_radius;
-		(*ti).m_vertPos = p;
-	}
-}
-
-size_t Planet::getNumCells() {
-	return m_cells.size();
-}
-
-size_t Planet::getHexIndexFromPoint( btVector3 surfPos ) {
-	size_t best_hex = 0;
-	float best_dot;
-
-	// normalize
-	btVector3 p = surfPos;
-	p.normalize();
-	best_dot = acos( (m_cells[0].m_vertPos.dot(p) )  / m_radius );
-
-
-	// clever cheat -- just use the dot product to find the 
+size_t Planet::getCellIdAt( btVector3 p ){
+    // clever cheat -- just use the dot product to find the 
 	// smallest angle -- and thus the containing hex
-	for (size_t ndx = 1; ndx < m_cells.size(); ndx++) {
-		float d = acos( ( m_cells[ndx].m_vertPos.dot(p) ) / m_radius );
-		if (d < best_dot) {
-			best_hex = ndx;
-			best_dot = d;
-		}
-	}
-
-	return best_hex;
+    btVector3 targetRadial = p - center;
+    float minAngle = 2 * PI;
+    float currentAngle;
+    int bestCell;
+    for(int i=0;i<cells.size();i++){
+        currentAngle = targetRadial.angle(vertices[cells[i].centerId]);
+        if(currentAngle < minAngle){
+            minAngle = currentAngle;
+            bestCell = i;
+        }
+    }
+    return bestCell;
 }
 
-// returns the polygon representation of this
-// hex. Usually 6-sided but could be a pentagon	
-void Planet::getPolygon( Cell &tile, std::vector<btVector3> &poly, float offset ) {
-	// clear list
-	poly.erase( poly.begin(), poly.end() );
+/*
+void Planet::renderAxis(){
+    glDisable(GL_LIGHTING);
+    glBegin(GL_LINES);
+    
+    glColor3f(1.0,0.0,0.0);
+    glVertex3f(center[0],center[1],center[2]);
+    glVertex3f(center[0]+1.0,center[1],center[2]);
+    
+    glColor3f(0.0,1.0,0.0);
+    glVertex3f(center[0],center[1],center[2]);
+    glVertex3f(center[0],center[1]+1.0,center[2]);
+    
+    glColor3f(0.0,0.0,1.0);
+    glVertex3f(center[0],center[1],center[2]);
+    glVertex3f(center[0],center[1],center[2]+1.0);
+    
+    glEnd();
+    glEnable(GL_LIGHTING);
+}
+*/
 
-	// construct polygon
-	for ( std::vector<Face*>::iterator ti = tile.m_faces.begin();
-		  ti != tile.m_faces.end(); ti++ ) {
-		btVector3 p = (*ti)->getCenter( m_cells );
-		p.normalize();
-		p *= m_radius + offset;
-		poly.push_back( p );
-	}
+/*
+void Planet::renderCells(){
+    glColor3f(1.0,1.0,1.0);
+    for(int i=0;i<cells.size();i++){
+        renderCellBoundary(cells[i]);
+    }
+}
+*/
+
+bool Planet::rayHitPlanet( btVector3 p, btVector3 dir, btVector3 &result ){
+    float a,b,c,d;
+    a = dir.dot(dir);
+    b = (2.0f*dir).dot(p);
+    c = p.dot(p) - (radius*radius);
+    d = b*b - 4.0f*a*c;
+    if (d <=0 ) return false;
+    result = p + ((-b - sqrt(d)) / 2.0f*a)*dir;
+    return true;
 }
 
-// returns the indices of the neighbors of this tile
-// Usually 6, could be 5
-void Planet::getNeighbors( size_t tileNdx, std::vector<size_t> &nbrs ) {
-	// clear list
-	nbrs.erase( nbrs.begin(), nbrs.end() );
-
-	// find neighbors
-	for ( std::vector<Face*>::iterator ti = m_cells[tileNdx].m_faces.begin();
-		  ti != m_cells[tileNdx].m_faces.end(); ti++ ) {
-		// Check all all the cells on neiboring 
-		// Facees (except ourself), checking for dups
-
-		// HEX A
-		if ( ( ((*ti)->m_cellA) != tileNdx ) &&
-			 (find( nbrs.begin(), nbrs.end(), ((*ti)->m_cellA) ) == nbrs.end() ) ) {
-			nbrs.push_back( ((*ti)->m_cellA) );
-		}
-
-		// HEX B
-		if ( ( ((*ti)->m_cellB) != tileNdx ) &&
-			 (find( nbrs.begin(), nbrs.end(), ((*ti)->m_cellB) ) == nbrs.end() ) ) {
-			nbrs.push_back( ((*ti)->m_cellB) );
-		}
-		
-		// HEX C
-		if ( ( ((*ti)->m_cellC) != tileNdx ) &&
-			 (find( nbrs.begin(), nbrs.end(), ((*ti)->m_cellC) ) == nbrs.end() ) ) {
-			nbrs.push_back( ((*ti)->m_cellC) );
-		}
-	}
+void Planet::createManualObjects(Ogre::SceneManager* scnMgr){
+    stringstream ss;
+    string s = "Cell_";
+    Ogre::String name_manobj;
+    for (int i=0; i<cells.size(); i++){
+        ss << i;
+        name_manobj = s.append(ss.str());
+        ManualObject* manual = scnMgr->createManualObject(name_manobj);
+        manual->begin("MyMaterials/wood2", RenderOperation::OT_LINE_STRIP);
+        
+        std::vector<size_t> p = cells[i].paramVerts;
+        //btVector3 triCenter = vertices[cells[i].centerId];
+        //btVector3 triNormal = triCenter - center;
+        
+        for(int j=0;j<p.size();j++){
+            //glNormal3d(triNormal[0], triNormal[1], triNormal[2]);
+            manual->position( vertices[p[j]][0], vertices[p[j]][1], vertices[p[j]][2] );
+            manual->normal( vertices[p[j]][0], vertices[p[j]][1], vertices[p[j]][2] );
+            if(j+1==p.size()){
+                manual->position( vertices[p[0]][0], vertices[p[0]][1], vertices[p[0]][2] );
+                manual->normal( vertices[p[0]][0], vertices[p[0]][1], vertices[p[0]][2] );
+            }
+            else{
+                manual->position( vertices[p[j+1]][0], vertices[p[j+1]][1], vertices[p[j+1]][2] );
+                manual->normal( vertices[p[j+1]][0], vertices[p[j+1]][1], vertices[p[j+1]][2] );
+            }
+        }
+        manual->end();
+        scnMgr->getRootSceneNode()->attachObject(manual);
+        cout << "Cell " << i << " created" << endl;
+    }
 }
 
-// Returns a point on the planet's surface given a ray
-bool Planet::rayHitPlanet( btVector3 p, btVector3 dir, btVector3 &result ) {
-	float a,b,c,d;
-	a = dir.dot(dir);
-	b = (2.0f*dir).dot(p);
-	c = (p.dot(p)) - (m_radius*m_radius);
-	d = b*b - 4.0f*a*c;
-	if (d <=0 ) return false;
-	result = p + ((-b - sqrt(d)) / 2.0f*a)*dir;
-	return true;
-}
-
-void Planet::createOgreMesh(string name){
-    /* create the mesh and a single sub mesh */
-    Ogre::MeshPtr mesh = Ogre::MeshManager::getSingleton().createManual("CustomMesh", "General");
-    Ogre::SubMesh *subMesh = mesh->createSubMesh();
-
-    /* create the vertex data structure */
-    mesh->sharedVertexData = new Ogre::VertexData;
-    mesh->sharedVertexData->vertexCount = 3;
-
-    /* declare how the vertices will be represented */
-    Ogre::VertexDeclaration *decl = mesh->sharedVertexData->vertexDeclaration;
-    size_t offset = 0;
-
-    /* the first three floats of each vertex represent the position */
-    decl->addElement(0, offset, Ogre::VET_FLOAT3, Ogre::VES_POSITION);
-    offset += Ogre::VertexElement::getTypeSize(Ogre::VET_FLOAT3);
-
-    /* the second three floats of each vertex represent the colour */
-    decl->addElement(0, offset, Ogre::VET_FLOAT3, Ogre::VES_COLOUR);
-    offset += Ogre::VertexElement::getTypeSize(Ogre::VET_FLOAT3);
-
-    /* create the vertex buffer */
-    Ogre::HardwareBuffer *vertexBuffer = Ogre::HardwareBufferManager::getSingleton().
-        createVertexBuffer(offset, mesh->sharedVertexData->vertexCount, Ogre::HardwareBuffer::HBU_STATIC);
-
-    /* lock the buffer so we can get exclusive access to its data */
-    float *vertices = static_cast<float *>(vertexBuffer->lock(Ogre::HardwareBuffer::HBL_NORMAL));
-
-    /* populate the buffer with some data */
-    vertices[0] = 0; vertices[1] = 1; vertices[2] = 0; /* position */
-    vertices[3] = 1; vertices[4] = 0; vertices[5] = 0; /* colour */
-
-    vertices[6] = -1; vertices[7] = -1; vertices[8] = 0; /* position */
-    vertices[9] = 0; vertices[10] = 1; vertices[11] = 0; /* colour */
-
-    vertices[12] = 1; vertices[13] = -1; vertices[14] = 0; /* position */
-    vertices[15] = 0; vertices[16] = 0; vertices[17] = 1; /* colour */
-
-    /* unlock the buffer */
-    vertexBuffer->unlock();
-
-    /* create the index buffer */
-    Ogre::HardwareBuffer *indexBuffer = Ogre::HardwareBufferManager::getSingleton().
-        createIndexBuffer(Ogre::HardwareIndexBuffer::IT_16BIT, mesh->sharedVertexData->vertexCount, Ogre::HardwareBuffer::HBU_STATIC);
-
-    /* lock the buffer so we can get exclusive access to its data */
-    uint16_t *indices = static_cast<uint16_t *>(indexBuffer->lock(Ogre::HardwareBuffer::HBL_NORMAL));
-
-    /* define our triangle */
-    indices[0] = 0;
-    indices[1] = 1;
-    indices[2] = 2;
-
-    /* unlock the buffer */
-    indexBuffer->unlock();
-
-    /* attach the buffers to the mesh */
-    mesh->sharedVertexData->vertexBufferBinding->setBinding(0, vertexBuffer);
-    subMesh->useSharedVertices = true;
-    subMesh->indexData->indexBuffer = indexBuffer;
-    subMesh->indexData->indexCount = mesh->sharedVertexData->vertexCount;
-    subMesh->indexData->indexStart = 0;
-
-    /* set the bounds of the mesh */
-    mesh->_setBounds(Ogre::AxisAlignedBox(-1, -1, -1, 1, 1, 1));
-
-    /* notify the mesh that we're all ready */
-    mesh->load();
-
-    /* you can now create an entity/scene node based on your mesh, e.g. */
-    Ogre::Entity *entity = sceneManager->createEntity("CustomEntity", "CustomMesh", "General");
-    entity->setMaterialName("YourMaterial", "General");
-    Ogre::SceneNode *node = rootNode->createChildSceneNode();
-    node->attachObject(entity);
-}
 
