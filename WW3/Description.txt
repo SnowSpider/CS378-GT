@@ -5,12 +5,12 @@ Wonjun Lee wl4337 wlee
 Howard Fu hef79 howardfu
 
 Game Design:
-A real-time strategy game based off Battleship. The world is represented by a sphere instead of a flat board.
-The players will assume the roles of USA and USSR. The objective is to eliminate the other player's nuclear weapon platforms. 
-The games is divided into 2 phases: peace and war.
-During the peace phase, USA and USSR build ICBM silos in their territory. They can also build navy bases and air force bases (AFB). The buildings are invisible to the enemy.
-During the war phase, which is initiated when both players have declared war by pressing a button, they launch their missiles to destroy the other player's silos. The players cannot construct any more buildings or weapons. 
-The game ends when a player destroys the last enemy nuclear weapon platform. In order to "win" you need at least one weapon platform left.
+A real-time strategy game loosely based off Battleship with influences from the Cold War. The world is torn apart by two conflicting sides, professing the 'True way' of government, Democracy and Communism. In a world where conflicting ideas exist, obviously there may only be one truth, so each side is left with no other option but to obliterate their enemy.
+The world is represented by a large sphere mesh, in which hexagonal areas are individual pieces of land. Each piece of land varies in their land type, ownership, radiation status, and occupation.
+The players will assume the roles of Prolaimer of Democracy(USA) and Fighters of True Equality(USSR). The objective is to eliminate the other player's Education Institutes(Base of Command(s)) to stop the root of their teachings(and their nukes). 
+The games is a continuous battle that involves first setting up your Base of commands, and then branching out into the world. A player can build in any land that has the 'Influnce of Truth'(claimed hexagon). Initially a player starts out with an initial area of influnce they can work with(the Homeland) that is on the opposite side of the world from enemies. From there on players branch out, influnce new lands, build various attacking and defending builds, and must progress to destroy the enemy.
+
+A game is concluded when only player manages to destroy all of the enemies Education Institutes(Base of Command(s)). The player was a set amount of bases that must be built at the very beginning of the game, and thereafter no more may be created.
 
 *** The World ***
 The game is played on a spherical world that can be rotated freely, like Google Earth. 
@@ -27,26 +27,50 @@ The world is constructed thus:
 Keyboard input (WASD) will be converted to btVector3 and fed to the rotation matrix, then the 4x4 quaternion. This will allow free rotation.
 
 *** Tiles ***
-There will be "land" tiles and "water" tiles. "Land" tiles are occupied by different factions: USA, USSR and neutral. The players are unable to expand their territory; they can only lose tiles by nuclear attack. Buildings may be only built on the center of a tile, and a tile can only afford one building. When a nuclear warhead lands on a land tile, a crater decal will be applied to that tile.
+There will be "land" tiles and "water" tiles. "Land" tiles are occupied by different factions: USA, USSR and neutral. The players are able to expand their territory and can also lose terretory to nuclear destruction. Buildings may be only built on the center of a tile, and a tile can only afford one building. When a nuclear warhead lands on a land tile, a nuclear destruction in the form of Radiation Level takes place, immediately destroying connected targets and furhter endangering surrounding land.
 
 *** Construction ***
-During the peace phase, building icons will appear on the left hand side of the screen. The player can left-click on an icon to select a building and then click on one of his own tiles to build it. He can deselect the building by right-click. 
-Each construction will deduct a certain amount from the national treasure. 
+The player can right-click on a land area to select a space and then click on one of the building types on the onscreen gui menu to build the land. Land must be first controlled(influenced) before it can be built on. 
+Each construction will deduct a certain amount from the national resources, which at the moment include Money and Enriched Plutonium. 
 
-*** The Chess Pieces ***
+Construction is broken down into three different intervals.
+1. Claiming the land.
+2. Building on the land.
+3. Complete.
+
+Both steps 1 and 2 will take a specific amount of time.
+
+*** The Building Pieces ***
+These Will be placed in order of difficulty to obtain:
+
+Education Institutes: Beginning buildings that act as the foundation for all conquest. Produces Enlighteners.
+    Enlighteners: can take over a territory cell which currently has nothing built on
+                  it and doesn't belong to a Homeland.
+Navy Base: Builds subs and destroyers, must be built on LandWater.
+    Submarine: Attacking water units that act as moveable short range missle launchers.
+    Destroyer: Defending water units that act as enemy intercepters.
+Army Base: Builds Scud and Tanks, must be build on land or LandWater.
+    Scud: Attacking land unit used to destroy buildings.
+    Tanks: Defending land unit used to destroy enemy units.
+Air Force Base: Houses bombers and fighters. Built on land and LandWater.
+    Bomber: They can hit anywhere on the Earth.
+    Fighter: Shoots down enemy bombers. .
 ICBM Silo: The missile thrower. They can hit anywhere on the Earth.
-Navy Base: Houses subs and destroyers. Ships must return to their base periodically to recharge their weapons.
-    Submarine: They must be located in a water tile adjacent to the land tile you want to destroy.
-    Destroyer: They can destroy enemy submarines.
-Air Force Base: Houses bombers and fighters. Aeroplanes must return to their base periodically to recharge their weapons.
-    Bomber: They can hit anywhere on the Earth. 
-    Fighter: Shoots down enemy bombers. 
-SAM Site: Shoots down enemy areoplanes.
-Naval Mines: Mines are placed on water tiles to defend against the submarines.
 
 
-
-
+Battle simulations are calculated by the following. In the case that there is a mutual attack then the angles of their forward vector and the distance vector is calculated. The one who has a smaller angle, gets the other in the rear, wins. In the case of a tie, both will die. Also a building will destroy a building in the construction phase if in range.
+This was made in Gedit so it might not map correctly. Anything with an arrow pointing to it can be killed by the pointer.
+ _
+| v                               _
+[Tank]<-----[Bomber]             | v
+  |   _______| |   ^-----_    _--[Destroyer]<---_
+  |  |         |          |  v        |          |
+  v  v         |      [Fighter]       |          |
+[scud]_____    |      ^_|             |          |
+|_^ |      v   v                      v          |
+    |      [Building]<----------[Submarine]      |
+    |         |_^                  |_^           |
+    |____________________________________________| 
 
 
 
