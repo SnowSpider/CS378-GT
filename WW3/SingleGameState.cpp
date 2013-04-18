@@ -58,6 +58,7 @@ void SingleGameState::enter()
     m_pSceneMgr->setAmbientLight(Ogre::ColourValue(0.7f, 0.7f, 0.7f));
  
     m_pCamera = m_pSceneMgr->createCamera("GameCamera");
+    m_pSceneMgr->setSkyBox(true, "Examples/NebulaSkyBox");
     m_pCamera->setPosition(0,0,20000); 
     m_pCamera->lookAt(Vector3(0, 0, 0));
     m_pCamera->setNearClipDistance(5);

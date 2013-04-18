@@ -58,6 +58,7 @@ void SingleGameState::enter()
     m_pSceneMgr->setAmbientLight(Ogre::ColourValue(0.7f, 0.7f, 0.7f));
  
     m_pCamera = m_pSceneMgr->createCamera("GameCamera");
+    m_pSceneMgr->setSkyBox(true, "Examples/HellSkyBox");
     m_pCamera->setPosition(0,0,20000); 
     m_pCamera->lookAt(Vector3(0, 0, 0));
     m_pCamera->setNearClipDistance(5);
@@ -178,7 +179,7 @@ void SingleGameState::createScene()
                   btVector3(0,1,0), //axis
                   btVector3(0,0,1), //longitude_zero
                   6371,
-                  2);
+                  3);
     earth.init();
     //earth.createOgreMesh("earth");
     
