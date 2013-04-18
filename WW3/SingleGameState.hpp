@@ -51,6 +51,56 @@ public:
         void itemSelected(OgreBites::SelectMenu* menu);
  
 	void update(double timeSinceLastFrame);
+        typedef enum terrainType{
+            Terrain_WATER,
+            Terrain_LAND
+        };
+
+        typedef enum ownerType{
+            Owner_NEUTRAL,
+            Owner_RED,
+            Owner_BLUE
+        };
+
+        typedef enum radiationType{
+            Radiation_SAFE,
+            Radiation_LOW,
+            Radiation_MODERATE,
+            Radiation_HIGH,
+            Radiation_DEADLY
+        };
+
+        typedef enum buildType{
+            Build_NONE,
+            Build_ICBMSILO,
+            Build_NAVYBASE,
+            Build_SUBMARINE,
+            Build_DESTROYER,
+            Build_AIRFORCEBASE,
+            Build_BOMBER,
+            Build_FIGHTER,
+            Build_ENLIGHTENER,
+            Build_COMMANDBASE
+        };
+
+        struct Cell {
+            Cell( btVector3 p );
+        
+            // the position of the vert in the tile,
+            // and the center of the hex in space
+            btVector3 m_vertPos;		
+            btVector3 m_nrm;
+
+            bool visiblity;
+            terrainType terrain;
+            ownerType owner;
+            radiationType radiation;
+            buildType build;
+
+
+            // Triangle that share this hex
+            //std::vector<Face*> m_faces;	
+        };
  
 private:
 	Ogre::SceneNode*		m_pOgreHeadNode;
