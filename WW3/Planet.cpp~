@@ -70,7 +70,7 @@ void Planet::init(){
     subdivide (v4,  v8,  v10 , complexity);
 
     // Fix the seam.
-    fixSeam();
+    //fixSeam();
     
     // Create cells.
     genCells();
@@ -190,27 +190,33 @@ void Planet::fixSeamHelper(PlanetFace& f){
     http://howevangotburned.wordpress.com/2011/02/28/the-oddyssey-of-texturing-a-geodesic-dome/
     */
     
+    // <
+    // <=
+    // <=
+    // <=
+    
     if( (cLongitude*bLatitude-cLatitude*bLongitude) +
         (bLongitude*aLatitude-bLatitude*aLongitude) +
-        (aLongitude*cLatitude-aLatitude*cLongitude) < 0 ){ 
+        (aLongitude*cLatitude-aLatitude*cLongitude) > 0 ){ 
         // Signed area is negative
-        if(c[0]<=0){
+        
+        if(c[0]==0){
             PlanetVertex newC(c);
-            newC.longitude++;
+            newC.longitude = 1;
             newC.positive = false;
             vertices.add(newC);
             f.v[2] = newC.id; //critical
         }
-        if(b[0]<=0){
+        if(b[0]==0){
             PlanetVertex newB(b);
-            newB.longitude++;
+            newB.longitude = 1;
             newB.positive = false;
             vertices.add(newB);
             f.v[1] = newB.id; //critical
         }
-        if(a[0]<=0){
+        if(a[0]==0){
             PlanetVertex newA(a);
-            newA.longitude++;
+            newA.longitude = 1;
             newA.positive = false;
             vertices.add(newA);
             f.v[0] = newA.id; //critical
@@ -304,7 +310,8 @@ void Planet::renderWireframe(){
 */
 
 void Planet::genCells(){
-    for(int i=0;i<vertices.size();i++){
+    int len = vertices.size(); 
+    for(int i=0;i<len;i++){
         if(vertices[i].neighbors.size()>0){
             //cout << "neighbors.size() = " << vertices[i].neighbors.size() << endl;
             PlanetCell tempCell(vertices[i]);
@@ -355,7 +362,62 @@ void Planet::genCells(){
             U x V = Ux*Vy-Uy*Vx
             */
             
+            // Sort the paramVerts again to make them run in the same direction: counterclockwise.
+            // We need to check the 3-d cross product between 2 paramVert.
             
+            bool facingIn = false;
+            
+            btVector3 vi = vertices[i];
+            btVector3 p0 = vertices[paramVerts_sorted[0]];
+            btVector3 p1 = vertices[paramVerts_sorted[1]];
+            btScalar t0 = vi.angle(p0);
+            btScalar t1 = vi.angle(p1);
+            btScalar len_p0 = p0.length();
+            btScalar len_p1 = p1.length();
+            btScalar len_x0 = len_p0 * cos(t0);
+            btScalar len_x1 = len_p1 * cos(t1);
+            btVector3 x0 = vi.normalized() * len_x0;
+            btVector3 x1 = vi.normalized() * len_x1;
+            btVector3 y0 = p0 - x0;
+            btVector3 y1 = p1 - x1;
+            
+            btVector3 u = y0;
+            btVector3 v = y1;
+            btVector3 uxv = u.cross(v);
+            uxv.normalize();
+            vi.normalize();
+            //cout << "uxv = (" << uxv.x() << "," << uxv.y() << "," << uxv.z() << ")" << endl;
+            //cout << "vi = (" << vi.x() << "," << vi.y() << "," << vi.z() << ")\n" << endl;
+            
+            btScalar theta = vi.angle(uxv);
+            
+            if(theta > PI/2.0){
+                facingIn = true;
+                //cout << "A tile is facing in!" << endl;
+            }
+            
+            if (facingIn){
+                std::reverse(paramVerts_sorted.begin(), paramVerts_sorted.end());
+            }
+            
+            std::vector<size_t> p = paramVerts_sorted;
+            PlanetVertex& a = vertices[i];
+            PlanetFace tempFace;
+            
+            for(int j=0;j<p.size();j++){
+                PlanetVertex& b = vertices[p[j]];
+                if(j+1==p.size()){
+                    tempFace = PlanetFace(a, b, vertices[p[0]]);
+                }
+                else{
+                    tempFace = PlanetFace(a, b, vertices[p[j+1]]);
+                }
+                smallFaces.add(tempFace);
+                tempFace.parentCellId = tempCell.id;
+                tempCell.faces.push_back(tempFace.id);
+            }
+            
+            // Last touch
             tempCell.paramVerts = paramVerts_sorted;
             cells.add(tempCell);
         }
@@ -488,6 +550,11 @@ bool Planet::rayHitPlanet( btVector3 p, btVector3 dir, btVector3 &result ){
 }
 
 void Planet::createManualObjects(Ogre::SceneManager* scnMgr){
+    
+    for(int i=0;i<smallFaces.size();i++){
+        fixSeamHelper( smallFaces[i] );
+    }
+    
     stringstream ss;
     string s = "Cell_";
     Ogre::String name_manobj;
@@ -495,28 +562,108 @@ void Planet::createManualObjects(Ogre::SceneManager* scnMgr){
         ss << i;
         name_manobj = s.append(ss.str());
         ManualObject* manual = scnMgr->createManualObject(name_manobj);
-        manual->begin("MyMaterials/wood2", RenderOperation::OT_LINE_STRIP);
+        manual->begin("MyMaterials/earth_day", RenderOperation::OT_TRIANGLE_LIST);
         
         std::vector<size_t> p = cells[i].paramVerts;
-        //btVector3 triCenter = vertices[cells[i].centerId];
+        PlanetVertex& triCenter = vertices[cells[i].centerId];
         //btVector3 triNormal = triCenter - center;
+        
+        int mvc = 0; // mesh vertex counter
+        
+        for (int j=0; j<cells[i].faces.size(); j++){
+            PlanetFace& tempFace = smallFaces[cells[i].faces[j]];
+            PlanetVertex& a = vertices[tempFace.v[0]]; 
+            PlanetVertex& b = vertices[tempFace.v[1]]; 
+            PlanetVertex& c = vertices[tempFace.v[2]]; 
+            
+            manual->position( a[0], a[1], a[2] );
+            manual->normal( a[0], a[1], a[2] );
+            manual->textureCoord( 1-a.longitude, a.latitude );
+            mvc++;
+            
+            manual->position( b[0], b[1], b[2] );
+            manual->normal( b[0], b[1], b[2] );
+            manual->textureCoord( 1-b.longitude, b.latitude );
+            mvc++;
+            
+            manual->position( c[0], c[1], c[2] );
+            manual->normal( c[0], c[1], c[2] );
+            manual->textureCoord( 1-c.longitude, c.latitude );
+            mvc++;
+        }
+        
+        /*
+        manual->position( triCenter[0], triCenter[1], triCenter[2] );
+        manual->normal( triCenter[0], triCenter[1], triCenter[2] );
+        manual->textureCoord( 1-triCenter.longitude, triCenter.latitude );
+        mvc++;
         
         for(int j=0;j<p.size();j++){
             //glNormal3d(triNormal[0], triNormal[1], triNormal[2]);
             manual->position( vertices[p[j]][0], vertices[p[j]][1], vertices[p[j]][2] );
             manual->normal( vertices[p[j]][0], vertices[p[j]][1], vertices[p[j]][2] );
-            if(j+1==p.size()){
-                manual->position( vertices[p[0]][0], vertices[p[0]][1], vertices[p[0]][2] );
-                manual->normal( vertices[p[0]][0], vertices[p[0]][1], vertices[p[0]][2] );
-            }
-            else{
-                manual->position( vertices[p[j+1]][0], vertices[p[j+1]][1], vertices[p[j+1]][2] );
-                manual->normal( vertices[p[j+1]][0], vertices[p[j+1]][1], vertices[p[j+1]][2] );
-            }
+            manual->textureCoord( 1-vertices[p[j]].longitude, vertices[p[j]].latitude );
+            mvc++;
         }
+        manual->position( vertices[p[0]][0], vertices[p[0]][1], vertices[p[0]][2] );
+        manual->normal( vertices[p[0]][0], vertices[p[0]][1], vertices[p[0]][2] );
+        manual->textureCoord( 1-vertices[p[0]].longitude, vertices[p[0]].latitude );
+        mvc++;
+        */
+        
+        
+        
+        for (int i=0; i<mvc; i++){
+            manual->index(i);
+        }
+        
         manual->end();
         scnMgr->getRootSceneNode()->attachObject(manual);
-        cout << name_manobj << "created" << endl;
+        //cout << "Cell " << i << " created" << endl;
+    }
+    
+    btVector3 one(1,0,0);
+    btVector3 two(0,1,0);
+    float three = one.angle(two);
+    cout << "angle = " << three << endl; // radian!
+    
+    for (int i=0; i<cells.size(); i++){
+        ss << i;
+        name_manobj = s.append(ss.str());
+        ManualObject* manual = scnMgr->createManualObject(name_manobj);
+        manual->begin("BaseWhiteNoLighting", RenderOperation::OT_LINE_LIST);
+        
+        std::vector<size_t> p = cells[i].paramVerts;
+        PlanetVertex& triCenter = vertices[cells[i].centerId];
+        //btVector3 triNormal = triCenter - center;
+        
+        int mvc = 0; // mesh vertex counter
+        
+        btVector3 temp;
+        
+        // cell boundary
+        for(int j=0;j<p.size();j++){
+            temp = vertices[p[j]] * 1.001;
+            manual->position( temp.x(), temp.y(), temp.z() );
+            manual->normal( temp.x(), temp.y(), temp.z() );
+            manual->colour( 0.5, 0.5, 0.5 );
+            if(j+1==p.size()){
+                temp = vertices[p[0]] * 1.001;
+                manual->position( temp.x(), temp.y(), temp.z() );
+                manual->normal( temp.x(), temp.y(), temp.z() );
+                manual->colour( 0.5, 0.5, 0.5 );
+            }
+            else{
+                temp = vertices[p[j+1]] * 1.001;
+                manual->position( temp.x(), temp.y(), temp.z() );
+                manual->normal( temp.x(), temp.y(), temp.z() );
+                manual->colour( 0.5, 0.5, 0.5 );
+            }
+        }
+        
+        manual->end();
+        scnMgr->getRootSceneNode()->attachObject(manual);
+        //cout << "Cell " << i << " created" << endl;
     }
 }
 

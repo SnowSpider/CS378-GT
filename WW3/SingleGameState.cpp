@@ -175,8 +175,8 @@ void SingleGameState::createScene()
     
     // Earth
     Planet earth( btVector3(0,0,0), //center
-                  btVector3(0,0,1), //axis
-                  btVector3(0,1,0), //longitude_zero
+                  btVector3(0,1,0), //axis
+                  btVector3(0,0,1), //longitude_zero
                   6371,
                   3);
     earth.init();

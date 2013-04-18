@@ -23,7 +23,7 @@ class PlanetVertex: public btVector3{
     public:
     size_t id;
     float altitude;
-    float longitude;
+    float longitude; 
     float latitude;
     vector<size_t> neighbors;
     bool positive;
@@ -143,6 +143,7 @@ class PlanetFace{
     btVector3 normal;
     float angle;
     bool positive;
+    size_t parentCellId;
     
     PlanetFace(){
         v[0] = -1;
@@ -152,6 +153,7 @@ class PlanetFace{
         normal = btVector3(0,0,0);
         float angle = 0;
         positive = true;
+        parentCellId = -1;
     }
     
     PlanetFace(PlanetVertex& a, PlanetVertex& b, PlanetVertex& c){
@@ -162,6 +164,7 @@ class PlanetFace{
         normal = (b-a).cross(c-a);
         angle = center.angle(normal);
         positive = true;
+        parentCellId = -1;
     }
         
     PlanetFace(const PlanetFace& f){
@@ -172,6 +175,7 @@ class PlanetFace{
         normal = f.normal;
         angle = f.angle;
         positive = f.positive;
+        parentCellId = f.parentCellId;
     }
         
     PlanetFace& operator=(const PlanetFace& f){
@@ -183,11 +187,16 @@ class PlanetFace{
         normal = f.normal;
         angle = f.angle;
         positive = f.positive;
+        parentCellId = f.parentCellId;
         return *this;
     }
     
     operator bool() const {
         return positive;
+    }
+    
+    void setParent(size_t id){
+        parentCellId = id;
     }
 };
 
@@ -201,6 +210,7 @@ class PlanetCell{
     float altitude;
     float longitude;
     float latitude;
+    vector<size_t> faces; //triangle faces that belong to this cell
     //bool water; //???
     
     PlanetCell(){
@@ -230,6 +240,7 @@ class PlanetCell{
         altitude = c.altitude;
         longitude = c.longitude;
         latitude = c.latitude;
+        faces = c.faces;
     }
         
     PlanetCell( PlanetCell& c ){
@@ -241,6 +252,7 @@ class PlanetCell{
         altitude = c.altitude;
         longitude = c.longitude;
         latitude = c.latitude;
+        faces = c.faces;
     }
     
     PlanetCell& operator=( const PlanetCell& c ){
@@ -252,6 +264,7 @@ class PlanetCell{
         altitude = c.altitude;
         longitude = c.longitude;
         latitude = c.latitude;
+        faces = c.faces;
     }
     
     void setOwner(size_t him){
@@ -361,6 +374,7 @@ class Planet {
     VertexList vertices;
     FaceList faces;
     CellList cells;
+    FaceList smallFaces;
     
     btVector3 center;
     btVector3 axis;
@@ -383,6 +397,7 @@ class Planet {
     void mapVertex(PlanetVertex& v);
     void fixSeamHelper (PlanetFace& f);
     void fixSeam();
+    void fixSeam_small();
     PlanetVertex midpointOnSphere (PlanetVertex& a, PlanetVertex& b);
     PlanetVertex midpointOnSphere (PlanetVertex& a, PlanetVertex& b, PlanetVertex& c);
     //void drawFace (PlanetFace& f);

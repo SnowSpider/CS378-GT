@@ -1,3 +1,18 @@
+material MyMaterials/earth_day
+{
+   technique
+   {
+      pass
+      {
+         texture_unit
+         {
+            texture test.png 2d
+            scale 1 1
+         }
+      }
+   }
+}
+
 material MyMaterials/wood1
 {
     technique
@@ -26,6 +41,21 @@ material MyMaterials/wood2
             texture_unit
             {
                 texture wood2.png
+                scale 0.5 0.5
+            }
+        }   
+    }
+}
+
+material MyMaterials/wood3
+{
+    technique
+    {
+        pass
+        {
+            texture_unit
+            {
+                texture wood3.png
                 scale 0.5 0.5
             }
         }   

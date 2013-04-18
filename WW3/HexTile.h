@@ -2,21 +2,37 @@
 #define __HexTile_h_
 
 #include "Ogre.h"
+#include <OgreEntity.h>
+#include <OgreSceneManager.h>
+#include <string.h>
+#include <iostream>
 #include <btBulletCollisionCommon.h>
-
 #include <vector>
 
 class HexTile {
     public:
-    int id;
-    btVector3 pos_center; 
-    btVector3 paramVerts[6];
-    btVector3 normal;
-    float speed;
+    size_t id; 
+    size_t owner; //id of the player who owns the territory
+    vector<size_t> neighbors; // neigboring cells
+    btVector3 center;
+    vector<btVector3> paramVerts; //parameter vertices
+    float height;
+    float longitude;
+    float latitude;
     
-    HexTile(){}
-    HexTile(int i, );
-    //~HexTile();
+    size_t radiation; // 0, 1, 2, 3
+    size_t population; // 0, 1, 2, 3
+    
+    
+    PlanetCell(){
+        
+    }
+    
+    
+    void select();
+    void deselect();
+    void setOwner(size_t him);
+    
 };
 
 #endif // #ifndef __HexTile_h_
