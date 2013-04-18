@@ -10,6 +10,8 @@ To build & run:
 ./makeit
 ./OgreApp
 
-The networking has not been fully implemented yet. 
 In the main menu, press "Singleplayer game" button to play.
+Multiplayer not initiated yet.
+
+Currently only the world is made. Use ASDW to move around or right click and drag camera to rotate.
 
