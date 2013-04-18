@@ -53,7 +53,7 @@ SingleGameState::SingleGameState()
 void SingleGameState::enter()
 {
     OgreFramework::getSingletonPtr()->m_pLog->logMessage("Entering SingleGameState...");
- 
+    OgreFramework::getSingletonPtr()->m_pTrayMgr->hideCursor();
     m_pSceneMgr = OgreFramework::getSingletonPtr()->m_pRoot->createSceneManager(ST_GENERIC, "GameSceneMgr");
     m_pSceneMgr->setAmbientLight(Ogre::ColourValue(0.7f, 0.7f, 0.7f));
  
@@ -62,7 +62,7 @@ void SingleGameState::enter()
     m_pCamera->setPosition(0,0,20000); 
     m_pCamera->lookAt(Vector3(0, 0, 0));
     m_pCamera->setNearClipDistance(5);
- 
+    
     m_pCamera->setAspectRatio(Real(OgreFramework::getSingletonPtr()->m_pViewport->getActualWidth()) /
         Real(OgreFramework::getSingletonPtr()->m_pViewport->getActualHeight()));
  
@@ -86,7 +86,7 @@ bool SingleGameState::pause()
 void SingleGameState::resume()
 {
     OgreFramework::getSingletonPtr()->m_pLog->logMessage("Resuming SingleGameState...");
- 
+    OgreFramework::getSingletonPtr()->m_pTrayMgr->hideCursor();
     buildGUI();
  
     OgreFramework::getSingletonPtr()->m_pViewport->setCamera(m_pCamera);
@@ -165,7 +165,7 @@ void SingleGameState::createScene()
     //cout << "sizeof(btVector3*) = " << sizeof(btVector3*) << endl;
     
     mRenderer = &CEGUI::OgreRenderer::bootstrapSystem();
-    
+
     // Create SoundManager
     sound.open();
     sound.turnOn();
@@ -202,6 +202,16 @@ void SingleGameState::createScene()
  
     CEGUI::SchemeManager::getSingleton().create("TaharezLook.scheme");
  
+    CEGUI::MouseCursor::getSingleton().setImage("TaharezLook", "MouseArrow");
+    try
+    {
+        CEGUI::System::getSingleton().setDefaultMouseCursor( "TaharezLook", "MouseArrow" );
+    }
+    catch (CEGUI::Exception& e)
+    {
+        // something went wrong - probably did not load the imageset first!
+        //TODO: Handle error,
+    }
     CEGUI::WindowManager &wmgr = CEGUI::WindowManager::getSingleton();
     CEGUI::Window *sheet = wmgr.createWindow("DefaultWindow", "CEGUIDemo/Sheet");
  
@@ -249,57 +259,23 @@ void SingleGameState::createScene()
 
 bool SingleGameState::keyPressed(const OIS::KeyEvent &keyEventRef)
 {
-    if(m_bSettingsMode == true)
-    {
-        if(OgreFramework::getSingletonPtr()->m_pKeyboard->isKeyDown(OIS::KC_S))
-        {
-            OgreBites::SelectMenu* pMenu = (OgreBites::SelectMenu*)OgreFramework::getSingletonPtr()->m_pTrayMgr->getWidget("ChatModeSelMenu");
-            if(pMenu->getSelectionIndex() + 1 < (int)pMenu->getNumItems())
-                pMenu->selectItem(pMenu->getSelectionIndex() + 1);
-        }
- 
-        if(OgreFramework::getSingletonPtr()->m_pKeyboard->isKeyDown(OIS::KC_W))
-        {
-            OgreBites::SelectMenu* pMenu = (OgreBites::SelectMenu*)OgreFramework::getSingletonPtr()->m_pTrayMgr->getWidget("ChatModeSelMenu");
-            if(pMenu->getSelectionIndex() - 1 >= 0)
-                pMenu->selectItem(pMenu->getSelectionIndex() - 1);
-        }
-    }
- 
-    if(OgreFramework::getSingletonPtr()->m_pKeyboard->isKeyDown(OIS::KC_ESCAPE))
+    CEGUI::System &sys = CEGUI::System::getSingleton();
+    sys.injectKeyDown(keyEventRef.key);
+    sys.injectChar(keyEventRef.text);
+    if (keyEventRef.key == OIS::KC_ESCAPE)
     {
         pushAppState(findByName("PauseState"));
-        //OgreFramework::getSingletonPtr()->m_pTrayMgr->showCursor();
         return true;
     }
- 
-    if(OgreFramework::getSingletonPtr()->m_pKeyboard->isKeyDown(OIS::KC_I))
+    if (keyEventRef.key == OIS::KC_X)
     {
-        if(m_pDetailsPanel->getTrayLocation() == OgreBites::TL_NONE)
-        {
-            OgreFramework::getSingletonPtr()->m_pTrayMgr->moveWidgetToTray(m_pDetailsPanel, OgreBites::TL_TOPLEFT, 0);
-            m_pDetailsPanel->show();
-        }
+        SingleGameState::soundSwitch();
+        CEGUI::Window* sounder = CEGUI::WindowManager::getSingleton().getWindow("SounderDontBreak");
+        if (soundIs)
+            sounder->setText("Sound: On");
         else
-        {
-            OgreFramework::getSingletonPtr()->m_pTrayMgr->removeWidgetFromTray(m_pDetailsPanel);
-            m_pDetailsPanel->hide();
-        }
+            sounder->setText("Sound: Off");
     }
- 
-    if(OgreFramework::getSingletonPtr()->m_pKeyboard->isKeyDown(OIS::KC_TAB))
-    {
-        m_bSettingsMode = !m_bSettingsMode;
-        return true;
-    }
- 
-    if(m_bSettingsMode && OgreFramework::getSingletonPtr()->m_pKeyboard->isKeyDown(OIS::KC_RETURN) ||
-        OgreFramework::getSingletonPtr()->m_pKeyboard->isKeyDown(OIS::KC_NUMPADENTER))
-    {
-    }
- 
-    if(!m_bSettingsMode || (m_bSettingsMode && !OgreFramework::getSingletonPtr()->m_pKeyboard->isKeyDown(OIS::KC_O)))
-        OgreFramework::getSingletonPtr()->keyPressed(keyEventRef);
     
     return true;
 }
@@ -314,6 +290,7 @@ bool SingleGameState::keyReleased(const OIS::KeyEvent &keyEventRef)
 
 bool SingleGameState::mouseMoved(const OIS::MouseEvent &evt)
 {
+    CEGUI::System::getSingleton().injectMouseMove(evt.state.X.rel, evt.state.Y.rel);
     if(OgreFramework::getSingletonPtr()->m_pTrayMgr->injectMouseMove(evt)) return true;
     
     deltaX = evt.state.X.rel;
@@ -455,19 +432,6 @@ void SingleGameState::getInput()
         if(OgreFramework::getSingletonPtr()->m_pKeyboard->isKeyDown(OIS::KC_S))
             m_TranslateVector.z = m_MoveScale;
  
-        if(OgreFramework::getSingletonPtr()->m_pKeyboard->isKeyDown(OIS::KC_Q))
-            m_TranslateVector.y = -m_MoveScale;
- 
-        if(OgreFramework::getSingletonPtr()->m_pKeyboard->isKeyDown(OIS::KC_E))
-            m_TranslateVector.y = m_MoveScale;
- 
-        //camera roll
-        if(OgreFramework::getSingletonPtr()->m_pKeyboard->isKeyDown(OIS::KC_Z))
-            m_pCamera->roll(Angle(-m_MoveScale));
- 
-        if(OgreFramework::getSingletonPtr()->m_pKeyboard->isKeyDown(OIS::KC_X))
-            m_pCamera->roll(Angle(m_MoveScale));
- 
         //reset roll
         if(OgreFramework::getSingletonPtr()->m_pKeyboard->isKeyDown(OIS::KC_C))
             m_pCamera->roll(-(m_pCamera->getRealOrientation().getRoll()));
@@ -555,6 +519,14 @@ void SingleGameState::itemSelected(OgreBites::SelectMenu* menu)
     }
 }
 
-
+bool SingleGameState::soundSwitch(void)
+{
+    if(soundIs)
+       sound.turnOff();
+    else
+        sound.turnOn();
+    soundIs = !soundIs;
+    return true;
+} 
 
 

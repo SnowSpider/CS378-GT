@@ -51,6 +51,7 @@ public:
         void itemSelected(OgreBites::SelectMenu* menu);
  
 	void update(double timeSinceLastFrame);
+        bool soundSwitch();
         typedef enum terrainType{
             Terrain_WATER,
             Terrain_LAND

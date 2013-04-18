@@ -99,7 +99,7 @@ public:
 
 
             // Triangle that share this hex
-            std::vector<Face*> m_faces;	
+            //std::vector<Face*> m_faces;	
         };
  
 private:
