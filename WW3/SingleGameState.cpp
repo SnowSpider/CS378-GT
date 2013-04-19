@@ -72,6 +72,7 @@ void SingleGameState::enter()
     buildGUI();
  
     createScene();
+    m_pCamera->setAutoTracking(true, cameraNode);
 }
 
 bool SingleGameState::pause()
@@ -184,7 +185,9 @@ void SingleGameState::createScene()
     //earth.createOgreMesh("earth");
     
     earth.createManualObjects(m_pSceneMgr);
+
     
+    cameraNode = m_pSceneMgr->getRootSceneNode();
     
     
     
@@ -247,7 +250,7 @@ void SingleGameState::createScene()
     // stuff from createFrameListener
     
     // Backgroun Music
-    sound.PlaySound("buddhist_chant.wav");
+    //sound.PlaySound("buddhist_chant.wav");
     
     srand(time(0));  // Initialize random number generator.
     // Set default values for variables
@@ -427,10 +430,13 @@ void SingleGameState::getInput()
             m_TranslateVector.x = m_MoveScale;
  
         if(OgreFramework::getSingletonPtr()->m_pKeyboard->isKeyDown(OIS::KC_W))
-            m_TranslateVector.z = -m_MoveScale;
+	    if(m_pCamera->getPosition().z > 200 || m_pCamera->getPosition().z < -200)
+            	m_TranslateVector.y = m_MoveScale;
  
         if(OgreFramework::getSingletonPtr()->m_pKeyboard->isKeyDown(OIS::KC_S))
-            m_TranslateVector.z = m_MoveScale;
+	    if(m_pCamera->getPosition().z > 200 || m_pCamera->getPosition().z < -200)
+            	m_TranslateVector.y = -m_MoveScale;
+
  
         //reset roll
         if(OgreFramework::getSingletonPtr()->m_pKeyboard->isKeyDown(OIS::KC_C))

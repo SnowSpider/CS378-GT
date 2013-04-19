@@ -108,6 +108,7 @@ private:
 	Ogre::Entity*			m_pOgreHeadEntity;
 	Ogre::MaterialPtr		m_pOgreHeadMat;
 	Ogre::MaterialPtr		m_pOgreHeadMatHigh;
+	Ogre::SceneNode*		cameraNode;
  
     OgreBites::ParamsPanel*		m_pDetailsPanel;
 	bool				m_bQuit;
