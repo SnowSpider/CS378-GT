@@ -8,6 +8,7 @@
 #include <iostream>
 #include <sstream>
 #include <math.h>
+#include <X11/Xlib.h>
 
 #include <btBulletCollisionCommon.h>
 
@@ -52,6 +53,19 @@ SingleGameState::SingleGameState()
  
 void SingleGameState::enter()
 {
+
+    mRenderer = &CEGUI::OgreRenderer::bootstrapSystem();
+    Display* pdsp = NULL;
+    Window wid = 0;
+    pdsp = XOpenDisplay( NULL );
+    wid = DefaultRootWindow( pdsp );
+    XWindowAttributes xwAttr;
+    Status ret = XGetWindowAttributes( pdsp, wid, &xwAttr );
+
+    OgreFramework::getSingletonPtr()->m_pRenderWnd->setFullscreen(true, xwAttr.width, xwAttr.height);
+    CEGUI::System::getSingleton().notifyDisplaySizeChanged(CEGUI::Size(xwAttr.width, xwAttr.height));
+    XCloseDisplay( pdsp );
+
     OgreFramework::getSingletonPtr()->m_pLog->logMessage("Entering SingleGameState...");
     OgreFramework::getSingletonPtr()->m_pTrayMgr->hideCursor();
     m_pSceneMgr = OgreFramework::getSingletonPtr()->m_pRoot->createSceneManager(ST_GENERIC, "GameSceneMgr");
@@ -77,6 +91,7 @@ void SingleGameState::enter()
 
 bool SingleGameState::pause()
 {
+    CEGUI::MouseCursor::getSingleton().hide();
     OgreFramework::getSingletonPtr()->m_pLog->logMessage("Pausing SingleGameState...");
  
     return true;
@@ -86,6 +101,7 @@ bool SingleGameState::pause()
  
 void SingleGameState::resume()
 {
+    CEGUI::MouseCursor::getSingleton().show();
     OgreFramework::getSingletonPtr()->m_pLog->logMessage("Resuming SingleGameState...");
     OgreFramework::getSingletonPtr()->m_pTrayMgr->hideCursor();
     buildGUI();
@@ -165,7 +181,7 @@ void SingleGameState::createScene()
     
     //cout << "sizeof(btVector3*) = " << sizeof(btVector3*) << endl;
     
-    mRenderer = &CEGUI::OgreRenderer::bootstrapSystem();
+    
 
     // Create SoundManager
     sound.open();
@@ -218,13 +234,13 @@ void SingleGameState::createScene()
     CEGUI::WindowManager &wmgr = CEGUI::WindowManager::getSingleton();
     CEGUI::Window *sheet = wmgr.createWindow("DefaultWindow", "CEGUIDemo/Sheet");
  
-    CEGUI::Window *counter = wmgr.createWindow("TaharezLook/Button", "Counter");
+    CEGUI::Window *counter = wmgr.createWindow("TaharezLook/Spinner", "Counter");
     counter->setText("Score:  ");
     counter->setSize(CEGUI::UVector2(CEGUI::UDim(0.15, 0), CEGUI::UDim(0.05, 0)));
  
     sheet->addChildWindow(counter);
 
-    CEGUI::Window *sounder = wmgr.createWindow("TaharezLook/Button", "SounderDontBreak");
+    CEGUI::Window *sounder = wmgr.createWindow("TaharezLook/Tooltip", "SounderDontBreak");
     sounder->setText("Sound: On");
     sounder->setSize(CEGUI::UVector2(CEGUI::UDim(0.15, 0), CEGUI::UDim(0.05, 0)));
     sounder->setHorizontalAlignment(CEGUI::HA_RIGHT);
@@ -430,11 +446,11 @@ void SingleGameState::getInput()
             m_TranslateVector.x = m_MoveScale;
  
         if(OgreFramework::getSingletonPtr()->m_pKeyboard->isKeyDown(OIS::KC_W))
-	    if(m_pCamera->getPosition().z > 500 || m_pCamera->getPosition().z < -500)
+	    if(m_pCamera->getPosition().z > 200 || m_pCamera->getPosition().z < -200)
             	m_TranslateVector.y = m_MoveScale;
  
         if(OgreFramework::getSingletonPtr()->m_pKeyboard->isKeyDown(OIS::KC_S))
-	    if(m_pCamera->getPosition().z > 500 || m_pCamera->getPosition().z < -500)
+	    if(m_pCamera->getPosition().z > 200 || m_pCamera->getPosition().z < -200)
             	m_TranslateVector.y = -m_MoveScale;
 
  
