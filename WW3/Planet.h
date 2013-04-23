@@ -200,6 +200,12 @@ class PlanetFace{
     }
 };
 
+typedef enum terrainType{
+    Terrain_WATER = 0,
+    Terrain_WATERLAND = 1,
+    Terrain_LAND = 2
+};
+
 class PlanetCell{
     public: 
     size_t id; 
@@ -211,7 +217,11 @@ class PlanetCell{
     float longitude;
     float latitude;
     vector<size_t> faces; //triangle faces that belong to this cell
-    //bool water; //???
+    
+    terrainType terrain;
+    float avg_color;
+    
+    bool visible;
     
     PlanetCell(){
         id = -1;
@@ -219,6 +229,8 @@ class PlanetCell{
         altitude = 0;
         longitude = 0;
         latitude = 0;
+        terrain = Terrain_WATER;
+        avg_color = 0;
     }
     
     PlanetCell(PlanetVertex& v){
@@ -229,6 +241,8 @@ class PlanetCell{
         altitude = v.altitude;
         longitude = v.longitude;
         latitude = v.latitude;
+        terrain = Terrain_WATER;
+        avg_color = 0;
     }
     
     PlanetCell( const PlanetCell& c ){
@@ -241,6 +255,8 @@ class PlanetCell{
         longitude = c.longitude;
         latitude = c.latitude;
         faces = c.faces;
+        terrain = c.terrain;
+        avg_color = c.avg_color;
     }
         
     PlanetCell( PlanetCell& c ){
@@ -253,6 +269,8 @@ class PlanetCell{
         longitude = c.longitude;
         latitude = c.latitude;
         faces = c.faces;
+        terrain = c.terrain;
+        avg_color = c.avg_color;
     }
     
     PlanetCell& operator=( const PlanetCell& c ){
@@ -265,6 +283,8 @@ class PlanetCell{
         longitude = c.longitude;
         latitude = c.latitude;
         faces = c.faces;
+        terrain = c.terrain;
+        avg_color = c.avg_color;
     }
     
     void setOwner(size_t him){
@@ -384,6 +404,14 @@ class Planet {
     
     float spinAngle;
     
+    Planet(){
+        center = btVector3(0,0,0);
+        axis = btVector3(0,1,0);
+        longitude_zero = btVector3(0,0,1);
+        radius = 6371;
+        complexity = 3;
+    }
+    
     Planet(btVector3 c, btVector3 a, btVector3 lz, float r, int k){
         center = c;
         axis = a;
@@ -412,7 +440,7 @@ class Planet {
     //void renderCells();
     bool rayHitPlanet( btVector3 p, btVector3 dir, btVector3 &result );
     void createManualObjects(Ogre::SceneManager* scnMgr);
-    
+    void mapTerrain();
 };
 
 #endif

@@ -70,7 +70,9 @@ void SingleGameState::enter()
     OgreFramework::getSingletonPtr()->m_pTrayMgr->hideCursor();
     m_pSceneMgr = OgreFramework::getSingletonPtr()->m_pRoot->createSceneManager(ST_GENERIC, "GameSceneMgr");
     m_pSceneMgr->setAmbientLight(Ogre::ColourValue(0.7f, 0.7f, 0.7f));
- 
+    
+    m_pRSQ = m_pSceneMgr->createRayQuery(Ray());
+    
     m_pCamera = m_pSceneMgr->createCamera("GameCamera");
     m_pSceneMgr->setSkyBox(true, "Examples/NebulaSkyBox");
     m_pCamera->setPosition(0,0,20000); 
@@ -113,58 +115,14 @@ void SingleGameState::resume()
 void SingleGameState::exit()
 {
     OgreFramework::getSingletonPtr()->m_pLog->logMessage("Leaving SingleGameState...");
- 
-    /*
-    m_pSceneMgr->destroyCamera(m_pCamera);
-    if(m_pSceneMgr){
-        OgreFramework::getSingletonPtr()->m_pRoot->destroySceneManager(m_pSceneMgr);
-    }
-    */
     
     sound.close();
-    //m_pSceneMgr->destroyCamera(m_pCamera);
+    myfile.close();
     
-    /*
-    cout << "0" << endl;
-    cout << "m_objects.size() = " << m_objects.size() << endl;
-    for(int i=0;i<m_objects.size();i++){
-        cout << "01" << endl;
-        m_objects[i].rootNode->removeAndDestroyAllChildren(); cout << "1" << endl;
-        m_objects[i].sceneMgr->destroySceneNode(m_objects[i].rootNode); cout << "2" << endl;
-    }
-    cout << "4" << endl;
-    
-    
-    cout << "0" << endl;
-    m_pSceneMgr->getRootSceneNode()->removeAndDestroyAllChildren();cout << "1" << endl;
-    //m_pSceneMgr->destroySceneNode(m_pSceneMgr->getRootSceneNode());cout << "2" << endl;
-    if(mRenderer){
-        mRenderer->destroySystem(); cout << "22" << endl;
-    }
-    OgreFramework::getSingletonPtr()->m_pRoot->destroySceneManager(m_pSceneMgr);cout << "3" << endl;
-    
-    //m_pSceneMgr->clearScene();cout << "3" << endl;
-    //m_pSceneMgr->destroyAllCameras();cout << "4" << endl;
-    m_objects.clear();cout << "5" << endl;
-    
-    //OgreFramework::getSingletonPtr()->m_pRoot->destroySceneManager(m_pSceneMgr);cout << "6" << endl;
-    */
-    Node::ChildNodeIterator it = m_pSceneMgr->getRootSceneNode()->getChildIterator();
-    while( it.hasMoreElements() ){
-        cout << "name: " << it.getNext()->getName() << endl;
-        m_pSceneMgr->destroyEntity(it.getNext()->getName());
-        //m_pSceneMgr->destroySceneNode(it.getNext()->getName());
-    }
-    m_pSceneMgr->getRootSceneNode()->removeAndDestroyAllChildren();cout << "1" << endl;
-    //m_pSceneMgr->destroySceneNode(m_pSceneMgr->getRootSceneNode());cout << "2" << endl;
-    m_pSceneMgr->clearScene();cout << "3" << endl;
-    m_pSceneMgr->destroyAllCameras();cout << "4" << endl;
-    OgreFramework::getSingletonPtr()->m_pRoot->destroySceneManager(m_pSceneMgr);cout << "5" << endl;
-    /*
-    if(mRenderer){
-        mRenderer->destroySystem(); cout << "22" << endl;
-    }
-    */
+    m_pSceneMgr->destroyCamera(m_pCamera);
+    m_pSceneMgr->destroyQuery(m_pRSQ);
+    if(m_pSceneMgr) OgreFramework::getSingletonPtr()->m_pRoot->destroySceneManager(m_pSceneMgr);
+
     //CEGUI::System::getSingleton().destroy();cout << "6" << endl;
     mRenderer->destroySystem();cout << "7" << endl;
     //delete mRenderer;
@@ -181,7 +139,7 @@ void SingleGameState::createScene()
     
     //cout << "sizeof(btVector3*) = " << sizeof(btVector3*) << endl;
     
-    
+    myfile.open("waterland.txt");
 
     // Create SoundManager
     sound.open();
@@ -192,16 +150,15 @@ void SingleGameState::createScene()
     // Create game objects
     
     // Earth
-    Planet earth( btVector3(0,0,0), //center
-                  btVector3(0,1,0), //axis
-                  btVector3(0,0,1), //longitude_zero
-                  6371,
-                  3);
+    earth = Planet( btVector3(0,0,0), //center
+                    btVector3(0,1,0), //axis
+                    btVector3(0,0,1), //longitude_zero
+                    6371,
+                    3);
     earth.init();
-    //earth.createOgreMesh("earth");
-    
+    earth.mapTerrain();
     earth.createManualObjects(m_pSceneMgr);
-
+    mRayScnQuery = m_pSceneMgr->createRayQuery(Ogre::Ray());
     
     cameraNode = m_pSceneMgr->getRootSceneNode();
     
@@ -400,10 +357,8 @@ void SingleGameState::onLeftPressed(const OIS::MouseEvent &evt)
     if(m_pCurrentObject)
     {
         m_pCurrentObject->showBoundingBox(false);
-        m_pCurrentEntity->getSubEntity(1)->setMaterial(m_pOgreHeadMat);
     }
     
-    /*
     Ogre::Ray mouseRay = m_pCamera->getCameraToViewportRay(OgreFramework::getSingletonPtr()->m_pMouse->getMouseState().X.abs / float(evt.state.width),
         OgreFramework::getSingletonPtr()->m_pMouse->getMouseState().Y.abs / float(evt.state.height));
     m_pRSQ->setRay(mouseRay);
@@ -416,16 +371,32 @@ void SingleGameState::onLeftPressed(const OIS::MouseEvent &evt)
     {
         if(itr->movable)
         {
-            OgreFramework::getSingletonPtr()->m_pLog->logMessage("MovableName: " + itr->movable->getName());
-            m_pCurrentObject = m_pSceneMgr->getEntity(itr->movable->getName())->getParentSceneNode();
-            OgreFramework::getSingletonPtr()->m_pLog->logMessage("ObjName " + m_pCurrentObject->getName());
+            //OgreFramework::getSingletonPtr()->m_pLog->logMessage("MovableName: " + itr->movable->getName());
+            m_pCurrentObject = m_pSceneMgr->getMovableObject(itr->movable->getName(), "ManualObject")->getParentSceneNode();
+            //cout << "gets here" << endl;
             m_pCurrentObject->showBoundingBox(true);
-            m_pCurrentEntity = m_pSceneMgr->getEntity(itr->movable->getName());
-            m_pCurrentEntity->getSubEntity(1)->setMaterial(m_pOgreHeadMatHigh);
+            
+            
+            string tempLandCellId = itr->movable->getName();
+            string idNumber = tempLandCellId.substr(5, tempLandCellId.length()-1);
+            
+            /*
+            if (myfile.is_open()){
+                myfile << "waterland_"<< idNumber << endl;
+            }
+            else cout << "Unable to open file";
+            */
+            
+            int intId;
+            istringstream(idNumber) >> intId;
+            cout << tempLandCellId << " = " << earth.cells[intId].terrain << endl;
+            cout << "Average color = " << earth.cells[intId].avg_color << endl;
+            cout << endl;
+            
             break;
         }
     }
-    */
+    
 }
 
 void SingleGameState::moveCamera()
