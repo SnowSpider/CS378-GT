@@ -17,6 +17,15 @@
 #include "GameObject.h"
 #include "SoundManager.h"
 #include <vector>
+#include "Planet.h"
+#include <btBulletCollisionCommon.h>
+
+#include <iostream>
+#include <sstream>
+#include <math.h>
+
+#include <string.h>
+
 using namespace std;
 
 #define GRAVITY 9.80665
@@ -51,63 +60,14 @@ public:
         void itemSelected(OgreBites::SelectMenu* menu);
  
 	void update(double timeSinceLastFrame);
-        bool soundSwitch();
-        typedef enum terrainType{
-            Terrain_WATER,
-            Terrain_LAND
-        };
-
-        typedef enum ownerType{
-            Owner_NEUTRAL,
-            Owner_RED,
-            Owner_BLUE
-        };
-
-        typedef enum radiationType{
-            Radiation_SAFE,
-            Radiation_LOW,
-            Radiation_MODERATE,
-            Radiation_HIGH,
-            Radiation_DEADLY
-        };
-
-        typedef enum buildType{
-            Build_NONE,
-            Build_ICBMSILO,
-            Build_NAVYBASE,
-            Build_SUBMARINE,
-            Build_DESTROYER,
-            Build_AIRFORCEBASE,
-            Build_BOMBER,
-            Build_FIGHTER,
-            Build_ENLIGHTENER,
-            Build_COMMANDBASE
-        };
-
-        struct Cell {
-            Cell( btVector3 p );
-        
-            // the position of the vert in the tile,
-            // and the center of the hex in space
-            btVector3 m_vertPos;		
-            btVector3 m_nrm;
-
-            bool visiblity;
-            terrainType terrain;
-            ownerType owner;
-            radiationType radiation;
-            buildType build;
-
-
-            // Triangle that share this hex
-            //std::vector<Face*> m_faces;	
-        };
+	bool soundSwitch();
  
 private:
 	Ogre::SceneNode*		m_pOgreHeadNode;
 	Ogre::Entity*			m_pOgreHeadEntity;
 	Ogre::MaterialPtr		m_pOgreHeadMat;
 	Ogre::MaterialPtr		m_pOgreHeadMatHigh;
+	Ogre::SceneNode*	cameraNode;
  
     OgreBites::ParamsPanel*		m_pDetailsPanel;
 	bool				m_bQuit;
@@ -118,6 +78,7 @@ private:
 	float				m_MoveScale;
 	Ogre::Degree			m_RotScale;
  
+    Ogre::RaySceneQuery*		m_pRSQ;
 	Ogre::SceneNode*		m_pCurrentObject;
 	Ogre::Entity*			m_pCurrentEntity;
 	bool				m_bLMouseDown, m_bRMouseDown;
@@ -142,6 +103,17 @@ private:
     bool soundIs;
     bool startUp;
     bool lost;
+    
+    Planet earth;
+    ofstream myfile;
+    
+    Ogre::SceneNode *mCurrentObject;	//pointer to our currently selected object
+	Ogre::RaySceneQuery* mRayScnQuery;	//pointer to our ray scene query
+	CEGUI::Renderer* mGUIRenderer;		//our CEGUI renderer
+ 
+	bool bLMouseDown, bRMouseDown;	//true if mouse buttons are held down
+	int mCount;						//number of objects created
+	float mRotateSpeed;				//the rotation speed for the camera
 };
  
 //|||||||||||||||||||||||||||||||||||||||||||||||

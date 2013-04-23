@@ -53,7 +53,7 @@ SingleGameState::SingleGameState()
  
 void SingleGameState::enter()
 {
-
+    camDistance = 20000;
     mRenderer = &CEGUI::OgreRenderer::bootstrapSystem();
     Display* pdsp = NULL;
     Window wid = 0;
@@ -423,6 +423,20 @@ void SingleGameState::getInput()
         if(OgreFramework::getSingletonPtr()->m_pKeyboard->isKeyDown(OIS::KC_S))
 	    if(m_pCamera->getPosition().z > 200 || m_pCamera->getPosition().z < -200)
             	m_TranslateVector.y = -m_MoveScale;
+
+	if(OgreFramework::getSingletonPtr()->m_pKeyboard->isKeyDown(OIS::KC_F)){
+	    if(camDistance < 20000){
+            	m_TranslateVector.z = m_MoveScale;
+		camDistance += 100;
+	    }
+	}
+ 
+	if(OgreFramework::getSingletonPtr()->m_pKeyboard->isKeyDown(OIS::KC_G)){
+	    if(camDistance > 7000){
+            	m_TranslateVector.z = -m_MoveScale;
+		camDistance -= 100;
+	    }
+	}
 
  
         //reset roll

@@ -83,6 +83,8 @@ private:
 	Ogre::Entity*			m_pCurrentEntity;
 	bool				m_bLMouseDown, m_bRMouseDown;
 	bool				m_bSettingsMode;
+
+    Ogre::Real camDistance;
 	
 	// stuff from Assignment 2
     int deltaX;
