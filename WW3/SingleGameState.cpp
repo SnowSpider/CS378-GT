@@ -61,8 +61,6 @@ void SingleGameState::enter()
     wid = DefaultRootWindow( pdsp );
     XWindowAttributes xwAttr;
     Status ret = XGetWindowAttributes( pdsp, wid, &xwAttr );
-
-    OgreFramework::getSingletonPtr()->m_pRenderWnd->setFullscreen(true, xwAttr.width, xwAttr.height);
     CEGUI::System::getSingleton().notifyDisplaySizeChanged(CEGUI::Size(xwAttr.width, xwAttr.height));
     XCloseDisplay( pdsp );
 
@@ -268,13 +266,13 @@ bool SingleGameState::mouseMoved(const OIS::MouseEvent &evt)
 {
     CEGUI::System::getSingleton().injectMouseMove(evt.state.X.rel, evt.state.Y.rel);
     if(OgreFramework::getSingletonPtr()->m_pTrayMgr->injectMouseMove(evt)) return true;
-    
+    CEGUI::Vector2 guiMouse = CEGUI::MouseCursor::getSingleton().getPosition();
     deltaX = evt.state.X.rel;
     deltaY = -evt.state.Y.rel;
     //xi = evt.state.X.abs - (1024/2);
     //yi = -evt.state.Y.abs + (768/2); 
-    xi += evt.state.X.rel;
-    yi += -evt.state.Y.rel; 
+    xi += guiMouse.d_x;
+    yi += -guiMouse.d_y; 
     if (xi > 90) xi = 90;
     if (xi < -90) xi = -90;
     if (yi > 90) yi = 90;
@@ -354,13 +352,15 @@ bool SingleGameState::mouseReleased(const OIS::MouseEvent &evt, OIS::MouseButton
 
 void SingleGameState::onLeftPressed(const OIS::MouseEvent &evt)
 {
+    printf("%d THE WIDTH",evt.state.width);
+    printf("%d THE HEIGHT",evt.state.height);
     if(m_pCurrentObject)
     {
         m_pCurrentObject->showBoundingBox(false);
     }
-    
-    Ogre::Ray mouseRay = m_pCamera->getCameraToViewportRay(OgreFramework::getSingletonPtr()->m_pMouse->getMouseState().X.abs / float(evt.state.width),
-        OgreFramework::getSingletonPtr()->m_pMouse->getMouseState().Y.abs / float(evt.state.height));
+    CEGUI::Vector2 guiMouse = CEGUI::MouseCursor::getSingleton().getPosition();
+    Ogre::Ray mouseRay = m_pCamera->getCameraToViewportRay(guiMouse.d_x / float(evt.state.width),
+        guiMouse.d_y / float(evt.state.height));
     m_pRSQ->setRay(mouseRay);
     m_pRSQ->setSortByDistance(true);
  
