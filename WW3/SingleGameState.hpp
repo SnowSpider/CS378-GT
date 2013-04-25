@@ -60,6 +60,8 @@ public:
         void itemSelected(OgreBites::SelectMenu* menu);
  
 	void update(double timeSinceLastFrame);
+        CEGUI::MouseButton convertButton(OIS::MouseButtonID buttonID);
+        bool soundButton(const CEGUI::EventArgs &e);
 	bool soundSwitch();
  
 private:

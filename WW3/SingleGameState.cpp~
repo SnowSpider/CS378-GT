@@ -189,15 +189,71 @@ void SingleGameState::createScene()
     CEGUI::WindowManager &wmgr = CEGUI::WindowManager::getSingleton();
     CEGUI::Window *sheet = wmgr.createWindow("DefaultWindow", "CEGUIDemo/Sheet");
  
-    CEGUI::Window *counter = wmgr.createWindow("TaharezLook/Button", "Counter");
-    counter->setText("Score:  ");
-    counter->setSize(CEGUI::UVector2(CEGUI::UDim(0.15, 0), CEGUI::UDim(0.05, 0)));
+    CEGUI::Window *counter = wmgr.createWindow("TaharezLook/StaticText", "Counter");
+    counter->setText("    Resources\nMoney: $0\nPlutonium: 0kg\nUranium: 0kg");
+    counter->setSize(CEGUI::UVector2(CEGUI::UDim(0.15, 0), CEGUI::UDim(0.15, 0)));
+    counter->setProperty("FrameEnabled", "false");
+    counter->setProperty("BackgroundEnabled", "false");
  
     sheet->addChildWindow(counter);
 
-    CEGUI::ImagesetManager::getSingleton().create( "ArmyBase.imageset" );
-    CEGUI::Window *w = wmgr.loadWindowLayout("ArmyBase.layout", "ArmyBase");
+    CEGUI::ProgressBar *progressBar = static_cast<CEGUI::ProgressBar*>(wmgr.createWindow("TaharezLook/ProgressBar", "ProgressBar1"));
+    sheet->addChildWindow(progressBar);
+    progressBar->setSize(CEGUI::UVector2(CEGUI::UDim(0.5f, 0), CEGUI::UDim(0.04f, 0)));
+    progressBar->setHorizontalAlignment(CEGUI::HA_CENTRE);
+    CEGUI::Window *resultWindow = wmgr.createWindow("TaharezLook/StaticText", "ProgressText1");
+    sheet->addChildWindow(resultWindow);
+    resultWindow->setHorizontalAlignment(CEGUI::HA_CENTRE);
+    resultWindow->setSize(CEGUI::UVector2(CEGUI::UDim(0.5f, 0), CEGUI::UDim(0.04f, 0)));
+    resultWindow->setText("Player Command Bases Remaining: 10/10");
+    resultWindow->setProperty("FrameEnabled", "false");
+    resultWindow->setProperty("BackgroundEnabled", "false");
+    resultWindow->setProperty("HorzFormatting", "WordWrapCentred");
+
+    progressBar = static_cast<CEGUI::ProgressBar*>(wmgr.createWindow("TaharezLook/ProgressBar", "ProgressBar2"));
+    sheet->addChildWindow(progressBar);
+    progressBar->setSize(CEGUI::UVector2(CEGUI::UDim(0.5f, 0), CEGUI::UDim(0.04f, 0)));
+    progressBar->setHorizontalAlignment(CEGUI::HA_CENTRE);
+    progressBar->setYPosition(CEGUI::UDim(0.05f, 0));
+    progressBar->setProgress(progressBar->getProgress() + 0.05f);
+    resultWindow = wmgr.createWindow("TaharezLook/StaticText", "ProgressText2");
+    sheet->addChildWindow(resultWindow);
+    resultWindow->setHorizontalAlignment(CEGUI::HA_CENTRE);
+    resultWindow->setYPosition(CEGUI::UDim(0.05f, 0));
+    resultWindow->setSize(CEGUI::UVector2(CEGUI::UDim(0.5f, 0), CEGUI::UDim(0.04f, 0)));
+    resultWindow->setText("Enemy Command Bases Remaining: 10/10");
+    resultWindow->setProperty("FrameEnabled", "false");
+    resultWindow->setProperty("BackgroundEnabled", "false");
+    resultWindow->setProperty("HorzFormatting", "WordWrapCentred");
+
+    CEGUI::ImagesetManager::getSingleton().create( "BCommandBase.imageset" );
+    CEGUI::Window *w = wmgr.loadWindowLayout("BCommandBase.layout", "BCommandBase");
     w->setHorizontalAlignment(CEGUI::HA_RIGHT);
+    w->setYPosition(CEGUI::UDim(0.05f, 0));
+    w->setVisible( true );
+
+    sheet->addChildWindow(w);
+
+    CEGUI::ImagesetManager::getSingleton().create( "ArmyBase.imageset" );
+    w = wmgr.loadWindowLayout("ArmyBase.layout", "ArmyBase");
+    w->setHorizontalAlignment(CEGUI::HA_RIGHT);
+    w->setYPosition(CEGUI::UDim(0.20f, 0));
+    w->setVisible( true );
+
+    sheet->addChildWindow(w);
+
+    CEGUI::ImagesetManager::getSingleton().create( "NavyBase.imageset" );
+    w = wmgr.loadWindowLayout("NavyBase.layout", "NavyBase");
+    w->setHorizontalAlignment(CEGUI::HA_RIGHT);
+    w->setYPosition(CEGUI::UDim(0.35f, 0));
+    w->setVisible( true );
+
+    sheet->addChildWindow(w);
+
+    CEGUI::ImagesetManager::getSingleton().create( "AirForceBase.imageset" );
+    w = wmgr.loadWindowLayout("AirForceBase.layout", "AirForceBase");
+    w->setHorizontalAlignment(CEGUI::HA_RIGHT);
+    w->setYPosition(CEGUI::UDim(0.50f, 0));
     w->setVisible( true );
 
     sheet->addChildWindow(w);
@@ -206,15 +262,8 @@ void SingleGameState::createScene()
     sounder->setText("Sound: On");
     sounder->setSize(CEGUI::UVector2(CEGUI::UDim(0.15, 0), CEGUI::UDim(0.05, 0)));
     sounder->setHorizontalAlignment(CEGUI::HA_RIGHT);
- 
+    sounder->subscribeEvent(CEGUI::PushButton::EventClicked,CEGUI::Event::Subscriber(&SingleGameState::soundButton,this));
     sheet->addChildWindow(sounder);
-
-    CEGUI::Window *starter = wmgr.createWindow("TaharezLook/StaticText", "StartingWindow");
-    starter->setText("Welcome, please click to begin.\nClick X to toggle sound.");
-    starter->setSize(CEGUI::UVector2(CEGUI::UDim(0.30, 0), CEGUI::UDim(0.10, 0)));
-    starter->setPosition(CEGUI::UVector2(CEGUI::UDim(0.35f, 0), CEGUI::UDim(0.45f, 0 )));
- 
-    sheet->addChildWindow(starter);
 
     CEGUI::Window *gameOver = wmgr.createWindow("TaharezLook/StaticText", "GameOverWindow");
     gameOver->setText("");
@@ -251,11 +300,6 @@ bool SingleGameState::keyPressed(const OIS::KeyEvent &keyEventRef)
     if (keyEventRef.key == OIS::KC_X)
     {
         SingleGameState::soundSwitch();
-        CEGUI::Window* sounder = CEGUI::WindowManager::getSingleton().getWindow("SounderDontBreak");
-        if (soundIs)
-            sounder->setText("Sound: On");
-        else
-            sounder->setText("Sound: Off");
     }
     
     return true;
@@ -299,6 +343,7 @@ bool SingleGameState::mouseMoved(const OIS::MouseEvent &evt)
  
 bool SingleGameState::mousePressed(const OIS::MouseEvent &evt, OIS::MouseButtonID id)
 {
+    CEGUI::System::getSingleton().injectMouseButtonDown(SingleGameState::convertButton(id));
     if(OgreFramework::getSingletonPtr()->m_pTrayMgr->injectMouseDown(evt, id)) return true;
     
     switch (id) {
@@ -318,22 +363,6 @@ bool SingleGameState::mousePressed(const OIS::MouseEvent &evt, OIS::MouseButtonI
         default:
             break;
     }
-    if(startUp)
-    {
-        startUp = false;
-        CEGUI::Window* starting = CEGUI::WindowManager::getSingleton().getWindow("StartingWindow");
-        starting->setVisible(false);
-        CEGUI::Window* counter = CEGUI::WindowManager::getSingleton().getWindow("Counter");
-        counter->setText("Score: 0");
-    }
-    if(lost)
-    {
-        lost = false;
-        CEGUI::Window* gameOver = CEGUI::WindowManager::getSingleton().getWindow("GameOverWindow");
-        gameOver->setVisible(false);
-        CEGUI::Window* counter = CEGUI::WindowManager::getSingleton().getWindow("Counter");
-        counter->setText("Score: 0");
-    }
 
     //mCameraMan->injectMouseDown(evt, id);
     return true;
@@ -343,6 +372,7 @@ bool SingleGameState::mousePressed(const OIS::MouseEvent &evt, OIS::MouseButtonI
  
 bool SingleGameState::mouseReleased(const OIS::MouseEvent &evt, OIS::MouseButtonID id)
 {
+    CEGUI::System::getSingleton().injectMouseButtonUp(convertButton(id));
     if(OgreFramework::getSingletonPtr()->m_pTrayMgr->injectMouseUp(evt, id)) return true;
  
     if(id == OIS::MB_Left)
@@ -533,12 +563,48 @@ void SingleGameState::itemSelected(OgreBites::SelectMenu* menu)
     }
 }
 
+CEGUI::MouseButton SingleGameState::convertButton(OIS::MouseButtonID buttonID)
+{
+    switch (buttonID)
+    {
+    case OIS::MB_Left:
+        return CEGUI::LeftButton;
+        break;
+ 
+    case OIS::MB_Right:
+        return CEGUI::RightButton;
+        break;
+ 
+    case OIS::MB_Middle:
+        return CEGUI::MiddleButton;
+        break;
+ 
+    default:
+        return CEGUI::LeftButton;
+        break;
+    }
+}
+
+bool SingleGameState::soundButton(const CEGUI::EventArgs &e)
+{
+    SingleGameState::soundSwitch();
+    return true;
+}
+
+
 bool SingleGameState::soundSwitch(void)
 {
+    CEGUI::Window* sounder = CEGUI::WindowManager::getSingleton().getWindow("SounderDontBreak");
     if(soundIs)
+    {
        sound.turnOff();
+       sounder->setText("Sound: Off");
+    }
     else
+    {
         sound.turnOn();
+        sounder->setText("Sound: On");
+    }
     soundIs = !soundIs;
     return true;
 } 

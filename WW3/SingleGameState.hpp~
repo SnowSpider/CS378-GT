@@ -60,6 +60,7 @@ public:
         void itemSelected(OgreBites::SelectMenu* menu);
  
 	void update(double timeSinceLastFrame);
+        bool soundButton(const CEGUI::EventArgs &e);
 	bool soundSwitch();
  
 private:
@@ -83,6 +84,8 @@ private:
 	Ogre::Entity*			m_pCurrentEntity;
 	bool				m_bLMouseDown, m_bRMouseDown;
 	bool				m_bSettingsMode;
+
+    Ogre::Real camDistance;
 	
 	// stuff from Assignment 2
     int deltaX;
