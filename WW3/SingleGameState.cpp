@@ -722,7 +722,7 @@ bool SingleGameState::FighterButton(const CEGUI::EventArgs &e)
 	return true;
 }
 
-void BuildingImages1(void)
+void BuildingImages1(const Planet::PlanetCell $cell)
 {
 	CEGUI::Window* w = CEGUI::WindowManager::getSingleton().getWindow("CommandBase");
 	w->setVisible( true );
@@ -748,7 +748,7 @@ void BuildingImages1(void)
 	w->setVisible( false );
 	buildingImages = 1;
 }
-void BuildingImagesCB2()
+void BuildingImagesCB2(const Planet::PlanetCell $cell)
 {
 	CEGUI::Window* w = CEGUI::WindowManager::getSingleton().getWindow("CommandBase");
 	w->setVisible( false );
@@ -774,7 +774,7 @@ void BuildingImagesCB2()
 	w->setVisible( false );
 	buildingImages = 2;
 }
-void BuildingImagesA3()
+void BuildingImagesA3(const Planet::PlanetCell $cell)
 {
 	CEGUI::Window* w = CEGUI::WindowManager::getSingleton().getWindow("CommandBase");
 	w->setVisible( false );
@@ -800,7 +800,7 @@ void BuildingImagesA3()
 	w->setVisible( false );
 	buildingImages = 3;
 }
-void BuildingImagesN4()
+void BuildingImagesN4(const Planet::PlanetCell $cell)
 {
 	CEGUI::Window* w = CEGUI::WindowManager::getSingleton().getWindow("CommandBase");
 	w->setVisible( false );
@@ -826,7 +826,7 @@ void BuildingImagesN4()
 	w->setVisible( false );
 	buildingImages = 4;
 }
-void BuildingImagesAF5()
+void BuildingImagesAF5(const Planet::PlanetCell $cell)
 {
 	CEGUI::Window* w = CEGUI::WindowManager::getSingleton().getWindow("CommandBase");
 	w->setVisible( false );
