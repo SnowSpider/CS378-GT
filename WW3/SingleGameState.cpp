@@ -195,6 +195,14 @@ void SingleGameState::createScene()
  
     sheet->addChildWindow(counter);
 
+    CEGUI::ImagesetManager::getSingleton().create( "ArmyBase.imageset" );
+    CEGUI::Window *w = wmgr.loadWindowLayout("ArmyBase.layout", "ArmyBase");
+    w->setHorizontalAlignment(CEGUI::HA_RIGHT);
+    w->setYPosition(CEGUI::UDim(0.35f, 0));
+    w->setVisible( true );
+
+    sheet->addChildWindow(w);
+
     CEGUI::Window *sounder = wmgr.createWindow("TaharezLook/Button", "SounderDontBreak");
     sounder->setText("Sound: On");
     sounder->setSize(CEGUI::UVector2(CEGUI::UDim(0.15, 0), CEGUI::UDim(0.05, 0)));

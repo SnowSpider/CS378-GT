@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<Imageset Name="Bomber" Imagefile="Bomber.png" >
+	<Image Name="btnNormal" XPos="0" YPos="0"  Width="300" Height="169" />
+	<Image Name="btnHover"  XPos="300" YPos="169" Width="300" Height="169" />
+	<Image Name="btnPushed" XPos="300" YPos="0" Width="300" Height="169" />
+	<Image Name="btnDisabl" XPos="0" YPos="169" Width="300" Height="169" />
+</Imageset>

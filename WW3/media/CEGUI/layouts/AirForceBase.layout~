@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<GUILayout>
+<Window Type="TaharezLook/ImageButton" Name="AirForceBase">
+	<Property Name="UnifiedPosition" Value="{{0,0},{0,0}}" />
+	<Property Name="UnifiedSize" Value="{{0,300},{0,169}}" />
+	<Property Name="NormalImage"     Value="set:AirForceBase image:btnNormal" />
+	<Property Name="HoverImage"      Value="set:AirForceBase image:btnHover"  />
+	<Property Name="PushedImage"     Value="set:AirForceBase image:btnPushed" />
+	<Property Name="DisabledImage"   Value="set:AirForceBase image:btnDisabl" />
+		<Property Name="UnifiedPosition"   Value="{{0,0},{.5,0}}" />
+		<Property Name="UnifiedSize"       Value="{{1,0},{.6,0}}" />
+		<Property Name="FrameEnabled"      Value="False" />
+		<Property Name="BackgroundEnabled" Value="False" />
+		<Property Name="HorzFormatting"    Value="WordWrapCentred" />
+		<Property Name="VertFormatting"    Value="Middle" />
+		<Property Name="Disabled"          Value="True" />
+		<Property Name="Text">Cost:$3000
+Build Time:300s</Property>
+	</Window>
+</Window>
+</GUILayout>
