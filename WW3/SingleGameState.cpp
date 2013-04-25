@@ -157,7 +157,7 @@ void SingleGameState::createScene()
                     btVector3(0,1,0), //axis
                     btVector3(0,0,1), //longitude_zero
                     6371,
-                    3);
+                    4);
     earth.init();
     earth.mapTerrain();
     earth.createManualObjects(m_pSceneMgr);
@@ -484,7 +484,9 @@ void SingleGameState::onLeftPressed(const OIS::MouseEvent &evt)
     printf("%d THE HEIGHT",evt.state.height);
     if(m_pCurrentObject)
     {
-        m_pCurrentObject->showBoundingBox(false);
+        //m_pCurrentObject->showBoundingBox(false);
+        cout << "deselect" << endl;
+        m_pCurrentEntity->setMaterialName("MyMaterials/earth_day");
     }
     CEGUI::Vector2 guiMouse = CEGUI::MouseCursor::getSingleton().getPosition();
     Ogre::Ray mouseRay = m_pCamera->getCameraToViewportRay(guiMouse.d_x / float(evt.state.width),
@@ -499,14 +501,18 @@ void SingleGameState::onLeftPressed(const OIS::MouseEvent &evt)
     {
         if(itr->movable)
         {
+            // Select a cell.
             //OgreFramework::getSingletonPtr()->m_pLog->logMessage("MovableName: " + itr->movable->getName());
-            m_pCurrentObject = m_pSceneMgr->getMovableObject(itr->movable->getName(), "ManualObject")->getParentSceneNode();
+            m_pCurrentObject = m_pSceneMgr->getEntity(itr->movable->getName())->getParentSceneNode();
             //cout << "gets here" << endl;
-            m_pCurrentObject->showBoundingBox(true);
             
+            //m_pCurrentObject->showBoundingBox(true);
+            m_pCurrentEntity = m_pSceneMgr->getEntity(itr->movable->getName());
+            m_pCurrentEntity->setMaterialName("MyMaterials/earth_day_bright");
             
             string tempLandCellId = itr->movable->getName();
             string idNumber = tempLandCellId.substr(5, tempLandCellId.length()-1);
+            
             
             /*
             if (myfile.is_open()){
