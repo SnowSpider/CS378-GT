@@ -68,6 +68,7 @@ public:
 	bool ArmyBaseButton(const CEGUI::EventArgs &e);
 	bool NavyBaseButton(const CEGUI::EventArgs &e);
 	bool AirForceBaseButton(const CEGUI::EventArgs &e);
+	bool ICBMSiloButton(const CEGUI::EventArgs &e);
 	bool InfantryButton(const CEGUI::EventArgs &e);
 	bool TankButton(const CEGUI::EventArgs &e);
 	bool ScudButton(const CEGUI::EventArgs &e);
@@ -76,11 +77,11 @@ public:
 	bool BomberButton(const CEGUI::EventArgs &e);
 	bool FighterButton(const CEGUI::EventArgs &e);
 	
-	void BuildingImages1(const Planet::PlanetCell $cell);
-	void BuildingImagesCB2(const Planet::PlanetCell $cell);
-	void BuildingImagesA3(const Planet::PlanetCell $cell);
-	void BuildingImagesN4(const Planet::PlanetCell $cell);
-	void BuildingImagesAF5(const Planet::PlanetCell $cell);
+	void BuildingImages1(const Planet::PlanetCell &cell);
+	void BuildingImagesCB2(const Planet::PlanetCell &cell);
+	void BuildingImagesA3(const Planet::PlanetCell &cell);
+	void BuildingImagesN4(const Planet::PlanetCell &cell);
+	void BuildingImagesAF5(const Planet::PlanetCell &cell);
 	
  
 private:
