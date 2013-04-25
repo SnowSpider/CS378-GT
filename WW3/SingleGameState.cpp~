@@ -47,6 +47,11 @@ SingleGameState::SingleGameState()
     soundIs = true;
     startUp = true;
     lost = false;
+    buildingImages = 1;
+    myOwner = 1;
+    money = 4000;
+    plutonium = 0;
+    uranium = 0;
 }
  
 //|||||||||||||||||||||||||||||||||||||||||||||||
@@ -201,6 +206,7 @@ void SingleGameState::createScene()
     sheet->addChildWindow(progressBar);
     progressBar->setSize(CEGUI::UVector2(CEGUI::UDim(0.5f, 0), CEGUI::UDim(0.04f, 0)));
     progressBar->setHorizontalAlignment(CEGUI::HA_CENTRE);
+    progressBar->setProgress(progressBar->getProgress() + 0.50f);
     CEGUI::Window *resultWindow = wmgr.createWindow("TaharezLook/StaticText", "ProgressText1");
     sheet->addChildWindow(resultWindow);
     resultWindow->setHorizontalAlignment(CEGUI::HA_CENTRE);
@@ -215,7 +221,7 @@ void SingleGameState::createScene()
     progressBar->setSize(CEGUI::UVector2(CEGUI::UDim(0.5f, 0), CEGUI::UDim(0.04f, 0)));
     progressBar->setHorizontalAlignment(CEGUI::HA_CENTRE);
     progressBar->setYPosition(CEGUI::UDim(0.05f, 0));
-    progressBar->setProgress(progressBar->getProgress() + 0.05f);
+    progressBar->setProgress(progressBar->getProgress() + 0.5f);
     resultWindow = wmgr.createWindow("TaharezLook/StaticText", "ProgressText2");
     sheet->addChildWindow(resultWindow);
     resultWindow->setHorizontalAlignment(CEGUI::HA_CENTRE);
@@ -226,11 +232,21 @@ void SingleGameState::createScene()
     resultWindow->setProperty("BackgroundEnabled", "false");
     resultWindow->setProperty("HorzFormatting", "WordWrapCentred");
 
-    CEGUI::ImagesetManager::getSingleton().create( "BCommandBase.imageset" );
-    CEGUI::Window *w = wmgr.loadWindowLayout("BCommandBase.layout", "BCommandBase");
+    CEGUI::Window *w;
+    if(myOwner = 0)
+    {
+    	CEGUI::ImagesetManager::getSingleton().create( "BCommandBase.imageset" );
+    	w = wmgr.loadWindowLayout("BCommandBase.layout", "CommandBase");
+    }
+    else
+    {
+    	CEGUI::ImagesetManager::getSingleton().create( "RCommandBase.imageset" );
+    	w = wmgr.loadWindowLayout("RCommandBase.layout", "CommandBase");
+    }
     w->setHorizontalAlignment(CEGUI::HA_RIGHT);
     w->setYPosition(CEGUI::UDim(0.05f, 0));
     w->setVisible( true );
+    w->subscribeEvent(CEGUI::PushButton::EventClicked,CEGUI::Event::Subscriber(&SingleGameState::CommandBaseButton,this));
 
     sheet->addChildWindow(w);
 
@@ -239,6 +255,7 @@ void SingleGameState::createScene()
     w->setHorizontalAlignment(CEGUI::HA_RIGHT);
     w->setYPosition(CEGUI::UDim(0.20f, 0));
     w->setVisible( true );
+    w->subscribeEvent(CEGUI::PushButton::EventClicked,CEGUI::Event::Subscriber(&SingleGameState::ArmyBaseButton,this));
 
     sheet->addChildWindow(w);
 
@@ -247,6 +264,7 @@ void SingleGameState::createScene()
     w->setHorizontalAlignment(CEGUI::HA_RIGHT);
     w->setYPosition(CEGUI::UDim(0.35f, 0));
     w->setVisible( true );
+    w->subscribeEvent(CEGUI::PushButton::EventClicked,CEGUI::Event::Subscriber(&SingleGameState::NavyBaseButton,this));
 
     sheet->addChildWindow(w);
 
@@ -255,6 +273,79 @@ void SingleGameState::createScene()
     w->setHorizontalAlignment(CEGUI::HA_RIGHT);
     w->setYPosition(CEGUI::UDim(0.50f, 0));
     w->setVisible( true );
+    w->subscribeEvent(CEGUI::PushButton::EventClicked,CEGUI::Event::Subscriber(&SingleGameState::AirForceBaseButton,this));
+
+    sheet->addChildWindow(w);
+    
+    CEGUI::ImagesetManager::getSingleton().create( "ICBMSilo.imageset" );
+    w = wmgr.loadWindowLayout("ICBMSilo.layout", "ICBMSilo");
+    w->setHorizontalAlignment(CEGUI::HA_RIGHT);
+    w->setYPosition(CEGUI::UDim(0.65f, 0));
+    w->setVisible( true );
+    w->subscribeEvent(CEGUI::PushButton::EventClicked,CEGUI::Event::Subscriber(&SingleGameState::ICBMSiloButton,this));
+
+    sheet->addChildWindow(w);
+    
+    CEGUI::ImagesetManager::getSingleton().create( "Infantry.imageset" );
+    w = wmgr.loadWindowLayout("Infantry.layout", "Infantry");
+    w->setHorizontalAlignment(CEGUI::HA_RIGHT);
+    w->setYPosition(CEGUI::UDim(0.05f, 0));
+    w->setVisible( false );
+    w->subscribeEvent(CEGUI::PushButton::EventClicked,CEGUI::Event::Subscriber(&SingleGameState::InfantryButton,this));
+
+    sheet->addChildWindow(w);
+    
+    CEGUI::ImagesetManager::getSingleton().create( "Submarine.imageset" );
+    w = wmgr.loadWindowLayout("Submarine.layout", "Submarine");
+    w->setHorizontalAlignment(CEGUI::HA_RIGHT);
+    w->setYPosition(CEGUI::UDim(0.05f, 0));
+    w->setVisible( false );
+    w->subscribeEvent(CEGUI::PushButton::EventClicked,CEGUI::Event::Subscriber(&SingleGameState::SubmarineButton,this));
+
+    sheet->addChildWindow(w);    
+    
+    CEGUI::ImagesetManager::getSingleton().create( "Destroyer.imageset" );
+    w = wmgr.loadWindowLayout("Destroyer.layout", "Destroyer");
+    w->setHorizontalAlignment(CEGUI::HA_RIGHT);
+    w->setYPosition(CEGUI::UDim(0.20f, 0));
+    w->setVisible( false );
+    w->subscribeEvent(CEGUI::PushButton::EventClicked,CEGUI::Event::Subscriber(&SingleGameState::DestroyerButton,this));
+
+    sheet->addChildWindow(w);
+    
+    CEGUI::ImagesetManager::getSingleton().create( "Tank.imageset" );
+    w = wmgr.loadWindowLayout("Tank.layout", "Tank");
+    w->setHorizontalAlignment(CEGUI::HA_RIGHT);
+    w->setYPosition(CEGUI::UDim(0.05f, 0));
+    w->setVisible( false );
+    w->subscribeEvent(CEGUI::PushButton::EventClicked,CEGUI::Event::Subscriber(&SingleGameState::TankButton,this));
+
+    sheet->addChildWindow(w);
+    
+    CEGUI::ImagesetManager::getSingleton().create( "Scud.imageset" );
+    w = wmgr.loadWindowLayout("Scud.layout", "Scud");
+    w->setHorizontalAlignment(CEGUI::HA_RIGHT);
+    w->setYPosition(CEGUI::UDim(0.20f, 0));
+    w->setVisible( false );
+    w->subscribeEvent(CEGUI::PushButton::EventClicked,CEGUI::Event::Subscriber(&SingleGameState::ScudButton,this));
+
+    sheet->addChildWindow(w);
+
+    CEGUI::ImagesetManager::getSingleton().create( "Bomber.imageset" );
+    w = wmgr.loadWindowLayout("Bomber.layout", "Bomber");
+    w->setHorizontalAlignment(CEGUI::HA_RIGHT);
+    w->setYPosition(CEGUI::UDim(0.05f, 0));
+    w->setVisible( false );
+    w->subscribeEvent(CEGUI::PushButton::EventClicked,CEGUI::Event::Subscriber(&SingleGameState::BomberButton,this));
+
+    sheet->addChildWindow(w);
+    
+    CEGUI::ImagesetManager::getSingleton().create( "Fighter.imageset" );
+    w = wmgr.loadWindowLayout("Fighter.layout", "Fightere");
+    w->setHorizontalAlignment(CEGUI::HA_RIGHT);
+    w->setYPosition(CEGUI::UDim(0.20f, 0));
+    w->setVisible( false );
+    w->subscribeEvent(CEGUI::PushButton::EventClicked,CEGUI::Event::Subscriber(&SingleGameState::FighterButton,this));
 
     sheet->addChildWindow(w);
 
@@ -609,4 +700,304 @@ bool SingleGameState::soundSwitch(void)
     return true;
 } 
 
+bool SingleGameState::CommandBaseButton(const CEGUI::EventArgs &e)
+{
+	return true;
+}
+bool SingleGameState::ArmyBaseButton(const CEGUI::EventArgs &e)
+{
+	return true;
+}
+bool SingleGameState::NavyBaseButton(const CEGUI::EventArgs &e)
+{
+	return true;
+}
+bool SingleGameState::AirForceBaseButton(const CEGUI::EventArgs &e)
+{
+	return true;
+}
+bool SingleGameState::ICBMSiloButton(const CEGUI::EventArgs &e)
+{
+	return true;
+}
+bool SingleGameState::InfantryButton(const CEGUI::EventArgs &e)
+{
+	return true;
+}
+bool SingleGameState::TankButton(const CEGUI::EventArgs &e)
+{
+	return true;
+}
+bool SingleGameState::ScudButton(const CEGUI::EventArgs &e)
+{
+	return true;
+}
+bool SingleGameState::SubmarineButton(const CEGUI::EventArgs &e)
+{
+	return true;
+}
+bool SingleGameState::DestroyerButton(const CEGUI::EventArgs &e)
+{
+	return true;
+}
+bool SingleGameState::BomberButton(const CEGUI::EventArgs &e)
+{
+	return true;
+}
+bool SingleGameState::FighterButton(const CEGUI::EventArgs &e)
+{
+	return true;
+}
 
+void SingleGameState::BuildingImages1(PlanetCell &cell)
+{
+	CEGUI::Window* w;
+	if(buildingImages != 1)
+	{
+		w = CEGUI::WindowManager::getSingleton().getWindow("CommandBase");
+		w->setVisible( true );
+		w->enable();
+		w = CEGUI::WindowManager::getSingleton().getWindow("ArmyBase");
+		w->setVisible( true );
+		w->enable();
+		w = CEGUI::WindowManager::getSingleton().getWindow("NavyBase");
+		w->setVisible( true );
+		w->enable();
+		w = CEGUI::WindowManager::getSingleton().getWindow("AirForceBase");
+		w->setVisible( true );
+		w->enable();
+		w = CEGUI::WindowManager::getSingleton().getWindow("ICBMSilo");
+		w->setVisible( true );
+		w->enable();
+		if(buildingImages == 2)
+		{
+			w = CEGUI::WindowManager::getSingleton().getWindow("Infantry");
+			w->setVisible( false );
+		}
+		else if(buildingImages == 3)
+		{
+			w = CEGUI::WindowManager::getSingleton().getWindow("Tank");
+			w->setVisible( false );
+			w = CEGUI::WindowManager::getSingleton().getWindow("Scud");
+			w->setVisible( false );
+		}
+		else if(buildingImages == 4)
+		{
+			w = CEGUI::WindowManager::getSingleton().getWindow("Submarine");
+			w->setVisible( false );
+			w = CEGUI::WindowManager::getSingleton().getWindow("Destroyer");
+			w->setVisible( false );
+		}
+		else if(buildingImages == 5)
+		{
+			w = CEGUI::WindowManager::getSingleton().getWindow("Bomber");
+			w->setVisible( false );
+			w = CEGUI::WindowManager::getSingleton().getWindow("Fighter");
+			w->setVisible( false );
+		}
+		buildingImages = 1;
+	}
+	if(cell.owner != myOwner || cell.terrain == 2)
+	{
+		w = CEGUI::WindowManager::getSingleton().getWindow("CommandBase");
+		w->disable();
+		w = CEGUI::WindowManager::getSingleton().getWindow("ArmyBase");
+		w->disable();
+		w = CEGUI::WindowManager::getSingleton().getWindow("NavyBase");
+		w->disable();
+		w = CEGUI::WindowManager::getSingleton().getWindow("AirForceBase");
+		w->disable();
+	}
+	else
+	{
+		if(cell.terrain == 0)
+		{
+			w = CEGUI::WindowManager::getSingleton().getWindow("NavyBase");
+			w->disable();	
+		}
+	}
+
+}
+void SingleGameState::BuildingImagesCB2(PlanetCell &cell)
+{
+	CEGUI::Window* w;
+	if(buildingImages != 2)
+	{
+		w = CEGUI::WindowManager::getSingleton().getWindow("Infantry");
+		w->setVisible( true );	
+		w->enable();
+		if(buildingImages == 1)
+		{
+			w = CEGUI::WindowManager::getSingleton().getWindow("CommandBase");
+			w->setVisible( false );
+			w = CEGUI::WindowManager::getSingleton().getWindow("ArmyBase");
+			w->setVisible( false );
+			w = CEGUI::WindowManager::getSingleton().getWindow("NavyBase");
+			w->setVisible( false );
+			w = CEGUI::WindowManager::getSingleton().getWindow("AirForceBase");
+			w->setVisible( false );
+			w = CEGUI::WindowManager::getSingleton().getWindow("ICBMSilo");
+			w->setVisible( false );
+		}
+		else if(buildingImages == 3)
+		{
+			w = CEGUI::WindowManager::getSingleton().getWindow("Tank");
+			w->setVisible( false );
+			w = CEGUI::WindowManager::getSingleton().getWindow("Scud");
+			w->setVisible( false );
+		}
+		else if(buildingImages == 4)
+		{
+			w = CEGUI::WindowManager::getSingleton().getWindow("Submarine");
+			w->setVisible( false );
+			w = CEGUI::WindowManager::getSingleton().getWindow("Destroyer");
+			w->setVisible( false );
+		}
+		else if(buildingImages == 5)
+		{
+			w = CEGUI::WindowManager::getSingleton().getWindow("Bomber");
+			w->setVisible( false );
+			w = CEGUI::WindowManager::getSingleton().getWindow("Fighter");
+			w->setVisible( false );
+		}
+		buildingImages = 2;
+	}
+}
+void SingleGameState::BuildingImagesA3(PlanetCell &cell)
+{
+	CEGUI::Window* w;
+	if(buildingImages != 3)
+	{
+		w = CEGUI::WindowManager::getSingleton().getWindow("Tank");
+		w->setVisible( true );
+		w->enable();
+		w = CEGUI::WindowManager::getSingleton().getWindow("Scud");
+		w->setVisible( true );	
+		w->enable();
+		if(buildingImages == 1)
+		{
+			w = CEGUI::WindowManager::getSingleton().getWindow("CommandBase");
+			w->setVisible( false );
+			w = CEGUI::WindowManager::getSingleton().getWindow("ArmyBase");
+			w->setVisible( false );
+			w = CEGUI::WindowManager::getSingleton().getWindow("NavyBase");
+			w->setVisible( false );
+			w = CEGUI::WindowManager::getSingleton().getWindow("AirForceBase");
+			w->setVisible( false );
+			w = CEGUI::WindowManager::getSingleton().getWindow("ICBMSilo");
+			w->setVisible( false );
+		}
+		else if(buildingImages == 2)
+		{
+			w = CEGUI::WindowManager::getSingleton().getWindow("Infantry");
+			w->setVisible( false );
+		}
+		else if(buildingImages == 4)
+		{
+			w = CEGUI::WindowManager::getSingleton().getWindow("Submarine");
+			w->setVisible( false );	
+			w = CEGUI::WindowManager::getSingleton().getWindow("Destroyer");
+			w->setVisible( false );
+		}
+		else if(buildingImages == 5)
+		{
+			w = CEGUI::WindowManager::getSingleton().getWindow("Bomber");
+			w->setVisible( false );
+			w = CEGUI::WindowManager::getSingleton().getWindow("Fighter");
+			w->setVisible( false );
+		}
+		buildingImages = 3;
+	}
+}
+void SingleGameState::BuildingImagesN4(PlanetCell &cell)
+{
+	CEGUI::Window* w;
+	if(buildingImages != 4)
+	{
+		w = CEGUI::WindowManager::getSingleton().getWindow("Submarine");
+		w->setVisible( true );
+		w->enable();
+		w = CEGUI::WindowManager::getSingleton().getWindow("Destroyer");
+		w->setVisible( true );	
+		w->enable();
+		if(buildingImages == 1)
+		{
+			w = CEGUI::WindowManager::getSingleton().getWindow("CommandBase");
+			w->setVisible( false );
+			w = CEGUI::WindowManager::getSingleton().getWindow("ArmyBase");
+			w->setVisible( false );
+			w = CEGUI::WindowManager::getSingleton().getWindow("NavyBase");
+			w->setVisible( false );
+			w = CEGUI::WindowManager::getSingleton().getWindow("AirForceBase");
+			w->setVisible( false );
+			w = CEGUI::WindowManager::getSingleton().getWindow("ICBMSilo");
+			w->setVisible( false );
+		}
+		else if(buildingImages == 2)
+		{
+			w = CEGUI::WindowManager::getSingleton().getWindow("Infantry");
+			w->setVisible( false );
+		}
+		else if(buildingImages == 3)
+		{
+			w = CEGUI::WindowManager::getSingleton().getWindow("Tank");
+			w->setVisible( false );
+			w = CEGUI::WindowManager::getSingleton().getWindow("Scud");
+			w->setVisible( false );
+		}
+		else if(buildingImages == 5)
+		{
+			w = CEGUI::WindowManager::getSingleton().getWindow("Bomber");
+			w->setVisible( false );
+			w = CEGUI::WindowManager::getSingleton().getWindow("Fighter");
+			w->setVisible( false );
+		}
+		buildingImages = 4;
+	}
+}
+void SingleGameState::BuildingImagesAF5(PlanetCell &cell)
+{
+	CEGUI::Window* w;
+	if(buildingImages != 5)
+	{
+		w = CEGUI::WindowManager::getSingleton().getWindow("Bomber");
+		w->setVisible( true );
+		w->enable();
+		w = CEGUI::WindowManager::getSingleton().getWindow("Fighter");
+		w->setVisible( true );
+		w->enable();
+		if(buildingImages == 1)
+		{
+			w = CEGUI::WindowManager::getSingleton().getWindow("CommandBase");
+			w->setVisible( false );
+			w = CEGUI::WindowManager::getSingleton().getWindow("ArmyBase");
+			w->setVisible( false );
+			w = CEGUI::WindowManager::getSingleton().getWindow("NavyBase");
+			w->setVisible( false );
+			w = CEGUI::WindowManager::getSingleton().getWindow("AirForceBase");
+			w->setVisible( false );
+			w = CEGUI::WindowManager::getSingleton().getWindow("ICBMSilo");
+			w->setVisible( false );
+		}
+		else if(buildingImages == 2)
+		{
+			w = CEGUI::WindowManager::getSingleton().getWindow("Infantry");
+			w->setVisible( false );
+		}
+		else if(buildingImages == 3)
+		{
+			w = CEGUI::WindowManager::getSingleton().getWindow("Tank");
+			w->setVisible( false );
+			w = CEGUI::WindowManager::getSingleton().getWindow("Scud");
+			w->setVisible( false );
+		}
+		else if(buildingImages == 4)
+		{
+			w = CEGUI::WindowManager::getSingleton().getWindow("Submarine");
+			w->setVisible( false );
+			w = CEGUI::WindowManager::getSingleton().getWindow("Destroyer");
+			w->setVisible( false );
+		}
+		buildingImages = 5;
+	}
+}

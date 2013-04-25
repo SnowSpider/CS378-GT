@@ -60,8 +60,34 @@ public:
         void itemSelected(OgreBites::SelectMenu* menu);
  
 	void update(double timeSinceLastFrame);
+        CEGUI::MouseButton convertButton(OIS::MouseButtonID buttonID);
         bool soundButton(const CEGUI::EventArgs &e);
 	bool soundSwitch();
+	
+	bool CommandBaseButton(const CEGUI::EventArgs &e);
+	bool ArmyBaseButton(const CEGUI::EventArgs &e);
+	bool NavyBaseButton(const CEGUI::EventArgs &e);
+	bool AirForceBaseButton(const CEGUI::EventArgs &e);
+	bool ICBMSiloButton(const CEGUI::EventArgs &e);
+	bool InfantryButton(const CEGUI::EventArgs &e);
+	bool TankButton(const CEGUI::EventArgs &e);
+	bool ScudButton(const CEGUI::EventArgs &e);
+	bool SubmarineButton(const CEGUI::EventArgs &e);
+	bool DestroyerButton(const CEGUI::EventArgs &e);
+	bool BomberButton(const CEGUI::EventArgs &e);
+	bool FighterButton(const CEGUI::EventArgs &e);
+	
+	void BuildingImages1(PlanetCell &cell);
+	void BuildingImagesCB2(PlanetCell &cell);
+	void BuildingImagesA3(PlanetCell &cell);
+	void BuildingImagesN4(PlanetCell &cell);
+	void BuildingImagesAF5(PlanetCell &cell);
+	
+    int buildingImages;
+    int myOwner;
+    int money;
+    int plutonium;
+    int uranium;
  
 private:
 	Ogre::SceneNode*		m_pOgreHeadNode;
