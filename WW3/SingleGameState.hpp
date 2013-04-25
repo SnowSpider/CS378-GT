@@ -64,11 +64,17 @@ public:
         bool soundButton(const CEGUI::EventArgs &e);
 	bool soundSwitch();
 	
-	bool soundButton(const CEGUI::EventArgs &e);
-	bool soundButton(const CEGUI::EventArgs &e);
-	bool soundButton(const CEGUI::EventArgs &e);
-	bool soundButton(const CEGUI::EventArgs &e);
-	bool soundButton(const CEGUI::EventArgs &e);
+	bool CommandBaseButton(const CEGUI::EventArgs &e);
+	bool ArmyBaseButton(const CEGUI::EventArgs &e);
+	bool NavyBaseButton(const CEGUI::EventArgs &e);
+	bool AirForceBaseButton(const CEGUI::EventArgs &e);
+	bool InfantryButton(const CEGUI::EventArgs &e);
+	bool TankButton(const CEGUI::EventArgs &e);
+	bool ScudButton(const CEGUI::EventArgs &e);
+	bool SubmarineButton(const CEGUI::EventArgs &e);
+	bool DestroyerButton(const CEGUI::EventArgs &e);
+	bool BomberButton(const CEGUI::EventArgs &e);
+	bool FighterButton(const CEGUI::EventArgs &e);
  
 private:
 	Ogre::SceneNode*		m_pOgreHeadNode;
