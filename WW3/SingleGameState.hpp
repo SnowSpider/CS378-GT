@@ -63,6 +63,12 @@ public:
         CEGUI::MouseButton convertButton(OIS::MouseButtonID buttonID);
         bool soundButton(const CEGUI::EventArgs &e);
 	bool soundSwitch();
+	
+	bool soundButton(const CEGUI::EventArgs &e);
+	bool soundButton(const CEGUI::EventArgs &e);
+	bool soundButton(const CEGUI::EventArgs &e);
+	bool soundButton(const CEGUI::EventArgs &e);
+	bool soundButton(const CEGUI::EventArgs &e);
  
 private:
 	Ogre::SceneNode*		m_pOgreHeadNode;
