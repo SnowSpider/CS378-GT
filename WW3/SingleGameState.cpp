@@ -231,6 +231,7 @@ void SingleGameState::createScene()
     w->setHorizontalAlignment(CEGUI::HA_RIGHT);
     w->setYPosition(CEGUI::UDim(0.05f, 0));
     w->setVisible( true );
+    w->subscribeEvent(CEGUI::PushButton::EventClicked,CEGUI::Event::Subscriber(&SingleGameState::CommandBaseButton,this));
 
     sheet->addChildWindow(w);
 
@@ -239,6 +240,7 @@ void SingleGameState::createScene()
     w->setHorizontalAlignment(CEGUI::HA_RIGHT);
     w->setYPosition(CEGUI::UDim(0.20f, 0));
     w->setVisible( true );
+    w->subscribeEvent(CEGUI::PushButton::EventClicked,CEGUI::Event::Subscriber(&SingleGameState::ArmyBaseButton,this));
 
     sheet->addChildWindow(w);
 
@@ -247,6 +249,7 @@ void SingleGameState::createScene()
     w->setHorizontalAlignment(CEGUI::HA_RIGHT);
     w->setYPosition(CEGUI::UDim(0.35f, 0));
     w->setVisible( true );
+    w->subscribeEvent(CEGUI::PushButton::EventClicked,CEGUI::Event::Subscriber(&SingleGameState::NavyBaseButton,this));
 
     sheet->addChildWindow(w);
 
@@ -255,6 +258,7 @@ void SingleGameState::createScene()
     w->setHorizontalAlignment(CEGUI::HA_RIGHT);
     w->setYPosition(CEGUI::UDim(0.50f, 0));
     w->setVisible( true );
+    w->subscribeEvent(CEGUI::PushButton::EventClicked,CEGUI::Event::Subscriber(&SingleGameState::AirForceBaseButton,this));
 
     sheet->addChildWindow(w);
     
@@ -263,6 +267,7 @@ void SingleGameState::createScene()
     w->setHorizontalAlignment(CEGUI::HA_RIGHT);
     w->setYPosition(CEGUI::UDim(0.05f, 0));
     w->setVisible( false );
+    w->subscribeEvent(CEGUI::PushButton::EventClicked,CEGUI::Event::Subscriber(&SingleGameState::InfantryButton,this));
 
     sheet->addChildWindow(w);
     
@@ -271,6 +276,7 @@ void SingleGameState::createScene()
     w->setHorizontalAlignment(CEGUI::HA_RIGHT);
     w->setYPosition(CEGUI::UDim(0.05f, 0));
     w->setVisible( false );
+    w->subscribeEvent(CEGUI::PushButton::EventClicked,CEGUI::Event::Subscriber(&SingleGameState::SubmarineButton,this));
 
     sheet->addChildWindow(w);    
     
@@ -279,6 +285,7 @@ void SingleGameState::createScene()
     w->setHorizontalAlignment(CEGUI::HA_RIGHT);
     w->setYPosition(CEGUI::UDim(0.20f, 0));
     w->setVisible( false );
+    w->subscribeEvent(CEGUI::PushButton::EventClicked,CEGUI::Event::Subscriber(&SingleGameState::DestroyerButton,this));
 
     sheet->addChildWindow(w);
     
@@ -287,6 +294,7 @@ void SingleGameState::createScene()
     w->setHorizontalAlignment(CEGUI::HA_RIGHT);
     w->setYPosition(CEGUI::UDim(0.05f, 0));
     w->setVisible( false );
+    w->subscribeEvent(CEGUI::PushButton::EventClicked,CEGUI::Event::Subscriber(&SingleGameState::TankButton,this));
 
     sheet->addChildWindow(w);
     
@@ -295,6 +303,7 @@ void SingleGameState::createScene()
     w->setHorizontalAlignment(CEGUI::HA_RIGHT);
     w->setYPosition(CEGUI::UDim(0.20f, 0));
     w->setVisible( false );
+    w->subscribeEvent(CEGUI::PushButton::EventClicked,CEGUI::Event::Subscriber(&SingleGameState::ScudButton,this));
 
     sheet->addChildWindow(w);
 
@@ -303,6 +312,7 @@ void SingleGameState::createScene()
     w->setHorizontalAlignment(CEGUI::HA_RIGHT);
     w->setYPosition(CEGUI::UDim(0.05f, 0));
     w->setVisible( false );
+    w->subscribeEvent(CEGUI::PushButton::EventClicked,CEGUI::Event::Subscriber(&SingleGameState::BomberButton,this));
 
     sheet->addChildWindow(w);
     
@@ -311,6 +321,7 @@ void SingleGameState::createScene()
     w->setHorizontalAlignment(CEGUI::HA_RIGHT);
     w->setYPosition(CEGUI::UDim(0.20f, 0));
     w->setVisible( false );
+    w->subscribeEvent(CEGUI::PushButton::EventClicked,CEGUI::Event::Subscriber(&SingleGameState::FighterButton,this));
 
     sheet->addChildWindow(w);
 
@@ -664,5 +675,50 @@ bool SingleGameState::soundSwitch(void)
     soundIs = !soundIs;
     return true;
 } 
+
+bool SingleGameState::CommandBaseButton(const CEGUI::EventArgs &e)
+{
+	return true;
+}
+bool SingleGameState::ArmyBaseButton(const CEGUI::EventArgs &e)
+{
+	return true;
+}
+bool SingleGameState::NavyBaseButton(const CEGUI::EventArgs &e)
+{
+	return true;
+}
+bool SingleGameState::AirForceBaseButton(const CEGUI::EventArgs &e)
+{
+	return true;
+}
+bool SingleGameState::InfantryButton(const CEGUI::EventArgs &e)
+{
+	return true;
+}
+bool SingleGameState::TankButton(const CEGUI::EventArgs &e)
+{
+	return true;
+}
+bool SingleGameState::ScudButton(const CEGUI::EventArgs &e)
+{
+	return true;
+}
+bool SingleGameState::SubmarineButton(const CEGUI::EventArgs &e)
+{
+	return true;
+}
+bool SingleGameState::DestroyerButton(const CEGUI::EventArgs &e)
+{
+	return true;
+}
+bool SingleGameState::BomberButton(const CEGUI::EventArgs &e)
+{
+	return true;
+}
+bool SingleGameState::FighterButton(const CEGUI::EventArgs &e)
+{
+	return true;
+}
 
 
