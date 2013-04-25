@@ -76,11 +76,11 @@ public:
 	bool BomberButton(const CEGUI::EventArgs &e);
 	bool FighterButton(const CEGUI::EventArgs &e);
 	
-	void BuildingImages1();
-	void BuildingImagesCB2();
-	void BuildingImagesA3();
-	void BuildingImagesN4();
-	void BuildingImagesAF5();
+	void BuildingImages1(const Planet::PlanetCell $cell);
+	void BuildingImagesCB2(const Planet::PlanetCell $cell);
+	void BuildingImagesA3(const Planet::PlanetCell $cell);
+	void BuildingImagesN4(const Planet::PlanetCell $cell);
+	void BuildingImagesAF5(const Planet::PlanetCell $cell);
 	
  
 private:
