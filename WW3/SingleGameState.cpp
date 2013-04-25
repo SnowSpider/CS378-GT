@@ -47,6 +47,7 @@ SingleGameState::SingleGameState()
     soundIs = true;
     startUp = true;
     lost = false;
+    buildingImage = 1;
 }
  
 //|||||||||||||||||||||||||||||||||||||||||||||||
@@ -227,7 +228,7 @@ void SingleGameState::createScene()
     resultWindow->setProperty("HorzFormatting", "WordWrapCentred");
 
     CEGUI::ImagesetManager::getSingleton().create( "BCommandBase.imageset" );
-    CEGUI::Window *w = wmgr.loadWindowLayout("BCommandBase.layout", "BCommandBase");
+    CEGUI::Window *w = wmgr.loadWindowLayout("BCommandBase.layout", "CommandBase");
     w->setHorizontalAlignment(CEGUI::HA_RIGHT);
     w->setYPosition(CEGUI::UDim(0.05f, 0));
     w->setVisible( true );
@@ -721,4 +722,43 @@ bool SingleGameState::FighterButton(const CEGUI::EventArgs &e)
 	return true;
 }
 
-
+void BuildingImages1(void)
+{
+	CEGUI::Window* w = CEGUI::WindowManager::getSingleton().getWindow("CommandBase");
+	w->setVisible( true );
+	w = CEGUI::WindowManager::getSingleton().getWindow("ArmyBase");
+	w->setVisible( true );
+	w = CEGUI::WindowManager::getSingleton().getWindow("NavyBase");
+	w->setVisible( true );
+	w = CEGUI::WindowManager::getSingleton().getWindow("AirForceBase");
+	w->setVisible( true );
+	w = CEGUI::WindowManager::getSingleton().getWindow("ArmyBase");
+	w = CEGUI::WindowManager::getSingleton().getWindow("ArmyBase");
+	w = CEGUI::WindowManager::getSingleton().getWindow("ArmyBase");
+	w = CEGUI::WindowManager::getSingleton().getWindow("ArmyBase");
+	w = CEGUI::WindowManager::getSingleton().getWindow("ArmyBase");
+	buildingImages = 1;
+}
+void BuildingImagesCB2()
+{
+	CEGUI::Window* w = CEGUI::WindowManager::getSingleton().getWindow("ArmyBase");
+	buildingImages = 2;
+}
+void BuildingImagesA3()
+{
+	CEGUI::Window* w = CEGUI::WindowManager::getSingleton().getWindow("ArmyBase");
+	w = CEGUI::WindowManager::getSingleton().getWindow("ArmyBase");
+	buildingImages = 3;
+}
+void BuildingImagesN4()
+{
+	CEGUI::Window* w = CEGUI::WindowManager::getSingleton().getWindow("ArmyBase");
+	w = CEGUI::WindowManager::getSingleton().getWindow("ArmyBase");
+	buildingImages = 4;
+}
+void BuildingImagesAF5()
+{
+	CEGUI::Window* w = CEGUI::WindowManager::getSingleton().getWindow("ArmyBase");
+	w = CEGUI::WindowManager::getSingleton().getWindow("ArmyBase");
+	buildingImages = 5;
+}
