@@ -127,6 +127,10 @@ private:
     bool startUp;
     bool lost;
     int buildingImages;
+    int myOwner;
+    int money;
+    int plutonium;
+    int uranium;
     
     Planet earth;
     ofstream myfile;
