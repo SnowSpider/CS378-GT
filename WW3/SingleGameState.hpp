@@ -75,6 +75,13 @@ public:
 	bool DestroyerButton(const CEGUI::EventArgs &e);
 	bool BomberButton(const CEGUI::EventArgs &e);
 	bool FighterButton(const CEGUI::EventArgs &e);
+	
+	void BuildingImages1();
+	void BuildingImagesCB2();
+	void BuildingImagesA3();
+	void BuildingImagesN4();
+	void BuildingImagesAF5();
+	
  
 private:
 	Ogre::SceneNode*		m_pOgreHeadNode;
@@ -119,6 +126,7 @@ private:
     bool soundIs;
     bool startUp;
     bool lost;
+    int buildingImages;
     
     Planet earth;
     ofstream myfile;
