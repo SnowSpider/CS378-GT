@@ -83,11 +83,6 @@ public:
 	void BuildingImagesN4(PlanetCell &cell);
 	void BuildingImagesAF5(PlanetCell &cell);
 	
-    int buildingImages;
-    int myOwner;
-    int money;
-    int plutonium;
-    int uranium;
  
 private:
 	Ogre::SceneNode*		m_pOgreHeadNode;
@@ -132,6 +127,11 @@ private:
     bool soundIs;
     bool startUp;
     bool lost;
+    int buildingImages;
+    int myOwner;
+    int money;
+    int plutonium;
+    int uranium;
     
     Planet earth;
     ofstream myfile;
@@ -143,6 +143,9 @@ private:
 	bool bLMouseDown, bRMouseDown;	//true if mouse buttons are held down
 	int mCount;						//number of objects created
 	float mRotateSpeed;				//the rotation speed for the camera
+	
+	Ogre::StaticGeometry* sg;
+	bool showWaterLand;
 };
  
 //|||||||||||||||||||||||||||||||||||||||||||||||

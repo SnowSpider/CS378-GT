@@ -35,80 +35,80 @@ using namespace std;
 class SingleGameState : public AppState
 {
 public:
-	SingleGameState();
+    SingleGameState();
  
-	DECLARE_APPSTATE_CLASS(SingleGameState)
+    DECLARE_APPSTATE_CLASS(SingleGameState)
  
-	void enter();
-	void createScene();
-	void exit();
-	bool pause();
-	void resume();
+    void enter();
+    void createScene();
+    void exit();
+    bool pause();
+    void resume();
  
-	void moveCamera();
-	void getInput();
+    void moveCamera();
+    void getInput();
         void buildGUI();
  
-	bool keyPressed(const OIS::KeyEvent &keyEventRef);
-	bool keyReleased(const OIS::KeyEvent &keyEventRef);
+    bool keyPressed(const OIS::KeyEvent &keyEventRef);
+    bool keyReleased(const OIS::KeyEvent &keyEventRef);
  
-	bool mouseMoved(const OIS::MouseEvent &arg);
-	bool mousePressed(const OIS::MouseEvent &arg, OIS::MouseButtonID id);
-	bool mouseReleased(const OIS::MouseEvent &arg, OIS::MouseButtonID id);
+    bool mouseMoved(const OIS::MouseEvent &arg);
+    bool mousePressed(const OIS::MouseEvent &arg, OIS::MouseButtonID id);
+    bool mouseReleased(const OIS::MouseEvent &arg, OIS::MouseButtonID id);
  
-	void onLeftPressed(const OIS::MouseEvent &evt);
+    void onLeftPressed(const OIS::MouseEvent &evt);
         void itemSelected(OgreBites::SelectMenu* menu);
  
-	void update(double timeSinceLastFrame);
+    void update(double timeSinceLastFrame);
         CEGUI::MouseButton convertButton(OIS::MouseButtonID buttonID);
         bool soundButton(const CEGUI::EventArgs &e);
-	bool soundSwitch();
-	
-	bool CommandBaseButton(const CEGUI::EventArgs &e);
-	bool ArmyBaseButton(const CEGUI::EventArgs &e);
-	bool NavyBaseButton(const CEGUI::EventArgs &e);
-	bool AirForceBaseButton(const CEGUI::EventArgs &e);
-	bool ICBMSiloButton(const CEGUI::EventArgs &e);
-	bool InfantryButton(const CEGUI::EventArgs &e);
-	bool TankButton(const CEGUI::EventArgs &e);
-	bool ScudButton(const CEGUI::EventArgs &e);
-	bool SubmarineButton(const CEGUI::EventArgs &e);
-	bool DestroyerButton(const CEGUI::EventArgs &e);
-	bool BomberButton(const CEGUI::EventArgs &e);
-	bool FighterButton(const CEGUI::EventArgs &e);
-	
-	void BuildingImages1(PlanetCell &cell);
-	void BuildingImagesCB2(PlanetCell &cell);
-	void BuildingImagesA3(PlanetCell &cell);
-	void BuildingImagesN4(PlanetCell &cell);
-	void BuildingImagesAF5(PlanetCell &cell);
-	
+    bool soundSwitch();
+    
+    bool CommandBaseButton(const CEGUI::EventArgs &e);
+    bool ArmyBaseButton(const CEGUI::EventArgs &e);
+    bool NavyBaseButton(const CEGUI::EventArgs &e);
+    bool AirForceBaseButton(const CEGUI::EventArgs &e);
+    bool ICBMSiloButton(const CEGUI::EventArgs &e);
+    bool InfantryButton(const CEGUI::EventArgs &e);
+    bool TankButton(const CEGUI::EventArgs &e);
+    bool ScudButton(const CEGUI::EventArgs &e);
+    bool SubmarineButton(const CEGUI::EventArgs &e);
+    bool DestroyerButton(const CEGUI::EventArgs &e);
+    bool BomberButton(const CEGUI::EventArgs &e);
+    bool FighterButton(const CEGUI::EventArgs &e);
+    
+    void BuildingImages1(PlanetCell &cell);
+    void BuildingImagesCB2(PlanetCell &cell);
+    void BuildingImagesA3(PlanetCell &cell);
+    void BuildingImagesN4(PlanetCell &cell);
+    void BuildingImagesAF5(PlanetCell &cell);
+    
  
 private:
-	Ogre::SceneNode*		m_pOgreHeadNode;
-	Ogre::Entity*			m_pOgreHeadEntity;
-	Ogre::MaterialPtr		m_pOgreHeadMat;
-	Ogre::MaterialPtr		m_pOgreHeadMatHigh;
-	Ogre::SceneNode*	cameraNode;
+    Ogre::SceneNode*        m_pOgreHeadNode;
+    Ogre::Entity*            m_pOgreHeadEntity;
+    Ogre::MaterialPtr        m_pOgreHeadMat;
+    Ogre::MaterialPtr        m_pOgreHeadMatHigh;
+    Ogre::SceneNode*    cameraNode;
  
-    OgreBites::ParamsPanel*		m_pDetailsPanel;
-	bool				m_bQuit;
+    OgreBites::ParamsPanel*        m_pDetailsPanel;
+    bool                m_bQuit;
  
-	Ogre::Vector3			m_TranslateVector;
-	Ogre::Real			m_MoveSpeed;
-	Ogre::Degree			m_RotateSpeed;
-	float				m_MoveScale;
-	Ogre::Degree			m_RotScale;
+    Ogre::Vector3            m_TranslateVector;
+    Ogre::Real            m_MoveSpeed;
+    Ogre::Degree            m_RotateSpeed;
+    float                m_MoveScale;
+    Ogre::Degree            m_RotScale;
  
-    Ogre::RaySceneQuery*		m_pRSQ;
-	Ogre::SceneNode*		m_pCurrentObject;
-	Ogre::Entity*			m_pCurrentEntity;
-	bool				m_bLMouseDown, m_bRMouseDown;
-	bool				m_bSettingsMode;
+    Ogre::RaySceneQuery*        m_pRSQ;
+    Ogre::SceneNode*        m_pCurrentObject;
+    Ogre::Entity*            m_pCurrentEntity;
+    bool                m_bLMouseDown, m_bRMouseDown;
+    bool                m_bSettingsMode;
 
     Ogre::Real camDistance;
-	
-	// stuff from Assignment 2
+    
+    // stuff from Assignment 2
     int deltaX;
     int deltaY;
     int xi;
@@ -136,13 +136,16 @@ private:
     Planet earth;
     ofstream myfile;
     
-    Ogre::SceneNode *mCurrentObject;	//pointer to our currently selected object
-	Ogre::RaySceneQuery* mRayScnQuery;	//pointer to our ray scene query
-	CEGUI::Renderer* mGUIRenderer;		//our CEGUI renderer
+    Ogre::SceneNode *mCurrentObject;    //pointer to our currently selected object
+    Ogre::RaySceneQuery* mRayScnQuery;    //pointer to our ray scene query
+    CEGUI::Renderer* mGUIRenderer;        //our CEGUI renderer
  
-	bool bLMouseDown, bRMouseDown;	//true if mouse buttons are held down
-	int mCount;						//number of objects created
-	float mRotateSpeed;				//the rotation speed for the camera
+    bool bLMouseDown, bRMouseDown;    //true if mouse buttons are held down
+    int mCount;                        //number of objects created
+    float mRotateSpeed;                //the rotation speed for the camera
+    
+    Ogre::StaticGeometry* sg;
+    bool showWaterLand;
 };
  
 //|||||||||||||||||||||||||||||||||||||||||||||||

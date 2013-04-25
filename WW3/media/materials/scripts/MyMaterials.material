@@ -28,6 +28,66 @@ material MyMaterials/earth_day_bright
    }
 }
 
+material MyMaterials/earth_day_red
+{
+   technique
+   {
+      pass
+      {
+         texture_unit
+         {
+            texture earth_day_red.png 2d
+            scale 1 1
+         }
+      }
+   }
+}
+
+material MyMaterials/earth_day_yellow
+{
+   technique
+   {
+      pass
+      {
+         texture_unit
+         {
+            texture earth_day_yellow.png 2d
+            scale 1 1
+         }
+      }
+   }
+}
+
+material MyMaterials/earth_day_green
+{
+   technique
+   {
+      pass
+      {
+         texture_unit
+         {
+            texture earth_day_green.png 2d
+            scale 1 1
+         }
+      }
+   }
+}
+
+material MyMaterials/earth_day_blue
+{
+   technique
+   {
+      pass
+      {
+         texture_unit
+         {
+            texture earth_day_blue.png 2d
+            scale 1 1
+         }
+      }
+   }
+}
+
 material MyMaterials/wood1
 {
     technique

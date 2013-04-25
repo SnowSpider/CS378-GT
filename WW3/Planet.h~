@@ -244,7 +244,7 @@ class PlanetCell{
     
     PlanetCell(){
         id = -1;
-        owner = -1;
+        owner = NEUTRAL;
         altitude = 0;
         longitude = 0;
         latitude = 0;
@@ -278,6 +278,7 @@ class PlanetCell{
         faces = c.faces;
         terrain = c.terrain;
         avg_color = c.avg_color;
+        popDensity = c.popDensity;
     }
         
     PlanetCell( PlanetCell& c ){
@@ -292,6 +293,7 @@ class PlanetCell{
         faces = c.faces;
         terrain = c.terrain;
         avg_color = c.avg_color;
+        popDensity = c.popDensity;
     }
     
     PlanetCell& operator=( const PlanetCell& c ){
@@ -306,6 +308,7 @@ class PlanetCell{
         faces = c.faces;
         terrain = c.terrain;
         avg_color = c.avg_color;
+        popDensity = c.popDensity;
     }
     
     void setOwner(size_t him){

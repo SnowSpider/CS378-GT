@@ -14,6 +14,7 @@
 #include <algorithm>
 #include <btBulletCollisionCommon.h>
 #include "Ogre.h"
+#include "Planet.h"
 
 #define PI 3.1415926535897932384626433832795
 
@@ -33,7 +34,14 @@ enum unitType{
     
     Type_BOMBER = 9,
     Type_FIGHTER = 10,
-    Type_SPYPLANE = 11
+    Type_SPYPLANE = 11,
+    
+    Type_COMMANDBASE = 12,
+    Type_ARMYBASE = 13,
+    Type_NAVYBASE = 14,
+    Type_AIRFORCEBASE = 15,
+    Type_ICBMSILO = 16,
+    Type_SAMSITE = 17
 };
 
 class Unit {

@@ -761,7 +761,6 @@ void Planet::mapTerrain(){
             
             for(int y=bottom; y<top; y++){
                 for(int x=left; x<right; x++){
-                    
                     if( inside(x0, y0, x1, y1, x, y) &&
                         inside(x1, y1, x2, y2, x, y) && 
                         inside(x2, y2, x0, y0, x, y) ){
@@ -795,21 +794,19 @@ void Planet::mapTerrain(){
 }
 
 void Planet::mapFaction(){
-    MyImage* image = loadBMP("media/materials/textures/earth_political_3.bmp");
-    
-    int numRed = 0;
-    int numNeutral = 0;
-    int numBlue = 0;
+    MyImage* image = loadBMP("media/materials/textures/earth_political_5.bmp");
     
     int x0, x1, x2;
     int y0, y1, y2;
     int top, bottom, left, right;
-    unsigned char pixel_red, pixel_blue;
-    float sum_red, sum_blue;
+    float numPixelPerCell;
+    unsigned char color;
+    float fcolor;
+    float sum_color;
     
     for(int i=0;i<cells.size();i++){
-        sum_red = 0;
-        sum_blue = 0;
+        sum_color = 0;
+        numPixelPerCell = 0;
         for (int j=0; j<cells[i].faces.size(); j++){
             PlanetFace& tempFace = smallFaces[cells[i].faces[j]];
             PlanetVertex& a = vertices[tempFace.v[0]]; 
@@ -830,35 +827,31 @@ void Planet::mapFaction(){
             
             for(int y=bottom; y<top; y++){
                 for(int x=left; x<right; x++){
-                    
                     if( inside(x0, y0, x1, y1, x, y) &&
                         inside(x1, y1, x2, y2, x, y) && 
                         inside(x2, y2, x0, y0, x, y) ){
-                        pixel_red = (unsigned char)image->pixels[3 * (y * image->width + x)];
-                        pixel_blue = (unsigned char)image->pixels[3 * (y * image->width + x) + 2];
-                        sum_red += pixel_red;
-                        sum_blue += pixel_blue;
-                    } 
+                        color = (unsigned char)image->pixels[3 * (y * image->width + x)];
+                        fcolor = color;
+                        if (fcolor == 255 || fcolor == 127){
+                            sum_color += (float)fcolor;
+                            numPixelPerCell += 1;
+                        }
+                    }
                 }
             }
         }
-        if(sum_red > sum_blue) {
+        if (numPixelPerCell == 0) numPixelPerCell = 1;
+        sum_color /= numPixelPerCell;
+        cout << sum_color << ",";
+        
+        if (sum_color >= 127 && sum_color < 200){
             cells[i].owner = Owner_RED;
-            numRed++;
         }
-        else if(sum_red < sum_blue) {
+        else if (sum_color >= 200){
             cells[i].owner = Owner_BLUE;
-            numBlue++;
-        }
-        else {
-            cells[i].owner = Owner_NEUTRAL;
-            numNeutral++;
         }
     }
     delete image;
-    cout << "numRed" << numRed << endl;
-    cout << "numNeutral" << numNeutral << endl;
-    cout << "numBlue" << numBlue << endl;
 }
 
 void Planet::mapPopDensity(){
