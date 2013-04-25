@@ -257,6 +257,62 @@ void SingleGameState::createScene()
     w->setVisible( true );
 
     sheet->addChildWindow(w);
+    
+    CEGUI::ImagesetManager::getSingleton().create( "Infantry.imageset" );
+    w = wmgr.loadWindowLayout("Infantry.layout", "Infantry");
+    w->setHorizontalAlignment(CEGUI::HA_RIGHT);
+    w->setYPosition(CEGUI::UDim(0.05f, 0));
+    w->setVisible( false );
+
+    sheet->addChildWindow(w);
+    
+    CEGUI::ImagesetManager::getSingleton().create( "Submarine.imageset" );
+    w = wmgr.loadWindowLayout("Submarine.layout", "Submarine");
+    w->setHorizontalAlignment(CEGUI::HA_RIGHT);
+    w->setYPosition(CEGUI::UDim(0.05f, 0));
+    w->setVisible( false );
+
+    sheet->addChildWindow(w);    
+    
+    CEGUI::ImagesetManager::getSingleton().create( "Destroyer.imageset" );
+    w = wmgr.loadWindowLayout("Destroyer.layout", "Destroyer");
+    w->setHorizontalAlignment(CEGUI::HA_RIGHT);
+    w->setYPosition(CEGUI::UDim(0.20f, 0));
+    w->setVisible( false );
+
+    sheet->addChildWindow(w);
+    
+    CEGUI::ImagesetManager::getSingleton().create( "Tank.imageset" );
+    w = wmgr.loadWindowLayout("Tank.layout", "Tank");
+    w->setHorizontalAlignment(CEGUI::HA_RIGHT);
+    w->setYPosition(CEGUI::UDim(0.05f, 0));
+    w->setVisible( false );
+
+    sheet->addChildWindow(w);
+    
+    CEGUI::ImagesetManager::getSingleton().create( "Scud.imageset" );
+    w = wmgr.loadWindowLayout("Scud.layout", "Scud");
+    w->setHorizontalAlignment(CEGUI::HA_RIGHT);
+    w->setYPosition(CEGUI::UDim(0.20f, 0));
+    w->setVisible( false );
+
+    sheet->addChildWindow(w);
+
+    CEGUI::ImagesetManager::getSingleton().create( "Bomber.imageset" );
+    w = wmgr.loadWindowLayout("Bomber.layout", "Bomber");
+    w->setHorizontalAlignment(CEGUI::HA_RIGHT);
+    w->setYPosition(CEGUI::UDim(0.05f, 0));
+    w->setVisible( false );
+
+    sheet->addChildWindow(w);
+    
+    CEGUI::ImagesetManager::getSingleton().create( "Fighter.imageset" );
+    w = wmgr.loadWindowLayout("Fighter.layout", "Fightere");
+    w->setHorizontalAlignment(CEGUI::HA_RIGHT);
+    w->setYPosition(CEGUI::UDim(0.20f, 0));
+    w->setVisible( false );
+
+    sheet->addChildWindow(w);
 
     CEGUI::Window *sounder = wmgr.createWindow("TaharezLook/Button", "SounderDontBreak");
     sounder->setText("Sound: On");
