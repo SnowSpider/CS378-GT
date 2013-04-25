@@ -63,7 +63,7 @@ am_OgreApp_OBJECTS = OgreApp-AdvancedOgreFramework.$(OBJEXT) \
 	OgreApp-MultiGameState.$(OBJEXT) OgreApp-PauseState.$(OBJEXT) \
 	OgreApp-Planet.$(OBJEXT) OgreApp-Simulator.$(OBJEXT) \
 	OgreApp-SingleGameState.$(OBJEXT) \
-	OgreApp-SoundManager.$(OBJEXT)
+	OgreApp-SoundManager.$(OBJEXT) OgreApp-Unit.$(OBJEXT)
 OgreApp_OBJECTS = $(am_OgreApp_OBJECTS)
 am__DEPENDENCIES_1 =
 OgreApp_DEPENDENCIES = $(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
@@ -245,9 +245,9 @@ target_alias = @target_alias@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
-noinst_HEADERS = AdvancedOgreFramework.hpp AppState.hpp AppStateManager.hpp ClientGameState.hpp DemoApp.hpp DotSceneLoader.hpp EditString.h GameObject.h HostGameState.hpp imageloader.h JoinState.hpp MenuState.hpp MultiGameState.hpp OgreMotionState.h PauseState.hpp Planet.h Simulator.h SingleGameState.hpp SoundManager.h rapidxml.hpp
+noinst_HEADERS = AdvancedOgreFramework.hpp AppState.hpp AppStateManager.hpp ClientGameState.hpp DemoApp.hpp DotSceneLoader.hpp EditString.h GameObject.h HostGameState.hpp imageloader.h JoinState.hpp MenuState.hpp MultiGameState.hpp OgreMotionState.h PauseState.hpp Planet.h Simulator.h SingleGameState.hpp SoundManager.h rapidxml.hpp Unit.h
 OgreApp_CPPFLAGS = -I$(top_srcdir)
-OgreApp_SOURCES = AdvancedOgreFramework.cpp AppStateManager.cpp ClientGameState.cpp DemoApp.cpp DotSceneLoader.cpp EditString.cpp GameObject.cpp HostGameState.cpp imageloader.cpp JoinState.cpp main.cpp MenuState.cpp MultiGameState.cpp PauseState.cpp Planet.cpp Simulator.cpp SingleGameState.cpp SoundManager.cpp
+OgreApp_SOURCES = AdvancedOgreFramework.cpp AppStateManager.cpp ClientGameState.cpp DemoApp.cpp DotSceneLoader.cpp EditString.cpp GameObject.cpp HostGameState.cpp imageloader.cpp JoinState.cpp main.cpp MenuState.cpp MultiGameState.cpp PauseState.cpp Planet.cpp Simulator.cpp SingleGameState.cpp SoundManager.cpp Unit.cpp
 OgreApp_CXXFLAGS = $(OGRE_CFLAGS) $(OGRE_TERRAIN_CFLAGS) $(OIS_CFLAGS) $(bullet_CFLAGS) $(CEGUI_CFLAGS) $(CEGUI_OGRE_CFLAGS) $(sdl_CFLAGS) $(SDL_net_CFLAGS)
 OgreApp_LDADD = $(OGRE_LIBS) $(OGRE_TERRAIN_LIBS) $(OIS_LIBS) $(bullet_LIBS) $(CEGUI_LIBS) $(CEGUI_OGRE_LIBS) $(sdl_LIBS) $(SDL_net_LIBS)
 EXTRA_DIST = buildit makeit
@@ -375,6 +375,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/OgreApp-Simulator.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/OgreApp-SingleGameState.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/OgreApp-SoundManager.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/OgreApp-Unit.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/OgreApp-imageloader.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/OgreApp-main.Po@am__quote@
 
@@ -650,6 +651,20 @@ OgreApp-SoundManager.obj: SoundManager.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='SoundManager.cpp' object='OgreApp-SoundManager.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(OgreApp_CPPFLAGS) $(CPPFLAGS) $(OgreApp_CXXFLAGS) $(CXXFLAGS) -c -o OgreApp-SoundManager.obj `if test -f 'SoundManager.cpp'; then $(CYGPATH_W) 'SoundManager.cpp'; else $(CYGPATH_W) '$(srcdir)/SoundManager.cpp'; fi`
+
+OgreApp-Unit.o: Unit.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(OgreApp_CPPFLAGS) $(CPPFLAGS) $(OgreApp_CXXFLAGS) $(CXXFLAGS) -MT OgreApp-Unit.o -MD -MP -MF $(DEPDIR)/OgreApp-Unit.Tpo -c -o OgreApp-Unit.o `test -f 'Unit.cpp' || echo '$(srcdir)/'`Unit.cpp
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/OgreApp-Unit.Tpo $(DEPDIR)/OgreApp-Unit.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='Unit.cpp' object='OgreApp-Unit.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(OgreApp_CPPFLAGS) $(CPPFLAGS) $(OgreApp_CXXFLAGS) $(CXXFLAGS) -c -o OgreApp-Unit.o `test -f 'Unit.cpp' || echo '$(srcdir)/'`Unit.cpp
+
+OgreApp-Unit.obj: Unit.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(OgreApp_CPPFLAGS) $(CPPFLAGS) $(OgreApp_CXXFLAGS) $(CXXFLAGS) -MT OgreApp-Unit.obj -MD -MP -MF $(DEPDIR)/OgreApp-Unit.Tpo -c -o OgreApp-Unit.obj `if test -f 'Unit.cpp'; then $(CYGPATH_W) 'Unit.cpp'; else $(CYGPATH_W) '$(srcdir)/Unit.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/OgreApp-Unit.Tpo $(DEPDIR)/OgreApp-Unit.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='Unit.cpp' object='OgreApp-Unit.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(OgreApp_CPPFLAGS) $(CPPFLAGS) $(OgreApp_CXXFLAGS) $(CXXFLAGS) -c -o OgreApp-Unit.obj `if test -f 'Unit.cpp'; then $(CYGPATH_W) 'Unit.cpp'; else $(CYGPATH_W) '$(srcdir)/Unit.cpp'; fi`
 
 mostlyclean-libtool:
 	-rm -f *.lo

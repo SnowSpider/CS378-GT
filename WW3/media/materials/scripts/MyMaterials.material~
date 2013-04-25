@@ -6,7 +6,7 @@ material MyMaterials/earth_day
       {
          texture_unit
          {
-            texture test.png 2d
+            texture earth_day.png 2d
             scale 1 1
          }
       }

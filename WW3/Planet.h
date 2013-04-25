@@ -14,6 +14,7 @@
 #include <algorithm>
 #include <btBulletCollisionCommon.h>
 #include "Ogre.h"
+#include "Unit.h"
 
 #define PI 3.1415926535897932384626433832795
 
@@ -200,11 +201,25 @@ class PlanetFace{
     }
 };
 
-typedef enum terrainType{
+enum terrainType{
     Terrain_WATER = 0,
     Terrain_WATERLAND = 1,
     Terrain_LAND = 2
 };
+
+enum radiationLevel{
+    Radiation_SAFE = 0,
+    Radiation_LOW = 1,
+    Radiation_MODERATE = 2,
+    Radiation_HIGH = 3,
+    Radiation_DEADLY = 4
+};
+
+enum ownerType{
+    Owner_RED = 0,
+    Owner_NEUTRAL = 1,
+    Owner_BLUE = 2
+}; 
 
 class PlanetCell{
     public: 
@@ -220,8 +235,12 @@ class PlanetCell{
     
     terrainType terrain;
     float avg_color;
+    float popDensity;
     
     bool visible;
+    bool selected;
+    
+    size_t myUnit;
     
     PlanetCell(){
         id = -1;
@@ -231,6 +250,7 @@ class PlanetCell{
         latitude = 0;
         terrain = Terrain_WATER;
         avg_color = 0;
+        popDensity = 0;
     }
     
     PlanetCell(PlanetVertex& v){
@@ -243,6 +263,7 @@ class PlanetCell{
         latitude = v.latitude;
         terrain = Terrain_WATER;
         avg_color = 0;
+        popDensity = 0;
     }
     
     PlanetCell( const PlanetCell& c ){
@@ -257,6 +278,7 @@ class PlanetCell{
         faces = c.faces;
         terrain = c.terrain;
         avg_color = c.avg_color;
+        popDensity = c.popDensity;
     }
         
     PlanetCell( PlanetCell& c ){
@@ -271,6 +293,7 @@ class PlanetCell{
         faces = c.faces;
         terrain = c.terrain;
         avg_color = c.avg_color;
+        popDensity = c.popDensity;
     }
     
     PlanetCell& operator=( const PlanetCell& c ){
@@ -285,6 +308,7 @@ class PlanetCell{
         faces = c.faces;
         terrain = c.terrain;
         avg_color = c.avg_color;
+        popDensity = c.popDensity;
     }
     
     void setOwner(size_t him){
@@ -441,6 +465,8 @@ class Planet {
     bool rayHitPlanet( btVector3 p, btVector3 dir, btVector3 &result );
     void createManualObjects(Ogre::SceneManager* scnMgr);
     void mapTerrain();
+    void mapFaction();
+    void mapPopDensity();
 };
 
 #endif

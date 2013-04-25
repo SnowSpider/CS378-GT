@@ -13,6 +13,21 @@ material MyMaterials/earth_day
    }
 }
 
+material MyMaterials/earth_day_bright
+{
+   technique
+   {
+      pass
+      {
+         texture_unit
+         {
+            texture earth_day_bright.png 2d
+            scale 1 1
+         }
+      }
+   }
+}
+
 material MyMaterials/wood1
 {
     technique
