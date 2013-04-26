@@ -6,7 +6,7 @@ material MyMaterials/earth_day
       {
          texture_unit
          {
-            texture earth_day.png 2d
+            texture earth_political_5.png 2d
             scale 1 1
          }
       }
@@ -52,6 +52,36 @@ material MyMaterials/earth_day_yellow
          texture_unit
          {
             texture earth_day_yellow.png 2d
+            scale 1 1
+         }
+      }
+   }
+}
+
+material MyMaterials/earth_day_green
+{
+   technique
+   {
+      pass
+      {
+         texture_unit
+         {
+            texture earth_day_green.png 2d
+            scale 1 1
+         }
+      }
+   }
+}
+
+material MyMaterials/earth_day_blue
+{
+   technique
+   {
+      pass
+      {
+         texture_unit
+         {
+            texture earth_day_blue.png 2d
             scale 1 1
          }
       }

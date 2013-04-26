@@ -464,6 +464,7 @@ class Planet {
     //void renderCells();
     bool rayHitPlanet( btVector3 p, btVector3 dir, btVector3 &result );
     void createManualObjects(Ogre::SceneManager* scnMgr);
+    void createManualObjects2(Ogre::SceneManager* scnMgr);
     void mapTerrain();
     void mapFaction();
     void mapPopDensity();

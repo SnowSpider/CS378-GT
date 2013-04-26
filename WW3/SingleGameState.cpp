@@ -165,7 +165,9 @@ void SingleGameState::createScene()
     earth.mapFaction();
     earth.mapPopDensity();
     earth.createManualObjects(m_pSceneMgr);
+    earth.createManualObjects2(m_pSceneMgr);
     
+    /*
     for (int i=0;i<earth.cells.size();i++){
         string s = "Cell_";
         stringstream ss;
@@ -179,6 +181,7 @@ void SingleGameState::createScene()
             m_pSceneMgr->getEntity(name)->setMaterialName("MyMaterials/earth_day_blue");
         }
     }
+    */
 
     mRayScnQuery = m_pSceneMgr->createRayQuery(Ogre::Ray());
     
@@ -555,36 +558,39 @@ void SingleGameState::onLeftPressed(const OIS::MouseEvent &evt)
     {
         if(itr->movable)
         {
-            // Select a cell.
-            //OgreFramework::getSingletonPtr()->m_pLog->logMessage("MovableName: " + itr->movable->getName());
-            m_pCurrentObject = m_pSceneMgr->getEntity(itr->movable->getName())->getParentSceneNode();
-            //cout << "gets here" << endl;
-            
-            //m_pCurrentObject->showBoundingBox(true);
-            m_pCurrentEntity = m_pSceneMgr->getEntity(itr->movable->getName());
-            m_pCurrentEntity->setMaterialName("MyMaterials/earth_day_bright");
-            
             string tempLandCellId = itr->movable->getName();
-            string idNumber = tempLandCellId.substr(5, tempLandCellId.length()-1);
-            
-            
-            /*
-            if (myfile.is_open()){
-                myfile << "waterland_"<< idNumber << endl;
+            string idType = tempLandCellId.substr(0, 5);
+            if(idType == "Cell_"){
+                // Select a cell.
+                //OgreFramework::getSingletonPtr()->m_pLog->logMessage("MovableName: " + itr->movable->getName());
+                m_pCurrentObject = m_pSceneMgr->getEntity(itr->movable->getName())->getParentSceneNode();
+                //cout << "gets here" << endl;
+                
+                //m_pCurrentObject->showBoundingBox(true);
+                m_pCurrentEntity = m_pSceneMgr->getEntity(itr->movable->getName());
+                m_pCurrentEntity->setMaterialName("MyMaterials/earth_day_bright");
+                
+                
+                string idNumber = tempLandCellId.substr(5, tempLandCellId.length()-1);
+                
+                
+                /*
+                if (myfile.is_open()){
+                    myfile << "waterland_"<< idNumber << endl;
+                }
+                else cout << "Unable to open file";
+                */
+                
+                int intId;
+                istringstream(idNumber) >> intId;
+                cout << tempLandCellId << " = " << earth.cells[intId].terrain << endl;
+                cout << "Average color = " << earth.cells[intId].avg_color << endl;
+                cout << endl;
+                
+                break;
             }
-            else cout << "Unable to open file";
-            */
-            
-            int intId;
-            istringstream(idNumber) >> intId;
-            cout << tempLandCellId << " = " << earth.cells[intId].terrain << endl;
-            cout << "Average color = " << earth.cells[intId].avg_color << endl;
-            cout << endl;
-            
-            break;
         }
     }
-    
 }
 
 void SingleGameState::moveCamera()

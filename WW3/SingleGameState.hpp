@@ -144,7 +144,6 @@ private:
     int mCount;                        //number of objects created
     float mRotateSpeed;                //the rotation speed for the camera
     
-    Ogre::StaticGeometry* sg;
     bool showWaterLand;
 };
  

@@ -244,7 +244,7 @@ class PlanetCell{
     
     PlanetCell(){
         id = -1;
-        owner = NEUTRAL;
+        owner = Owner_NEUTRAL;
         altitude = 0;
         longitude = 0;
         latitude = 0;
@@ -256,7 +256,7 @@ class PlanetCell{
     PlanetCell(PlanetVertex& v){
         //id = v.id; //not a good idea
         centerId = v.id;
-        owner = -1;
+        owner = Owner_NEUTRAL;
         neighbors = v.neighbors;
         altitude = v.altitude;
         longitude = v.longitude;
