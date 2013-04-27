@@ -139,12 +139,14 @@ private:
     Ogre::SceneNode *mCurrentObject;    //pointer to our currently selected object
     Ogre::RaySceneQuery* mRayScnQuery;    //pointer to our ray scene query
     CEGUI::Renderer* mGUIRenderer;        //our CEGUI renderer
- 
+    
     bool bLMouseDown, bRMouseDown;    //true if mouse buttons are held down
     int mCount;                        //number of objects created
     float mRotateSpeed;                //the rotation speed for the camera
     
     bool showWaterLand;
+    
+    int intId;
 };
  
 //|||||||||||||||||||||||||||||||||||||||||||||||

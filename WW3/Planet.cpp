@@ -1,3 +1,4 @@
+#include <algorithm>
 #include "Planet.h"
 #include "imageloader.h"
 
@@ -424,6 +425,10 @@ void Planet::genCells(){
             cells.add(tempCell);
         }
     }
+    
+    for(int i=0;i<smallFaces.size();i++){
+        fixSeamHelper( smallFaces[i] );
+    }
 }
 
 /*
@@ -552,11 +557,6 @@ bool Planet::rayHitPlanet( btVector3 p, btVector3 dir, btVector3 &result ){
 }
 
 void Planet::createManualObjects(Ogre::SceneManager* scnMgr){
-    
-    for(int i=0;i<smallFaces.size();i++){
-        fixSeamHelper( smallFaces[i] );
-    }
-    
     for (int i=0; i<cells.size(); i++){
         string s = "Cell_";
         stringstream ss;
@@ -565,10 +565,8 @@ void Planet::createManualObjects(Ogre::SceneManager* scnMgr){
         name_manobj = s.append(ss.str()); // Be careful not to append indefinitely.
         
         ManualObject* manual = scnMgr->createManualObject(name_manobj);
-        manual->begin("MyMaterials/earth_day", RenderOperation::OT_TRIANGLE_LIST);
-        //manual->begin("BaseWhiteNoLighting", RenderOperation::OT_TRIANGLE_LIST);
+        manual->begin("MyMaterials/earth_day_bw", RenderOperation::OT_TRIANGLE_LIST);
         
-        std::vector<size_t> p = cells[i].paramVerts;
         //PlanetVertex& triCenter = vertices[cells[i].centerId];
         //btVector3 triNormal = triCenter - center;
         btVector3 cellCenter = vertices[cells[i].centerId];
@@ -584,25 +582,16 @@ void Planet::createManualObjects(Ogre::SceneManager* scnMgr){
             manual->position( a[0], a[1], a[2] );
             manual->normal( a[0], a[1], a[2] );
             manual->textureCoord( 1-a.longitude, a.latitude );
-            //if(cells[i].terrain==2) manual->colour( 1, 0, 0);
-            //if(cells[i].terrain==1) manual->colour( 1, 1, 0);
-            //if(cells[i].terrain==0) manual->colour( 0, 0, 1);
             mvc++;
             
             manual->position( b[0], b[1], b[2] );
             manual->normal( b[0], b[1], b[2] );
             manual->textureCoord( 1-b.longitude, b.latitude );
-            //if(cells[i].terrain==2) manual->colour( 1, 0, 0);
-            //if(cells[i].terrain==1) manual->colour( 1, 1, 0);
-            //if(cells[i].terrain==0) manual->colour( 0, 0, 1);
             mvc++;
             
             manual->position( c[0], c[1], c[2] );
             manual->normal( c[0], c[1], c[2] );
             manual->textureCoord( 1-c.longitude, c.latitude );
-            //if(cells[i].terrain==2) manual->colour( 1, 0, 0);
-            //if(cells[i].terrain==1) manual->colour( 1, 1, 0);
-            //if(cells[i].terrain==0) manual->colour( 0, 0, 1);
             mvc++;
         }
         
@@ -611,42 +600,6 @@ void Planet::createManualObjects(Ogre::SceneManager* scnMgr){
         }
         
         manual->end();
-        
-        /*
-        manual->begin("BaseWhiteNoLighting", RenderOperation::OT_LINE_LIST);
-        
-        // cell boundary
-        btVector3 temp;
-        for(int j=0;j<p.size();j++){
-            temp = vertices[p[j]] * 1.001 + (cellCenter * 0.001);
-            manual->position( temp.x(), temp.y(), temp.z() );
-            manual->normal( temp.x(), temp.y(), temp.z() );
-            //manual->colour( 0.5, 0.5, 0.5 );
-            if(cells[i].terrain==2) manual->colour( 0, 1, 0);
-            if(cells[i].terrain==1) manual->colour( 1, 1, 0);
-            if(cells[i].terrain==0) manual->colour( 0, 0, 1);
-            if(j+1==p.size()){
-                temp = vertices[p[0]] * 1.001;
-                manual->position( temp.x(), temp.y(), temp.z() );
-                manual->normal( temp.x(), temp.y(), temp.z() );
-                //manual->colour( 0.5, 0.5, 0.5 );
-                if(cells[i].terrain==2) manual->colour( 0, 1, 0);
-                if(cells[i].terrain==1) manual->colour( 1, 1, 0);
-                if(cells[i].terrain==0) manual->colour( 0, 0, 1);
-            }
-            else{
-                temp = vertices[p[j+1]] * 1.001;
-                manual->position( temp.x(), temp.y(), temp.z() );
-                manual->normal( temp.x(), temp.y(), temp.z() );
-                //manual->colour( 0.5, 0.5, 0.5 );
-                if(cells[i].terrain==2) manual->colour( 0, 1, 0);
-                if(cells[i].terrain==1) manual->colour( 1, 1, 0);
-                if(cells[i].terrain==0) manual->colour( 0, 0, 1);
-            }
-        }
-        
-        manual->end();
-        */
         
         manual->setQueryFlags(i);
         
@@ -687,30 +640,30 @@ void Planet::createManualObjects2(Ogre::SceneManager* scnMgr){
         // cell boundary
         btVector3 temp;
         for(int j=0;j<p.size();j++){
-            temp = vertices[p[j]] * 1.005 + (cellCenter * 0.005);;
+            temp = vertices[p[j]] * 1.005 + (cellCenter * 0.005);
             manual->position( temp.x(), temp.y(), temp.z() );
             manual->normal( temp.x(), temp.y(), temp.z() );
             //manual->colour( 0.5, 0.5, 0.5 );
-            if(cells[i].terrain==2) manual->colour( 0, 1, 0);
-            if(cells[i].terrain==1) manual->colour( 1, 1, 0);
-            if(cells[i].terrain==0) manual->colour( 0, 0, 1);
+            if(cells[i].terrain==Terrain_LAND) manual->colour( 0, 1, 0);
+            if(cells[i].terrain==Terrain_WATERLAND) manual->colour( 1, 1, 0);
+            if(cells[i].terrain==Terrain_WATER) manual->colour( 0, 0, 1);
             if(j+1==p.size()){
-                temp = vertices[p[0]] * 1.005 + (cellCenter * 0.005);;
+                temp = vertices[p[0]] * 1.005 + (cellCenter * 0.005);
                 manual->position( temp.x(), temp.y(), temp.z() );
                 manual->normal( temp.x(), temp.y(), temp.z() );
                 //manual->colour( 0.5, 0.5, 0.5 );
-                if(cells[i].terrain==2) manual->colour( 0, 1, 0);
-                if(cells[i].terrain==1) manual->colour( 1, 1, 0);
-                if(cells[i].terrain==0) manual->colour( 0, 0, 1);
+                if(cells[i].terrain==Terrain_LAND) manual->colour( 0, 1, 0);
+                if(cells[i].terrain==Terrain_WATERLAND) manual->colour( 1, 1, 0);
+                if(cells[i].terrain==Terrain_WATER) manual->colour( 0, 0, 1);
             }
             else{
-                temp = vertices[p[j+1]] * 1.005 + (cellCenter * 0.005);;
+                temp = vertices[p[j+1]] * 1.005 + (cellCenter * 0.005);
                 manual->position( temp.x(), temp.y(), temp.z() );
                 manual->normal( temp.x(), temp.y(), temp.z() );
                 //manual->colour( 0.5, 0.5, 0.5 );
-                if(cells[i].terrain==2) manual->colour( 0, 1, 0);
-                if(cells[i].terrain==1) manual->colour( 1, 1, 0);
-                if(cells[i].terrain==0) manual->colour( 0, 0, 1);
+                if(cells[i].terrain==Terrain_LAND) manual->colour( 0, 1, 0);
+                if(cells[i].terrain==Terrain_WATERLAND) manual->colour( 1, 1, 0);
+                if(cells[i].terrain==Terrain_WATER) manual->colour( 0, 0, 1);
             }
         }
         
@@ -723,29 +676,36 @@ void Planet::createManualObjects2(Ogre::SceneManager* scnMgr){
         Ogre::Entity* newCell = scnMgr->createEntity(name_manobj, name_manobj);
         
         cellNode->attachObject(newCell);
-        //cout << "Cell " << i << " created" << endl;
+        //cout << "CellBoundary " << i << " created" << endl;
     }
 }
 
-bool inside(int x0, int y0, int x1, int y1, int x, int y){
-    float a = y0 - y1;
-    float b = x1 - x0;
-    float c = (a*(x0+x1)) + (b*(y0+y1));
-    c /= (-2.0);
-    if ((a*x)+(b*y)+c > 0) return true;
+bool inside(int ax, int ay, int bx, int by, int x, int y){
+
+    int result = (bx - ax) * (y - ay) - (by - ay) * (x - ax);
+    if (result >= 0) return true;
     else return false;
+    
+    /*
+    float a = ay - by;
+    float b = ax - bx;
+    float c = (a*(ax+bx)) + (b*(ay+by));
+    c /= (-2.0);
+    if ((a*x)+(b*y)+c >= 0) return true;
+    else return false;
+    */
 }
 
 
 void Planet::mapTerrain(){
-    MyImage* image = loadBMP("media/materials/textures/earth_spec.bmp");
+    MyImage* image = loadBMP("media/materials/textures/earth_spec_bw.bmp");
     
     int numLand = 0;
     int numWaterLand = 0;
     int numWater = 0;
     
-    int x0, x1, x2;
-    int y0, y1, y2;
+    int ax, bx, cx;
+    int ay, by, cy;
     int top, bottom, left, right;
     float numPixelPerCell;
     unsigned char color;
@@ -761,23 +721,20 @@ void Planet::mapTerrain(){
             PlanetVertex& b = vertices[tempFace.v[1]]; 
             PlanetVertex& c = vertices[tempFace.v[2]]; 
             
-            x0 = -(image->width * a.longitude);
-            y0 = -(image->height * a.latitude);
-            x1 = -(image->width * b.longitude);
-            y1 = -(image->height * b.latitude);
-            x2 = -(image->width * c.longitude);
-            y2 = -(image->height * c.latitude);
+            ax = -(image->width * a.longitude); ay = -(image->height * a.latitude);
+            bx = -(image->width * b.longitude); by = -(image->height * b.latitude);
+            cx = -(image->width * c.longitude); cy = -(image->height * c.latitude);
             
-            top = max(y0, max(y1,y2));
-            bottom = min(y0, min(y1,y2));
-            left = min(x0, min(x1,x2));
-            right = max(x0, max(x1,x2));
+            top = max(ay, max(by,cy));
+            bottom = min(ay, min(by,cy));
+            left = min(ax, min(bx,cx));
+            right = max(ax, max(bx,cx));
             
             for(int y=bottom; y<top; y++){
                 for(int x=left; x<right; x++){
-                    if( inside(x0, y0, x1, y1, x, y) &&
-                        inside(x1, y1, x2, y2, x, y) && 
-                        inside(x2, y2, x0, y0, x, y) ){
+                    if( inside(ax, ay, bx, by, x, y) &&
+                        inside(bx, by, cx, cy, x, y) && 
+                        inside(cx, cy, ax, ay, x, y) ){
                         color = (unsigned char)image->pixels[3 * (y * image->width + x)];
                         fcolor = color;
                         sum_color += (float)fcolor;
@@ -788,30 +745,31 @@ void Planet::mapTerrain(){
         }
         sum_color /= numPixelPerCell;
         
-        if (sum_color <= 25){
+        if (sum_color <= 24.6){
             cells[i].terrain = Terrain_LAND;
             numLand++;
         }
-        else if (sum_color > 25 && sum_color <= 250){
+        else if (sum_color > 24.6 && sum_color <= 252.44){
             cells[i].terrain = Terrain_WATERLAND;
             numWaterLand++;
         }
-        else if (sum_color > 250){
+        else if (sum_color > 252.44){
             numWater++;
         }
+        cout << sum_color << ",";
         cells[i].avg_color = sum_color;
     }
     delete image;
-    cout << "numLand" << numLand << endl;
-    cout << "numWaterLand" << numWaterLand << endl;
-    cout << "numWater" << numWater << endl;
+    cout << "numLand = " << numLand << endl;
+    cout << "numWaterLand = " << numWaterLand << endl;
+    cout << "numWater = " << numWater << endl;
 }
 
 void Planet::mapFaction(){
     MyImage* image = loadBMP("media/materials/textures/earth_political_5.bmp");
     
-    int x0, x1, x2;
-    int y0, y1, y2;
+    int ax, bx, cx;
+    int ay, by, cy;
     int top, bottom, left, right;
     float numPixelPerCell;
     unsigned char color;
@@ -828,23 +786,23 @@ void Planet::mapFaction(){
             PlanetVertex& b = vertices[tempFace.v[1]]; 
             PlanetVertex& c = vertices[tempFace.v[2]]; 
             
-            x0 = -(image->width * a.longitude);
-            y0 = -(image->height * a.latitude);
-            x1 = -(image->width * b.longitude);
-            y1 = -(image->height * b.latitude);
-            x2 = -(image->width * c.longitude);
-            y2 = -(image->height * c.latitude);
+            ax = -(image->width * a.longitude);
+            ay = -(image->height * a.latitude);
+            bx = -(image->width * b.longitude);
+            by = -(image->height * b.latitude);
+            cx = -(image->width * c.longitude);
+            cy = -(image->height * c.latitude);
             
-            top = max(y0, max(y1,y2));
-            bottom = min(y0, min(y1,y2));
-            left = min(x0, min(x1,x2));
-            right = max(x0, max(x1,x2));
+            top = max(ay, max(by,cy));
+            bottom = min(ay, min(by,cy));
+            left = min(ax, min(bx,cx));
+            right = max(ax, max(bx,cx));
             
             for(int y=bottom; y<top; y++){
                 for(int x=left; x<right; x++){
-                    if( inside(x0, y0, x1, y1, x, y) &&
-                        inside(x1, y1, x2, y2, x, y) && 
-                        inside(x2, y2, x0, y0, x, y) ){
+                    if( inside(ax, ay, bx, by, x, y) &&
+                        inside(bx, by, cx, cy, x, y) && 
+                        inside(cx, cy, ax, ay, x, y) ){
                         color = (unsigned char)image->pixels[3 * (y * image->width + x)];
                         fcolor = color;
                         if (fcolor > 0){
@@ -852,6 +810,18 @@ void Planet::mapFaction(){
                             numPixelPerCell += 1;
                         }
                     }
+                    else {
+                        cout << "F";
+                    }
+                    
+                    /*
+                    color = (unsigned char)image->pixels[3 * (y * image->width + x)];
+                    fcolor = color;
+                    if (fcolor > 0){
+                        sum_color += (float)fcolor;
+                        numPixelPerCell += 1;
+                    }
+                    */
                 }
             }
         }
@@ -864,7 +834,6 @@ void Planet::mapFaction(){
         else if (sum_color >= 191){
             cells[i].owner = Owner_BLUE;
         }
-        cells[i].avg_color = sum_color;
     }
     delete image;
 }
@@ -872,8 +841,8 @@ void Planet::mapFaction(){
 void Planet::mapPopDensity(){
     MyImage* image = loadBMP("media/materials/textures/earth_pop.bmp");
     
-    int x0, x1, x2;
-    int y0, y1, y2;
+    int ax, bx, cx;
+    int ay, by, cy;
     int top, bottom, left, right;
     float numPixelPerCell;
     unsigned char color;
@@ -889,24 +858,24 @@ void Planet::mapPopDensity(){
             PlanetVertex& b = vertices[tempFace.v[1]]; 
             PlanetVertex& c = vertices[tempFace.v[2]]; 
             
-            x0 = -(image->width * a.longitude);
-            y0 = -(image->height * a.latitude);
-            x1 = -(image->width * b.longitude);
-            y1 = -(image->height * b.latitude);
-            x2 = -(image->width * c.longitude);
-            y2 = -(image->height * c.latitude);
+            ax = -(image->width * a.longitude);
+            ay = -(image->height * a.latitude);
+            bx = -(image->width * b.longitude);
+            by = -(image->height * b.latitude);
+            cx = -(image->width * c.longitude);
+            cy = -(image->height * c.latitude);
             
-            top = max(y0, max(y1,y2));
-            bottom = min(y0, min(y1,y2));
-            left = min(x0, min(x1,x2));
-            right = max(x0, max(x1,x2));
+            top = max(ay, max(by,cy));
+            bottom = min(ay, min(by,cy));
+            left = min(ax, min(bx,cx));
+            right = max(ax, max(bx,cx));
             
             for(int y=bottom; y<top; y++){
                 for(int x=left; x<right; x++){
                     
-                    if( inside(x0, y0, x1, y1, x, y) &&
-                        inside(x1, y1, x2, y2, x, y) && 
-                        inside(x2, y2, x0, y0, x, y) ){
+                    if( inside(ax, ay, bx, by, x, y) &&
+                        inside(bx, by, cx, cy, x, y) && 
+                        inside(cx, cy, ax, ay, x, y) ){
                         color = (unsigned char)image->pixels[3 * (y * image->width + x)];
                         fcolor = color;
                         sum_color += (float)fcolor;
@@ -919,5 +888,34 @@ void Planet::mapPopDensity(){
         cells[i].popDensity = sum_color / 255.0 * 100.0;
     }
     delete image;
+}
+
+void Planet::changeMaterial(Ogre::SceneManager* scnMgr, PlanetCell& targetCell, string matName){
+    string s = "Cell_";
+    stringstream ss;
+    Ogre::String cellName;
+    ss << targetCell.id;
+    cellName = s.append(ss.str());
+    scnMgr->getEntity(cellName)->setMaterialName(matName);
+}
+
+void Planet::own(Ogre::SceneManager* scnMgr, PlanetCell& targetCell){
+    targetCell.visible = true;
+    changeMaterial(scnMgr, targetCell, "MyMaterials/earth_day");
+    for (int i=0;i<targetCell.neighbors.size();i++){
+        PlanetCell& temp = cells[targetCell.neighbors[i]];
+        temp.visible = true;
+        changeMaterial(scnMgr, temp, "MyMaterials/earth_day");
+    }
+}
+
+void Planet::disown(Ogre::SceneManager* scnMgr, PlanetCell& targetCell){
+    targetCell.visible = false;
+    changeMaterial(scnMgr, targetCell, "MyMaterials/earth_day_bw");
+    for (int i=0;i<targetCell.neighbors.size();i++){
+        PlanetCell& temp = cells[targetCell.neighbors[i]];
+        temp.visible = false;
+        changeMaterial(scnMgr, temp, "MyMaterials/earth_day_bw");
+    }
 }
 

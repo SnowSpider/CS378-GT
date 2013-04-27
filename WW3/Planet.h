@@ -251,6 +251,8 @@ class PlanetCell{
         terrain = Terrain_WATER;
         avg_color = 0;
         popDensity = 0;
+        visible = false;
+        selected = false;
     }
     
     PlanetCell(PlanetVertex& v){
@@ -264,6 +266,8 @@ class PlanetCell{
         terrain = Terrain_WATER;
         avg_color = 0;
         popDensity = 0;
+        visible = false;
+        selected = false;
     }
     
     PlanetCell( const PlanetCell& c ){
@@ -279,6 +283,8 @@ class PlanetCell{
         terrain = c.terrain;
         avg_color = c.avg_color;
         popDensity = c.popDensity;
+        visible = false;
+        selected = false;
     }
         
     PlanetCell( PlanetCell& c ){
@@ -294,6 +300,8 @@ class PlanetCell{
         terrain = c.terrain;
         avg_color = c.avg_color;
         popDensity = c.popDensity;
+        visible = false;
+        selected = false;
     }
     
     PlanetCell& operator=( const PlanetCell& c ){
@@ -309,6 +317,8 @@ class PlanetCell{
         terrain = c.terrain;
         avg_color = c.avg_color;
         popDensity = c.popDensity;
+        visible = false;
+        selected = false;
     }
     
     void setOwner(size_t him){
@@ -468,6 +478,9 @@ class Planet {
     void mapTerrain();
     void mapFaction();
     void mapPopDensity();
+    void changeMaterial(Ogre::SceneManager* scnMgr, PlanetCell& targetCell, string matName);
+    void own(Ogre::SceneManager* scnMgr, PlanetCell& targetCell);
+    void disown(Ogre::SceneManager* scnMgr, PlanetCell& targetCell);
 };
 
 #endif

@@ -167,7 +167,7 @@ void SingleGameState::createScene()
     earth.createManualObjects(m_pSceneMgr);
     earth.createManualObjects2(m_pSceneMgr);
     
-    /*
+    
     for (int i=0;i<earth.cells.size();i++){
         string s = "Cell_";
         stringstream ss;
@@ -175,13 +175,14 @@ void SingleGameState::createScene()
         ss << i;
         name = s.append(ss.str());
         if (earth.cells[i].owner == Owner_RED){
-            m_pSceneMgr->getEntity(name)->setMaterialName("MyMaterials/earth_day_red");
+            //m_pSceneMgr->getEntity(name)->setMaterialName("MyMaterials/earth_day_red");
         }
         else if (earth.cells[i].owner == Owner_BLUE){
-            m_pSceneMgr->getEntity(name)->setMaterialName("MyMaterials/earth_day_blue");
+            //m_pSceneMgr->getEntity(name)->setMaterialName("MyMaterials/earth_day_blue");
+            earth.own(m_pSceneMgr, earth.cells[i]);
         }
     }
-    */
+    
 
     mRayScnQuery = m_pSceneMgr->createRayQuery(Ogre::Ray());
     
@@ -541,9 +542,10 @@ void SingleGameState::onLeftPressed(const OIS::MouseEvent &evt)
     printf("%d THE HEIGHT",evt.state.height);
     if(m_pCurrentObject)
     {
-        //m_pCurrentObject->showBoundingBox(false);
+        m_pCurrentObject->showBoundingBox(false);
         cout << "deselect" << endl;
-        m_pCurrentEntity->setMaterialName("MyMaterials/earth_day");
+        //m_pCurrentEntity->setMaterialName("MyMaterials/earth_day");
+        //earth.disown(m_pSceneMgr, earth.cells[intId]);
     }
     CEGUI::Vector2 guiMouse = CEGUI::MouseCursor::getSingleton().getPosition();
     Ogre::Ray mouseRay = m_pCamera->getCameraToViewportRay(guiMouse.d_x / float(evt.state.width),
@@ -566,9 +568,9 @@ void SingleGameState::onLeftPressed(const OIS::MouseEvent &evt)
                 m_pCurrentObject = m_pSceneMgr->getEntity(itr->movable->getName())->getParentSceneNode();
                 //cout << "gets here" << endl;
                 
-                //m_pCurrentObject->showBoundingBox(true);
+                m_pCurrentObject->showBoundingBox(true);
                 m_pCurrentEntity = m_pSceneMgr->getEntity(itr->movable->getName());
-                m_pCurrentEntity->setMaterialName("MyMaterials/earth_day_bright");
+                //m_pCurrentEntity->setMaterialName("MyMaterials/earth_day_bright");
                 
                 
                 string idNumber = tempLandCellId.substr(5, tempLandCellId.length()-1);
@@ -581,11 +583,14 @@ void SingleGameState::onLeftPressed(const OIS::MouseEvent &evt)
                 else cout << "Unable to open file";
                 */
                 
-                int intId;
+                //int intId;
                 istringstream(idNumber) >> intId;
                 cout << tempLandCellId << " = " << earth.cells[intId].terrain << endl;
                 cout << "Average color = " << earth.cells[intId].avg_color << endl;
+                cout << "Longitude = " << earth.cells[intId].longitude << ", latitude = " << earth.cells[intId].latitude << endl;
                 cout << endl;
+                
+                //earth.own(m_pSceneMgr, earth.cells[intId]);
                 
                 break;
             }
