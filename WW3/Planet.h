@@ -228,6 +228,7 @@ class PlanetCell{
     size_t owner; //id of the player who owns the territory
     vector<size_t> neighbors; //same as the center vertex neighbors
     vector<size_t> paramVerts; //parameter vertices
+    vector<size_t> borderSegments; 
     float altitude;
     float longitude;
     float latitude;
@@ -481,6 +482,8 @@ class Planet {
     void changeMaterial(Ogre::SceneManager* scnMgr, PlanetCell& targetCell, string matName);
     void own(Ogre::SceneManager* scnMgr, PlanetCell& targetCell);
     void disown(Ogre::SceneManager* scnMgr, PlanetCell& targetCell);
+    void createBorderSegments(Ogre::SceneManager* scnMgr, float k);
+    void updateBorderSegments(Ogre::SceneManager* scnMgr);
 };
 
 #endif

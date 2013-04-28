@@ -174,15 +174,40 @@ void SingleGameState::createScene()
         Ogre::String name;
         ss << i;
         name = s.append(ss.str());
-        if (earth.cells[i].owner == Owner_RED){
-            //m_pSceneMgr->getEntity(name)->setMaterialName("MyMaterials/earth_day_red");
+        if (myOwner == Owner_BLUE){
+            if (earth.cells[i].owner == Owner_BLUE){
+                earth.own(m_pSceneMgr, earth.cells[i]);
+            }
         }
-        else if (earth.cells[i].owner == Owner_BLUE){
-            //m_pSceneMgr->getEntity(name)->setMaterialName("MyMaterials/earth_day_blue");
-            earth.own(m_pSceneMgr, earth.cells[i]);
+        else if (myOwner == Owner_RED){
+            if (earth.cells[i].owner == Owner_RED){
+                earth.own(m_pSceneMgr, earth.cells[i]);
+            }
         }
     }
     
+    /*
+    for (int i=0;i<earth.cells.size();i++){
+        string s = "Cell_";
+        stringstream ss;
+        Ogre::String name;
+        ss << i;
+        name = s.append(ss.str());
+        if (myOwner == Owner_BLUE){
+            if (earth.cells[i].owner == Owner_BLUE){
+                m_pSceneMgr->getEntity(name)->setMaterialName("MyMaterials/earth_day_blue");
+            }
+        }
+        else if (myOwner == Owner_RED){
+            if (earth.cells[i].owner == Owner_RED){
+                m_pSceneMgr->getEntity(name)->setMaterialName("MyMaterials/earth_day_red");
+            }
+        }
+    }
+    */
+    
+    earth.createBorderSegments(m_pSceneMgr, 100);
+    earth.updateBorderSegments(m_pSceneMgr);
 
     mRayScnQuery = m_pSceneMgr->createRayQuery(Ogre::Ray());
     
@@ -256,7 +281,7 @@ void SingleGameState::createScene()
     resultWindow->setProperty("HorzFormatting", "WordWrapCentred");
 
     CEGUI::Window *w;
-    if(myOwner = 0)
+    if(myOwner == Owner_BLUE)
     {
         CEGUI::ImagesetManager::getSingleton().create( "BCommandBase.imageset" );
         w = wmgr.loadWindowLayout("BCommandBase.layout", "CommandBase");

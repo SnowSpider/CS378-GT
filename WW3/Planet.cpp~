@@ -403,6 +403,23 @@ void Planet::genCells(){
                 std::reverse(paramVerts_sorted.begin(), paramVerts_sorted.end());
             }
             
+            // At this point, paramVerts may start at a vertex or at the middle of an edge.
+            // They should start at the middle of an edge.
+            for(int j=0;j<faces.size();j++){
+                btVector3 triCenter = midpointOnSphere( vertices[faces[j].v[0]], 
+                                                        vertices[faces[j].v[1]], 
+                                                        vertices[faces[j].v[2]] );
+                if ((btVector3)vertices[paramVerts_sorted[0]] == triCenter){
+                    size_t firstElement = paramVerts_sorted[0];
+                    for(int k=1;k<paramVerts_sorted.size();k++){
+                        paramVerts_sorted[k-1] = paramVerts_sorted[k];
+                    }
+                    paramVerts_sorted[paramVerts_sorted.size()-1] = firstElement;
+                    break;
+                }
+            }
+            
+            // Store the new little triangle faces.
             std::vector<size_t> p = paramVerts_sorted;
             PlanetVertex& a = vertices[i];
             PlanetFace tempFace;
@@ -635,12 +652,10 @@ void Planet::createManualObjects2(Ogre::SceneManager* scnMgr){
         //btVector3 triNormal = triCenter - center;
         btVector3 cellCenter = vertices[cells[i].centerId];
         
-        int mvc = 0; // mesh vertex counter
-        
         // cell boundary
         btVector3 temp;
         for(int j=0;j<p.size();j++){
-            temp = vertices[p[j]] * 1.005 + (cellCenter * 0.005);
+            temp = vertices[p[j]] * 1.001 + (cellCenter * 0.005);
             manual->position( temp.x(), temp.y(), temp.z() );
             manual->normal( temp.x(), temp.y(), temp.z() );
             //manual->colour( 0.5, 0.5, 0.5 );
@@ -648,7 +663,7 @@ void Planet::createManualObjects2(Ogre::SceneManager* scnMgr){
             if(cells[i].terrain==Terrain_WATERLAND) manual->colour( 1, 1, 0);
             if(cells[i].terrain==Terrain_WATER) manual->colour( 0, 0, 1);
             if(j+1==p.size()){
-                temp = vertices[p[0]] * 1.005 + (cellCenter * 0.005);
+                temp = vertices[p[0]] * 1.001 + (cellCenter * 0.005);
                 manual->position( temp.x(), temp.y(), temp.z() );
                 manual->normal( temp.x(), temp.y(), temp.z() );
                 //manual->colour( 0.5, 0.5, 0.5 );
@@ -657,7 +672,7 @@ void Planet::createManualObjects2(Ogre::SceneManager* scnMgr){
                 if(cells[i].terrain==Terrain_WATER) manual->colour( 0, 0, 1);
             }
             else{
-                temp = vertices[p[j+1]] * 1.005 + (cellCenter * 0.005);
+                temp = vertices[p[j+1]] * 1.001 + (cellCenter * 0.005);
                 manual->position( temp.x(), temp.y(), temp.z() );
                 manual->normal( temp.x(), temp.y(), temp.z() );
                 //manual->colour( 0.5, 0.5, 0.5 );
@@ -668,8 +683,6 @@ void Planet::createManualObjects2(Ogre::SceneManager* scnMgr){
         }
         
         manual->end();
-        
-        manual->setQueryFlags(i);
         
         Ogre::SceneNode* cellNode = scnMgr->getRootSceneNode()->createChildSceneNode(name_manobj);
         Ogre::MeshPtr newMesh = manual->convertToMesh(name_manobj);
@@ -729,7 +742,7 @@ void Planet::mapTerrain(){
             bottom = min(ay, min(by,cy));
             left = min(ax, min(bx,cx));
             right = max(ax, max(bx,cx));
-            
+
             for(int y=bottom; y<top; y++){
                 for(int x=left; x<right; x++){
                     if( inside(ax, ay, bx, by, x, y) &&
@@ -756,7 +769,7 @@ void Planet::mapTerrain(){
         else if (sum_color > 252.44){
             numWater++;
         }
-        cout << sum_color << ",";
+        //cout << sum_color << ",";
         cells[i].avg_color = sum_color;
     }
     delete image;
@@ -765,7 +778,7 @@ void Planet::mapTerrain(){
     cout << "numWater = " << numWater << endl;
 }
 
-void Planet::mapFaction(Ogre::SceneManager* scnMgr){
+void Planet::mapFaction(){
     MyImage* image = loadBMP("media/materials/textures/earth_political_5.bmp");
     
     int ax, bx, cx;
@@ -809,9 +822,6 @@ void Planet::mapFaction(Ogre::SceneManager* scnMgr){
                             sum_color += (float)fcolor;
                             numPixelPerCell += 1;
                         }
-                    }
-                    else {
-                        cout << "F";
                     }
                     
                     /*
@@ -916,6 +926,128 @@ void Planet::disown(Ogre::SceneManager* scnMgr, PlanetCell& targetCell){
         PlanetCell& temp = cells[targetCell.neighbors[i]];
         temp.visible = false;
         changeMaterial(scnMgr, temp, "MyMaterials/earth_day_bw");
+    }
+}
+
+void Planet::createBorderSegments(Ogre::SceneManager* scnMgr, float k){
+    // k is the thickness constant.
+    btVector3 thickness_left, thickness_right, inside_left, inside_right, outside_left, outside_right;
+    int segCounter = 0;
+    for (int i=0; i<cells.size(); i++){
+        std::vector<size_t> p = cells[i].paramVerts;
+        btVector3 cellCenter = vertices[cells[i].centerId];
+        
+        btVector3 temp;
+        for(int j=0;j<p.size();j+=2){
+            string s = "BorderSegment_";
+            stringstream ss;
+            Ogre::String name_manobj;
+            ss << segCounter;
+            cells[i].borderSegments.push_back(segCounter);
+            segCounter ++;
+            name_manobj = s.append(ss.str()); // Be careful not to append indefinitely.
+            ManualObject* manual = scnMgr->createManualObject(name_manobj);
+            manual->begin("BaseWhiteNoLighting", RenderOperation::OT_TRIANGLE_FAN);
+            
+            if(j==0){ 
+                thickness_left = vertices[p[j+2]] - vertices[p[j+1]];
+                thickness_left.normalize();
+                thickness_left *= k;
+                thickness_right = vertices[p[p.size()-2]] - vertices[p[p.size()-1]];
+                thickness_right.normalize();
+                thickness_right *= k;
+                inside_left = vertices[p[j+1]] + thickness_left;
+                inside_left *= 1.005;
+                inside_right = vertices[p[p.size()-1]] + thickness_right;
+                inside_right *= 1.005;
+                outside_left = vertices[p[j+1]] * 1.005;
+                outside_right = vertices[p[p.size()-1]] * 1.005;
+            }
+            else if(j+2==p.size()){ 
+                thickness_left = vertices[p[0]] - vertices[p[j+1]];
+                thickness_left.normalize();
+                thickness_left *= k;
+                thickness_right = vertices[p[j-2]] - vertices[p[j-1]];
+                thickness_right.normalize();
+                thickness_right *= k;
+                inside_left = vertices[p[j+1]] + thickness_left;
+                inside_left *= 1.005;
+                inside_right = vertices[p[j-1]] + thickness_right;
+                inside_right *= 1.005;
+                outside_left = vertices[p[j+1]] * 1.005;
+                outside_right = vertices[p[j-1]] * 1.005;
+            }
+            else{
+                thickness_left = vertices[p[j+2]] - vertices[p[j+1]];
+                thickness_left.normalize();
+                thickness_left *= k;
+                thickness_right = vertices[p[j-2]] - vertices[p[j-1]];
+                thickness_right.normalize();
+                thickness_right *= k;
+                inside_left = vertices[p[j+1]] + thickness_left;
+                inside_left *= 1.005;
+                inside_right = vertices[p[j-1]] + thickness_right;
+                inside_right *= 1.005;
+                outside_left = vertices[p[j+1]] * 1.005;
+                outside_right = vertices[p[j-1]] * 1.005;
+            }
+
+            manual->position( inside_right.x(), inside_right.y(), inside_right.z() );
+            manual->normal( inside_right.x(), inside_right.y(), inside_right.z() );
+            if(cells[i].owner==Owner_RED) manual->colour( 1, 0, 0);
+            else if(cells[i].owner==Owner_BLUE) manual->colour( 0, 0, 1);
+            
+            manual->position( outside_right.x(), outside_right.y(), outside_right.z() );
+            manual->normal( outside_right.x(), outside_right.y(), outside_right.z() );
+            if(cells[i].owner==Owner_RED) manual->colour( 1, 0, 0);
+            else if(cells[i].owner==Owner_BLUE) manual->colour( 0, 0, 1);
+            
+            manual->position( outside_left.x(), outside_left.y(), outside_left.z() );
+            manual->normal( outside_left.x(), outside_left.y(), outside_left.z() );
+            if(cells[i].owner==Owner_RED) manual->colour( 1, 0, 0);
+            else if(cells[i].owner==Owner_BLUE) manual->colour( 0, 0, 1);
+            
+            manual->position( inside_left.x(), inside_left.y(), inside_left.z() );
+            manual->normal( inside_left.x(), inside_left.y(), inside_left.z() );
+            if(cells[i].owner==Owner_RED) manual->colour( 1, 0, 0);
+            else if(cells[i].owner==Owner_BLUE) manual->colour( 0, 0, 1);
+            
+            manual->end();
+            Ogre::SceneNode* segmentNode = scnMgr->getRootSceneNode()->createChildSceneNode(name_manobj);
+            Ogre::MeshPtr newMesh = manual->convertToMesh(name_manobj);
+            Ogre::Entity* newSegment = scnMgr->createEntity(name_manobj, name_manobj);
+            newSegment->setVisible(false);
+            segmentNode->attachObject(newSegment);
+            
+        }
+    }
+    
+    cout << "SegCounter = " << segCounter << endl; 
+}
+
+void Planet::updateBorderSegments(Ogre::SceneManager* scnMgr){ // Ugly.
+    for(int i=0;i<cells.size();i++){
+        std::vector<size_t> n = cells[i].neighbors;
+        std::vector<size_t> p = cells[i].paramVerts;
+        for(int j=0;j<n.size();j++){
+            if (cells[i].owner != cells[n[j]].owner) {
+                if(cells[i].owner == Owner_RED || cells[i].owner == Owner_BLUE){
+                    for(int k=0;k<p.size();k+=2){ //critical
+                        for(int l=0;l<cells[n[j]].paramVerts.size();l++){
+                            if((btVector3)vertices[p[k]] == (btVector3)vertices[cells[n[j]].paramVerts[l]]){
+                                int id = cells[i].borderSegments[k/2];
+                                string s = "BorderSegment_";
+                                stringstream ss;
+                                Ogre::String name;
+                                ss << id;
+                                name = s.append(ss.str()); 
+                                scnMgr->getEntity(name)->setVisible(true);
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 }
 
