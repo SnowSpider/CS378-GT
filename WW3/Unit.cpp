@@ -71,12 +71,15 @@ void Unit::createManualObject(Ogre::SceneManager* scnMgr){
     rootNode = scnMgr->getRootSceneNode()->createChildSceneNode(name_manobj);
     rootNode->attachObject(manual);
     
-    rootNode->scale(100, 100, 100);
+    rootNode->scale(150, 150, 150);
 }
+/*
+void Unit::applyTexture(){
 
-
+}
+*/
 void Unit::relocate(btVector3& destination){
     rootNode->translate(Ogre::Vector3(destination.x(), destination.y(), destination.z()));
-    
+    rootNode->setDirection(Ogre::Vector3(destination.x(), destination.y(), destination.z()));
 }
 

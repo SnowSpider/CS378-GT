@@ -117,7 +117,7 @@ class Unit {
 };
 
 
-
+/*
 class UnitList{
     public:
     std::vector<Unit> _units;
@@ -149,6 +149,6 @@ class UnitList{
         currentId = 0;
     }
 };
-
+*/
 
 #endif

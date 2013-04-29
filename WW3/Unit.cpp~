@@ -3,7 +3,7 @@
 
 using namespace Ogre;
 
-int unitId = 0
+int unitId = 0;
 
 void Unit::createManualObject(Ogre::SceneManager* scnMgr){
     string s = "Unit_";
@@ -71,12 +71,12 @@ void Unit::createManualObject(Ogre::SceneManager* scnMgr){
     rootNode = scnMgr->getRootSceneNode()->createChildSceneNode(name_manobj);
     rootNode->attachObject(manual);
     
-    rootNode->scale(100, 100, 100);
+    rootNode->scale(150, 150, 150);
 }
 
 
 void Unit::relocate(btVector3& destination){
     rootNode->translate(Ogre::Vector3(destination.x(), destination.y(), destination.z()));
-    
+    rootNode->setDirection(Ogre::Vector3(destination.x(), destination.y(), destination.z()));
 }
 

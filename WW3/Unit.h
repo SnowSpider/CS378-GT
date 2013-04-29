@@ -112,6 +112,7 @@ class Unit {
     }
     
     void createManualObject(Ogre::SceneManager* scnMgr);
+    //void applyTexture();
     void relocate(btVector3& destination);
 
 };
