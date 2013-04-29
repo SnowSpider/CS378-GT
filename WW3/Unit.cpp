@@ -3,11 +3,13 @@
 
 using namespace Ogre;
 
+int unitId = 0;
+
 void Unit::createManualObject(Ogre::SceneManager* scnMgr){
     string s = "Unit_";
     stringstream ss;
     Ogre::String name_manobj;
-    ss << id;
+    ss << unitId++;
     name_manobj = s.append(ss.str()); // Be careful not to append indefinitely.
     
     ManualObject* manual = scnMgr->createManualObject(name_manobj);
@@ -69,12 +71,12 @@ void Unit::createManualObject(Ogre::SceneManager* scnMgr){
     rootNode = scnMgr->getRootSceneNode()->createChildSceneNode(name_manobj);
     rootNode->attachObject(manual);
     
-    rootNode->translate(Ogre::Vector3(0,0,7000));
     rootNode->scale(100, 100, 100);
 }
 
-/*
-void Unit::relocate(PlanetCell& targetCell){
+
+void Unit::relocate(btVector3& destination){
+    rootNode->translate(Ogre::Vector3(destination.x(), destination.y(), destination.z()));
     
 }
-*/
+

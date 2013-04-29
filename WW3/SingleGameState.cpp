@@ -803,10 +803,14 @@ bool SingleGameState::CommandBaseButton(const CEGUI::EventArgs &e)
     earth.cells[intId].myUnit = Unit_COMMANDBASE;
     money -= Au_COMMANDBASE;
     plutonium -= Pt_COMMANDBASE;
+    Unit newUnit(Owner_BLUE);
+    newUnit.createManualObject(m_pSceneMgr);
+    newUnit.relocate(earth.vertices[intId]);
     return true;
 }
 bool SingleGameState::ArmyBaseButton(const CEGUI::EventArgs &e)
 {
+    cout << "Building a new army base..." << endl;
     string name = m_pCurrentEntity->getName();
     string idNumber = name.substr(5, name.length()-1);
     int intId;
@@ -814,6 +818,9 @@ bool SingleGameState::ArmyBaseButton(const CEGUI::EventArgs &e)
     earth.cells[intId].myUnit = Unit_ARMYBASE;
     money -= Au_ARMYBASE;
     plutonium -= Pt_ARMYBASE;
+    Unit newUnit(Owner_BLUE);
+    newUnit.createManualObject(m_pSceneMgr);
+    newUnit.relocate(earth.vertices[intId]);
     return true;
 }
 bool SingleGameState::NavyBaseButton(const CEGUI::EventArgs &e)
@@ -825,6 +832,9 @@ bool SingleGameState::NavyBaseButton(const CEGUI::EventArgs &e)
     earth.cells[intId].myUnit = Unit_NAVYBASE;
     money -= Au_NAVYBASE;
     plutonium -= Pt_NAVYBASE;
+    Unit newUnit(Owner_BLUE);
+    newUnit.createManualObject(m_pSceneMgr);
+    newUnit.relocate(earth.vertices[intId]);
     return true;
 }
 bool SingleGameState::AirForceBaseButton(const CEGUI::EventArgs &e)
@@ -836,6 +846,9 @@ bool SingleGameState::AirForceBaseButton(const CEGUI::EventArgs &e)
     earth.cells[intId].myUnit = Unit_AIRFORCEBASE;
     money -= Au_AIRFORCEBASE;
     plutonium -= Pt_AIRFORCEBASE;
+    Unit newUnit(Owner_BLUE);
+    newUnit.createManualObject(m_pSceneMgr);
+    newUnit.relocate(earth.vertices[intId]);
     return true;
 }
 bool SingleGameState::NuclearPlantButton(const CEGUI::EventArgs &e)
@@ -847,6 +860,9 @@ bool SingleGameState::NuclearPlantButton(const CEGUI::EventArgs &e)
     earth.cells[intId].myUnit = Unit_NUCLEARPLANT;
     money -= Au_NUCLEARPLANT;
     plutonium -= Pt_NUCLEARPLANT;
+    Unit newUnit(Owner_BLUE);
+    newUnit.createManualObject(m_pSceneMgr);
+    newUnit.relocate(earth.vertices[intId]);
     return true;
 }
 bool SingleGameState::ICBMSiloButton(const CEGUI::EventArgs &e)
@@ -858,6 +874,9 @@ bool SingleGameState::ICBMSiloButton(const CEGUI::EventArgs &e)
     earth.cells[intId].myUnit = Unit_ICBMSILO;
     money -= Au_ICBMSILO;
     plutonium -= Pt_ICBMSILO;
+    Unit newUnit(Owner_BLUE);
+    newUnit.createManualObject(m_pSceneMgr);
+    newUnit.relocate(earth.vertices[intId]);
     return true;
 }
 bool SingleGameState::InfantryButton(const CEGUI::EventArgs &e)

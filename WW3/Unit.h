@@ -98,7 +98,6 @@ enum unitType{
 class Unit {
     public:
     Ogre::SceneNode* rootNode;
-    int id;
     int myType;
     int owner;
     int currentCellId;
@@ -108,19 +107,17 @@ class Unit {
     int damage; // Attack value
     int moveInterval; // The number of seconds this unit takes to move to a neighboring cell
     
-    Unit(){
-        id = -1;
-        currentCellId = -1;
-        owner = 1;
+    Unit(size_t myOwner){
+        owner = myOwner;
     }
     
     void createManualObject(Ogre::SceneManager* scnMgr);
-    //void relocate(PlanetCell& targetCell);
+    void relocate(btVector3& destination);
 
 };
 
 
-
+/*
 class UnitList{
     public:
     std::vector<Unit> _units;
@@ -152,6 +149,6 @@ class UnitList{
         currentId = 0;
     }
 };
-
+*/
 
 #endif
