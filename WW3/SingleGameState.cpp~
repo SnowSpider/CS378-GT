@@ -608,7 +608,7 @@ void SingleGameState::onLeftPressed(const OIS::MouseEvent &evt)
                 
                 //int intId;
                 istringstream(idNumber) >> intId;
-                if(earth.cells[intId].myUnit == 0)
+                if(earth.cells[intId].myUnit == Unit_EMPTY)
                     BuildingImages1(earth.cells[intId]);
                 else if(earth.cells[intId].myUnit == Unit_COMMANDBASE)
                     BuildingImagesCB2(earth.cells[intId]);
@@ -618,6 +618,7 @@ void SingleGameState::onLeftPressed(const OIS::MouseEvent &evt)
                     BuildingImagesN4(earth.cells[intId]);
                 else if(earth.cells[intId].myUnit == Unit_AIRFORCEBASE)
                     BuildingImagesAF5(earth.cells[intId]);
+
                 cout << tempLandCellId << " = " << earth.cells[intId].terrain << endl;
                 cout << "Average color = " << earth.cells[intId].avg_color << endl;
                 cout << "Longitude = " << earth.cells[intId].longitude << ", latitude = " << earth.cells[intId].latitude << endl;

@@ -608,7 +608,9 @@ void SingleGameState::onLeftPressed(const OIS::MouseEvent &evt)
                 
                 //int intId;
                 istringstream(idNumber) >> intId;
-                if(earth.cells[intId].myUnit == Unit_COMMANDBASE)
+                if(earth.cells[intId].myUnit == Unit_EMPTY)
+                    BuildingImages1(earth.cells[intId]);
+                else if(earth.cells[intId].myUnit == Unit_COMMANDBASE)
                     BuildingImagesCB2(earth.cells[intId]);
                 else if(earth.cells[intId].myUnit == Unit_ARMYBASE)
                     BuildingImagesA3(earth.cells[intId]);

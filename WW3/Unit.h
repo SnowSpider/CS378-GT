@@ -71,6 +71,7 @@ enum unitCost_plutonium{
 };
 
 enum unitType{
+    Unit_EMPTY = 0,
     Unit_INFANTRY = 1,
     Unit_TANK = 2,
     Unit_ARTILLERY = 3,
