@@ -132,7 +132,8 @@ private:
     int myOwner;
     int money;
     int plutonium;
-    int uranium;
+    int population;
+    bool onButton;
     
     Planet earth;
     ofstream myfile;

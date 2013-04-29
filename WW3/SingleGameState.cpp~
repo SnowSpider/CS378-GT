@@ -49,10 +49,10 @@ SingleGameState::SingleGameState()
     lost = false;
     buildingImages = 1;
     myOwner = Owner_BLUE;
-    money = 4000;
-    plutonium = 0;
-    uranium = 0;
-    
+    money = 100000000;
+    plutonium = 100000000;
+    population = 0;
+    onButton = false;
     showWaterLand = false;
 }
  
@@ -516,8 +516,30 @@ bool SingleGameState::mouseMoved(const OIS::MouseEvent &evt)
 bool SingleGameState::mousePressed(const OIS::MouseEvent &evt, OIS::MouseButtonID id)
 {
     CEGUI::System::getSingleton().injectMouseButtonDown(SingleGameState::convertButton(id));
+    cout << "I mousePressed am GOING" << endl;
+    if(onButton)
+    {
+        onButton = false;
+        return true;
+    }
     if(OgreFramework::getSingletonPtr()->m_pTrayMgr->injectMouseDown(evt, id)) return true;
     
+    //mCameraMan->injectMouseDown(evt, id);
+    return true;
+}
+ 
+//|||||||||||||||||||||||||||||||||||||||||||||||
+ 
+bool SingleGameState::mouseReleased(const OIS::MouseEvent &evt, OIS::MouseButtonID id)
+{
+    CEGUI::System::getSingleton().injectMouseButtonUp(convertButton(id));
+    if(onButton)
+    {
+        onButton = false;
+        return true;
+    }
+    if(OgreFramework::getSingletonPtr()->m_pTrayMgr->injectMouseUp(evt, id)) return true;
+ 
     switch (id) {
         case OIS::MB_Left:
             onLeftPressed(evt);
@@ -534,26 +556,6 @@ bool SingleGameState::mousePressed(const OIS::MouseEvent &evt, OIS::MouseButtonI
             break;
         default:
             break;
-    }
-
-    //mCameraMan->injectMouseDown(evt, id);
-    return true;
-}
- 
-//|||||||||||||||||||||||||||||||||||||||||||||||
- 
-bool SingleGameState::mouseReleased(const OIS::MouseEvent &evt, OIS::MouseButtonID id)
-{
-    CEGUI::System::getSingleton().injectMouseButtonUp(convertButton(id));
-    if(OgreFramework::getSingletonPtr()->m_pTrayMgr->injectMouseUp(evt, id)) return true;
- 
-    if(id == OIS::MB_Left)
-    {
-        m_bLMouseDown = false;
-    }
-    else if(id == OIS::MB_Right)
-    {
-        m_bRMouseDown = false;
     }
  
     return true;
@@ -773,6 +775,7 @@ CEGUI::MouseButton SingleGameState::convertButton(OIS::MouseButtonID buttonID)
 bool SingleGameState::soundButton(const CEGUI::EventArgs &e)
 {
     SingleGameState::soundSwitch();
+    onButton = true;
     return true;
 }
 
@@ -803,13 +806,12 @@ bool SingleGameState::CommandBaseButton(const CEGUI::EventArgs &e)
     earth.cells[intId].myUnit = Unit_COMMANDBASE;
     money -= Au_COMMANDBASE;
     plutonium -= Pt_COMMANDBASE;
-    Unit newUnit(Owner_BLUE);
-    newUnit.createManualObject(earth.vertices[intId]);
+    onButton = true;
+    cout << "I CommandBaseButton am GOING" << endl;
     return true;
 }
 bool SingleGameState::ArmyBaseButton(const CEGUI::EventArgs &e)
 {
-    cout << "Building a new army base..." << endl;
     string name = m_pCurrentEntity->getName();
     string idNumber = name.substr(5, name.length()-1);
     int intId;
@@ -817,8 +819,7 @@ bool SingleGameState::ArmyBaseButton(const CEGUI::EventArgs &e)
     earth.cells[intId].myUnit = Unit_ARMYBASE;
     money -= Au_ARMYBASE;
     plutonium -= Pt_ARMYBASE;
-    Unit newUnit(Owner_BLUE);
-    newUnit.createManualObject(earth.vertices[intId]);
+    onButton = true;
     return true;
 }
 bool SingleGameState::NavyBaseButton(const CEGUI::EventArgs &e)
@@ -830,8 +831,7 @@ bool SingleGameState::NavyBaseButton(const CEGUI::EventArgs &e)
     earth.cells[intId].myUnit = Unit_NAVYBASE;
     money -= Au_NAVYBASE;
     plutonium -= Pt_NAVYBASE;
-    Unit newUnit(Owner_BLUE);
-    newUnit.createManualObject(earth.vertices[intId]);
+    onButton = true;
     return true;
 }
 bool SingleGameState::AirForceBaseButton(const CEGUI::EventArgs &e)
@@ -843,9 +843,7 @@ bool SingleGameState::AirForceBaseButton(const CEGUI::EventArgs &e)
     earth.cells[intId].myUnit = Unit_AIRFORCEBASE;
     money -= Au_AIRFORCEBASE;
     plutonium -= Pt_AIRFORCEBASE;
-    Unit newUnit(Owner_BLUE);
-    newUnit.createManualObject(earth.vertices[intId]);
-    newUnit.relocate(earth.vertices[intId]);
+    onButton = true;
     return true;
 }
 bool SingleGameState::NuclearPlantButton(const CEGUI::EventArgs &e)
@@ -857,8 +855,7 @@ bool SingleGameState::NuclearPlantButton(const CEGUI::EventArgs &e)
     earth.cells[intId].myUnit = Unit_NUCLEARPLANT;
     money -= Au_NUCLEARPLANT;
     plutonium -= Pt_NUCLEARPLANT;
-    Unit newUnit(Owner_BLUE);
-    newUnit.createManualObject(earth.vertices[intId]);
+    onButton = true;
     return true;
 }
 bool SingleGameState::ICBMSiloButton(const CEGUI::EventArgs &e)
@@ -870,36 +867,42 @@ bool SingleGameState::ICBMSiloButton(const CEGUI::EventArgs &e)
     earth.cells[intId].myUnit = Unit_ICBMSILO;
     money -= Au_ICBMSILO;
     plutonium -= Pt_ICBMSILO;
-    Unit newUnit(Owner_BLUE);
-    newUnit.createManualObject(earth.vertices[intId]);
+    onButton = true;
     return true;
 }
 bool SingleGameState::InfantryButton(const CEGUI::EventArgs &e)
 {
+    onButton = true;
     return true;
 }
 bool SingleGameState::TankButton(const CEGUI::EventArgs &e)
 {
+    onButton = true;
     return true;
 }
 bool SingleGameState::ScudButton(const CEGUI::EventArgs &e)
 {
+    onButton = true;
     return true;
 }
 bool SingleGameState::SubmarineButton(const CEGUI::EventArgs &e)
 {
+    onButton = true;
     return true;
 }
 bool SingleGameState::DestroyerButton(const CEGUI::EventArgs &e)
 {
+    onButton = true;
     return true;
 }
 bool SingleGameState::BomberButton(const CEGUI::EventArgs &e)
 {
+    onButton = true;
     return true;
 }
 bool SingleGameState::FighterButton(const CEGUI::EventArgs &e)
 {
+    onButton = true;
     return true;
 }
 
@@ -969,6 +972,7 @@ void SingleGameState::BuildingImages1(PlanetCell &cell)
         w = CEGUI::WindowManager::getSingleton().getWindow("ICBMSilo");
         w->enable();
     }
+
     if(cell.owner != myOwner || cell.terrain == Terrain_WATER)
     {
         w = CEGUI::WindowManager::getSingleton().getWindow("CommandBase");
@@ -986,7 +990,33 @@ void SingleGameState::BuildingImages1(PlanetCell &cell)
     }
     else
     {
-        if(cell.terrain == Terrain_LAND)
+
+        if(money < Au_COMMANDBASE || plutonium < Pt_COMMANDBASE)
+        {
+            w = CEGUI::WindowManager::getSingleton().getWindow("CommandBase");
+            w->disable();    
+        }
+        if(money < Au_ARMYBASE || plutonium < Pt_ARMYBASE)
+        {
+            w = CEGUI::WindowManager::getSingleton().getWindow("ArmyBase");
+            w->disable();    
+        }
+        if(money < Au_AIRFORCEBASE || plutonium < Pt_AIRFORCEBASE)
+        {
+            w = CEGUI::WindowManager::getSingleton().getWindow("AirForceBase");
+            w->disable();    
+        }
+        if(money < Au_NUCLEARPLANT || plutonium < Pt_NUCLEARPLANT)
+        {
+            w = CEGUI::WindowManager::getSingleton().getWindow("NuclearPlant");
+            w->disable();    
+        }
+        if(money < Au_ICBMSILO || plutonium < Pt_ICBMSILO)
+        {
+            w = CEGUI::WindowManager::getSingleton().getWindow("ICBMSilo");
+            w->disable();    
+        }
+        if(cell.terrain == Terrain_LAND || money < Au_NAVYBASE || plutonium < Pt_NAVYBASE)
         {
             w = CEGUI::WindowManager::getSingleton().getWindow("NavyBase");
             w->disable();    
