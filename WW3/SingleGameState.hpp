@@ -68,6 +68,7 @@ public:
     bool ArmyBaseButton(const CEGUI::EventArgs &e);
     bool NavyBaseButton(const CEGUI::EventArgs &e);
     bool AirForceBaseButton(const CEGUI::EventArgs &e);
+    bool NuclearPlantButton(const CEGUI::EventArgs &e);
     bool ICBMSiloButton(const CEGUI::EventArgs &e);
     bool InfantryButton(const CEGUI::EventArgs &e);
     bool TankButton(const CEGUI::EventArgs &e);

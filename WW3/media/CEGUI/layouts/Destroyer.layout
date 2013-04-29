@@ -7,7 +7,7 @@
 	<Property Name="HoverImage"      Value="set:Destroyer image:btnHover"  />
 	<Property Name="PushedImage"     Value="set:Destroyer image:btnPushed" />
 	<Property Name="DisabledImage"   Value="set:Destroyer image:btnDisabl" />
-	<Window Type="TaharezLook/StaticText" Name="btnNewGame_text__">
+	<Window Type="TaharezLook/StaticText" Name="DestroyerText">
 		<Property Name="UnifiedPosition"   Value="{{0,0},{.5,0}}" />
 		<Property Name="UnifiedSize"       Value="{{1,0},{.6,0}}" />
 		<Property Name="FrameEnabled"      Value="False" />
