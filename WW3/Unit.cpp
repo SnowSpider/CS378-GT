@@ -72,3 +72,9 @@ void Unit::createManualObject(Ogre::SceneManager* scnMgr){
     rootNode->translate(Ogre::Vector3(0,0,7000));
     rootNode->scale(100, 100, 100);
 }
+
+/*
+void Unit::relocate(PlanetCell& targetCell){
+    
+}
+*/

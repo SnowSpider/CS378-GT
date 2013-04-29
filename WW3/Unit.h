@@ -20,6 +20,56 @@
 
 using namespace std;
 
+enum unitCost_gold{
+    Au_INFANTRY = 100,
+    Au_TANK = 1000,
+    Au_ARTILLERY = 800,
+    Au_SCUD = 1500,
+    Au_ENGINEER = 200,
+    
+    Au_SUBMARINE = 3000,
+    Au_DESTROYER = 2400,
+    Au_CARRIER = 15000,
+    Au_CRUISER = 4000,
+    
+    Au_BOMBER = 2000,
+    Au_FIGHTER = 1200,
+    Au_SPYPLANE = 3000,
+    
+    Au_COMMANDBASE = 10000,
+    Au_ARMYBASE = 15000,
+    Au_NAVYBASE = 20000,
+    Au_AIRFORCEBASE = 25000,
+    Au_NUCLEARPLANT = 150000,
+    Au_ICBMSILO = 50000,
+    Au_SAMSITE = 1000
+};
+
+enum unitCost_plutonium{
+    Pt_INFANTRY = 0,
+    Pt_TANK = 0,
+    Pt_ARTILLERY = 0,
+    Pt_SCUD = 50,
+    Pt_ENGINEER = 0,
+    
+    Pt_SUBMARINE = 300,
+    Pt_DESTROYER = 0,
+    Pt_CARRIER = 100,
+    Pt_CRUISER = 0,
+    
+    Pt_BOMBER = 150,
+    Pt_FIGHTER = 0,
+    Pt_SPYPLANE = 0,
+    
+    Pt_COMMANDBASE = 0,
+    Pt_ARMYBASE = 0,
+    Pt_NAVYBASE = 0,
+    Pt_AIRFORCEBASE = 0,
+    Pt_NUCLEARPLANT = 2500,
+    Pt_ICBMSILO = 1000,
+    Pt_SAMSITE = 0
+};
+
 enum unitType{
     Unit_INFANTRY = 0,
     Unit_TANK = 1,
@@ -40,13 +90,14 @@ enum unitType{
     Unit_ARMYBASE = 13,
     Unit_NAVYBASE = 14,
     Unit_AIRFORCEBASE = 15,
-    Unit_ICBMSILO = 16,
-    Unit_SAMSITE = 17
+    Unit_NUCLEARPLANT = 16,
+    Unit_ICBMSILO = 17,
+    Unit_SAMSITE = 18
 };
 
 class Unit {
     public:
-    Ogre::SceneNode* rootNode;    
+    Ogre::SceneNode* rootNode;
     int id;
     int myType;
     int owner;
@@ -64,11 +115,15 @@ class Unit {
     }
     
     void createManualObject(Ogre::SceneManager* scnMgr);
+    //void relocate(PlanetCell& targetCell);
+
 };
+
+
 
 class UnitList{
     public:
-    vector<Unit> _units;
+    std::vector<Unit> _units;
     size_t currentId;
     
     UnitList(){

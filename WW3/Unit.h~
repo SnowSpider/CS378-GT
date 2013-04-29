@@ -1,5 +1,5 @@
-#ifndef __Type_H__
-#define __Type_H__
+#ifndef __Unit_H__
+#define __Unit_H__
 
 #include <OgreSubEntity.h>
 #include <OgreMaterialManager.h>
@@ -21,27 +21,27 @@
 using namespace std;
 
 enum unitType{
-    Type_INFANTRY = 0,
-    Type_TANK = 1,
-    Type_ARTILLERY = 2,
-    Type_SCUD = 3,
-    Type_ENGINEER = 4,
+    Unit_INFANTRY = 0,
+    Unit_TANK = 1,
+    Unit_ARTILLERY = 2,
+    Unit_SCUD = 3,
+    Unit_ENGINEER = 4,
     
-    Type_SUBMARINE = 5,
-    Type_DESTROYER = 6,
-    Type_CARRIER = 7,
-    Type_CRUISER = 8,
+    Unit_SUBMARINE = 5,
+    Unit_DESTROYER = 6,
+    Unit_CARRIER = 7,
+    Unit_CRUISER = 8,
     
-    Type_BOMBER = 9,
-    Type_FIGHTER = 10,
-    Type_SPYPLANE = 11,
+    Unit_BOMBER = 9,
+    Unit_FIGHTER = 10,
+    Unit_SPYPLANE = 11,
     
-    Type_COMMANDBASE = 12,
-    Type_ARMYBASE = 13,
-    Type_NAVYBASE = 14,
-    Type_AIRFORCEBASE = 15,
-    Type_ICBMSILO = 16,
-    Type_SAMSITE = 17
+    Unit_COMMANDBASE = 12,
+    Unit_ARMYBASE = 13,
+    Unit_NAVYBASE = 14,
+    Unit_AIRFORCEBASE = 15,
+    Unit_ICBMSILO = 16,
+    Unit_SAMSITE = 17
 };
 
 class Unit {

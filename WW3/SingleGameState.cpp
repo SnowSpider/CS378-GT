@@ -186,27 +186,7 @@ void SingleGameState::createScene()
         }
     }
     
-    /*
-    for (int i=0;i<earth.cells.size();i++){
-        string s = "Cell_";
-        stringstream ss;
-        Ogre::String name;
-        ss << i;
-        name = s.append(ss.str());
-        if (myOwner == Owner_BLUE){
-            if (earth.cells[i].owner == Owner_BLUE){
-                m_pSceneMgr->getEntity(name)->setMaterialName("MyMaterials/earth_day_blue");
-            }
-        }
-        else if (myOwner == Owner_RED){
-            if (earth.cells[i].owner == Owner_RED){
-                m_pSceneMgr->getEntity(name)->setMaterialName("MyMaterials/earth_day_red");
-            }
-        }
-    }
-    */
-    
-    earth.createBorderSegments(m_pSceneMgr, 100);
+    earth.createBorderSegments(m_pSceneMgr, 50);
     earth.updateBorderSegments(m_pSceneMgr);
 
     mRayScnQuery = m_pSceneMgr->createRayQuery(Ogre::Ray());
@@ -468,41 +448,31 @@ bool SingleGameState::keyPressed(const OIS::KeyEvent &keyEventRef)
     {
         SingleGameState::soundSwitch();
     }
-    /*
     if (keyEventRef.key == OIS::KC_Z)
     {
         if(showWaterLand) {
             showWaterLand = false;
             for (int i=0;i<earth.cells.size();i++){
-                string s = "Cell_";
+                string s = "CellBoundary_";
                 stringstream ss;
                 Ogre::String name;
                 ss << i;
                 name = s.append(ss.str());
-                if(earth.cells[i].terrain == Terrain_WATER){
-                    m_pSceneMgr->getEntity(name)->setMaterialName("MyMaterials/earth_day_blue");
-                }
-                else if(earth.cells[i].terrain == Terrain_WATERLAND){
-                    m_pSceneMgr->getEntity(name)->setMaterialName("MyMaterials/earth_day_yellow");
-                }
-                else if(earth.cells[i].terrain == Terrain_LAND){
-                    m_pSceneMgr->getEntity(name)->setMaterialName("MyMaterials/earth_day_green");
-                }
+                m_pSceneMgr->getEntity(name)->setVisible(true);
             }
         }
         else {
             showWaterLand = true;
             for (int i=0;i<earth.cells.size();i++){
-                string s = "Cell_";
+                string s = "CellBoundary_";
                 stringstream ss;
                 Ogre::String name;
                 ss << i;
                 name = s.append(ss.str());
-                m_pSceneMgr->getEntity(name)->setMaterialName("MyMaterials/earth_day");
+                m_pSceneMgr->getEntity(name)->setVisible(false);
             }
         }
     }
-    */
     
     return true;
 }
@@ -830,35 +800,64 @@ bool SingleGameState::CommandBaseButton(const CEGUI::EventArgs &e)
     string idNumber = name.substr(5, name.length()-1);
     int intId;
     istringstream(idNumber) >> intId;
-    if (true){ 
-        // 1. The player owns the currently selected cell
-        // 2. The cell is either LAND or WATERLAND
-        // 3. The cell has no unit on it
-        // 4. The player has enough resources
-        
-        earth.cells[intId].myUnit = Unit_COMMANDBASE;
-        
-    }
+    earth.cells[intId].myUnit = Unit_COMMANDBASE;
+    money -= Au_COMMANDBASE;
+    plutonium -= Pt_COMMANDBASE;
     return true;
 }
 bool SingleGameState::ArmyBaseButton(const CEGUI::EventArgs &e)
 {
+    string name = m_pCurrentEntity->getName();
+    string idNumber = name.substr(5, name.length()-1);
+    int intId;
+    istringstream(idNumber) >> intId;
+    earth.cells[intId].myUnit = Unit_ARMYBASE;
+    money -= Au_ARMYBASE;
+    plutonium -= Pt_ARMYBASE;
     return true;
 }
 bool SingleGameState::NavyBaseButton(const CEGUI::EventArgs &e)
 {
+    string name = m_pCurrentEntity->getName();
+    string idNumber = name.substr(5, name.length()-1);
+    int intId;
+    istringstream(idNumber) >> intId;
+    earth.cells[intId].myUnit = Unit_NAVYBASE;
+    money -= Au_NAVYBASE;
+    plutonium -= Pt_NAVYBASE;
     return true;
 }
 bool SingleGameState::AirForceBaseButton(const CEGUI::EventArgs &e)
 {
+    string name = m_pCurrentEntity->getName();
+    string idNumber = name.substr(5, name.length()-1);
+    int intId;
+    istringstream(idNumber) >> intId;
+    earth.cells[intId].myUnit = Unit_AIRFORCEBASE;
+    money -= Au_AIRFORCEBASE;
+    plutonium -= Pt_AIRFORCEBASE;
     return true;
 }
 bool SingleGameState::NuclearPlantButton(const CEGUI::EventArgs &e)
 {
+    string name = m_pCurrentEntity->getName();
+    string idNumber = name.substr(5, name.length()-1);
+    int intId;
+    istringstream(idNumber) >> intId;
+    earth.cells[intId].myUnit = Unit_NUCLEARPLANT;
+    money -= Au_NUCLEARPLANT;
+    plutonium -= Pt_NUCLEARPLANT;
     return true;
 }
 bool SingleGameState::ICBMSiloButton(const CEGUI::EventArgs &e)
 {
+    string name = m_pCurrentEntity->getName();
+    string idNumber = name.substr(5, name.length()-1);
+    int intId;
+    istringstream(idNumber) >> intId;
+    earth.cells[intId].myUnit = Unit_ICBMSILO;
+    money -= Au_ICBMSILO;
+    plutonium -= Pt_ICBMSILO;
     return true;
 }
 bool SingleGameState::InfantryButton(const CEGUI::EventArgs &e)
