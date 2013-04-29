@@ -516,7 +516,6 @@ bool SingleGameState::mouseMoved(const OIS::MouseEvent &evt)
 bool SingleGameState::mousePressed(const OIS::MouseEvent &evt, OIS::MouseButtonID id)
 {
     CEGUI::System::getSingleton().injectMouseButtonDown(SingleGameState::convertButton(id));
-    cout << "I mousePressed am GOING" << endl;
     if(onButton)
     {
         onButton = false;
@@ -609,7 +608,16 @@ void SingleGameState::onLeftPressed(const OIS::MouseEvent &evt)
                 
                 //int intId;
                 istringstream(idNumber) >> intId;
-                BuildingImages1(earth.cells[intId]);
+                if(earth.cells[intId].myUnit == 0)
+                    BuildingImages1(earth.cells[intId]);
+                else if(earth.cells[intId].myUnit == Unit_COMMANDBASE)
+                    BuildingImagesCB2(earth.cells[intId]);
+                else if(earth.cells[intId].myUnit == Unit_ARMYBASE)
+                    BuildingImagesA3(earth.cells[intId]);
+                else if(earth.cells[intId].myUnit == Unit_NAVYBASE)
+                    BuildingImagesN4(earth.cells[intId]);
+                else if(earth.cells[intId].myUnit == Unit_AIRFORCEBASE)
+                    BuildingImagesAF5(earth.cells[intId]);
                 cout << tempLandCellId << " = " << earth.cells[intId].terrain << endl;
                 cout << "Average color = " << earth.cells[intId].avg_color << endl;
                 cout << "Longitude = " << earth.cells[intId].longitude << ", latitude = " << earth.cells[intId].latitude << endl;
@@ -806,8 +814,11 @@ bool SingleGameState::CommandBaseButton(const CEGUI::EventArgs &e)
     earth.cells[intId].myUnit = Unit_COMMANDBASE;
     money -= Au_COMMANDBASE;
     plutonium -= Pt_COMMANDBASE;
+    Unit newUnit(Owner_BLUE);
+    newUnit.createManualObject(m_pSceneMgr);
+    newUnit.relocate(earth.vertices[intId]);
+    BuildingImagesCB2(earth.cells[intId]); 
     onButton = true;
-    cout << "I CommandBaseButton am GOING" << endl;
     return true;
 }
 bool SingleGameState::ArmyBaseButton(const CEGUI::EventArgs &e)
@@ -819,6 +830,10 @@ bool SingleGameState::ArmyBaseButton(const CEGUI::EventArgs &e)
     earth.cells[intId].myUnit = Unit_ARMYBASE;
     money -= Au_ARMYBASE;
     plutonium -= Pt_ARMYBASE;
+    Unit newUnit(Owner_BLUE);
+    newUnit.createManualObject(m_pSceneMgr);
+    newUnit.relocate(earth.vertices[intId]); 
+    BuildingImagesA3(earth.cells[intId]);
     onButton = true;
     return true;
 }
@@ -831,6 +846,10 @@ bool SingleGameState::NavyBaseButton(const CEGUI::EventArgs &e)
     earth.cells[intId].myUnit = Unit_NAVYBASE;
     money -= Au_NAVYBASE;
     plutonium -= Pt_NAVYBASE;
+    Unit newUnit(Owner_BLUE);
+    newUnit.createManualObject(m_pSceneMgr);
+    newUnit.relocate(earth.vertices[intId]);
+    BuildingImagesN4(earth.cells[intId]);
     onButton = true;
     return true;
 }
@@ -843,6 +862,10 @@ bool SingleGameState::AirForceBaseButton(const CEGUI::EventArgs &e)
     earth.cells[intId].myUnit = Unit_AIRFORCEBASE;
     money -= Au_AIRFORCEBASE;
     plutonium -= Pt_AIRFORCEBASE;
+    Unit newUnit(Owner_BLUE);
+    newUnit.createManualObject(m_pSceneMgr);
+    newUnit.relocate(earth.vertices[intId]); 
+    BuildingImagesAF5(earth.cells[intId]);
     onButton = true;
     return true;
 }
@@ -855,6 +878,9 @@ bool SingleGameState::NuclearPlantButton(const CEGUI::EventArgs &e)
     earth.cells[intId].myUnit = Unit_NUCLEARPLANT;
     money -= Au_NUCLEARPLANT;
     plutonium -= Pt_NUCLEARPLANT;
+    Unit newUnit(Owner_BLUE);
+    newUnit.createManualObject(m_pSceneMgr);
+    newUnit.relocate(earth.vertices[intId]); 
     onButton = true;
     return true;
 }
@@ -867,6 +893,9 @@ bool SingleGameState::ICBMSiloButton(const CEGUI::EventArgs &e)
     earth.cells[intId].myUnit = Unit_ICBMSILO;
     money -= Au_ICBMSILO;
     plutonium -= Pt_ICBMSILO;
+    Unit newUnit(Owner_BLUE);
+    newUnit.createManualObject(m_pSceneMgr);
+    newUnit.relocate(earth.vertices[intId]); 
     onButton = true;
     return true;
 }

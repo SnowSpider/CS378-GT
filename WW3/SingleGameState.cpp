@@ -608,7 +608,16 @@ void SingleGameState::onLeftPressed(const OIS::MouseEvent &evt)
                 
                 //int intId;
                 istringstream(idNumber) >> intId;
-                BuildingImages1(earth.cells[intId]);
+                if(earth.cells[intId].myUnit == Unit_COMMANDBASE)
+                    BuildingImagesCB2(earth.cells[intId]);
+                else if(earth.cells[intId].myUnit == Unit_ARMYBASE)
+                    BuildingImagesA3(earth.cells[intId]);
+                else if(earth.cells[intId].myUnit == Unit_NAVYBASE)
+                    BuildingImagesN4(earth.cells[intId]);
+                else if(earth.cells[intId].myUnit == Unit_AIRFORCEBASE)
+                    BuildingImagesAF5(earth.cells[intId]);
+                else
+                    BuildingImages1(earth.cells[intId]);
                 cout << tempLandCellId << " = " << earth.cells[intId].terrain << endl;
                 cout << "Average color = " << earth.cells[intId].avg_color << endl;
                 cout << "Longitude = " << earth.cells[intId].longitude << ", latitude = " << earth.cells[intId].latitude << endl;
@@ -807,7 +816,8 @@ bool SingleGameState::CommandBaseButton(const CEGUI::EventArgs &e)
     plutonium -= Pt_COMMANDBASE;
     Unit newUnit(Owner_BLUE);
     newUnit.createManualObject(m_pSceneMgr);
-    newUnit.relocate(earth.vertices[intId]); 
+    newUnit.relocate(earth.vertices[intId]);
+    BuildingImagesCB2(earth.cells[intId]); 
     onButton = true;
     return true;
 }
@@ -823,6 +833,7 @@ bool SingleGameState::ArmyBaseButton(const CEGUI::EventArgs &e)
     Unit newUnit(Owner_BLUE);
     newUnit.createManualObject(m_pSceneMgr);
     newUnit.relocate(earth.vertices[intId]); 
+    BuildingImagesA3(earth.cells[intId]);
     onButton = true;
     return true;
 }
@@ -837,7 +848,8 @@ bool SingleGameState::NavyBaseButton(const CEGUI::EventArgs &e)
     plutonium -= Pt_NAVYBASE;
     Unit newUnit(Owner_BLUE);
     newUnit.createManualObject(m_pSceneMgr);
-    newUnit.relocate(earth.vertices[intId]); 
+    newUnit.relocate(earth.vertices[intId]);
+    BuildingImagesN4(earth.cells[intId]);
     onButton = true;
     return true;
 }
@@ -853,6 +865,7 @@ bool SingleGameState::AirForceBaseButton(const CEGUI::EventArgs &e)
     Unit newUnit(Owner_BLUE);
     newUnit.createManualObject(m_pSceneMgr);
     newUnit.relocate(earth.vertices[intId]); 
+    BuildingImagesAF5(earth.cells[intId]);
     onButton = true;
     return true;
 }
