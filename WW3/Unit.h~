@@ -71,28 +71,28 @@ enum unitCost_plutonium{
 };
 
 enum unitType{
-    Unit_INFANTRY = 0,
-    Unit_TANK = 1,
-    Unit_ARTILLERY = 2,
-    Unit_SCUD = 3,
-    Unit_ENGINEER = 4,
+    Unit_INFANTRY = 1,
+    Unit_TANK = 2,
+    Unit_ARTILLERY = 3,
+    Unit_SCUD = 4,
+    Unit_ENGINEER = 5,
     
-    Unit_SUBMARINE = 5,
-    Unit_DESTROYER = 6,
-    Unit_CARRIER = 7,
-    Unit_CRUISER = 8,
+    Unit_SUBMARINE = 6,
+    Unit_DESTROYER = 7,
+    Unit_CARRIER = 8,
+    Unit_CRUISER = 9,
     
-    Unit_BOMBER = 9,
-    Unit_FIGHTER = 10,
-    Unit_SPYPLANE = 11,
+    Unit_BOMBER = 10,
+    Unit_FIGHTER = 11,
+    Unit_SPYPLANE = 12,
     
-    Unit_COMMANDBASE = 12,
-    Unit_ARMYBASE = 13,
-    Unit_NAVYBASE = 14,
-    Unit_AIRFORCEBASE = 15,
-    Unit_NUCLEARPLANT = 16,
-    Unit_ICBMSILO = 17,
-    Unit_SAMSITE = 18
+    Unit_COMMANDBASE = 13,
+    Unit_ARMYBASE = 14,
+    Unit_NAVYBASE = 15,
+    Unit_AIRFORCEBASE = 16,
+    Unit_NUCLEARPLANT = 17,
+    Unit_ICBMSILO = 18,
+    Unit_SAMSITE = 19
 };
 
 class Unit {
@@ -109,9 +109,11 @@ class Unit {
     
     Unit(size_t myOwner){
         owner = myOwner;
+        myType = -;
     }
     
     void createManualObject(Ogre::SceneManager* scnMgr);
+    //void applyTexture();
     void relocate(btVector3& destination);
 
 };
