@@ -635,42 +635,67 @@ void SingleGameState::onLeftPressed(const OIS::MouseEvent &evt)
 
 void SingleGameState::moveCamera()
 {
+    float z2 = m_pCamera->getPosition().z * m_pCamera->getPosition().z;
+    float y2 = m_pCamera->getPosition().y * m_pCamera->getPosition().y;
+    float x2 = m_pCamera->getPosition().x * m_pCamera->getPosition().x;
+    float oldz = m_pCamera->getPosition().z;
+    float distance = sqrt(x2 + y2 + z2);
     if(OgreFramework::getSingletonPtr()->m_pKeyboard->isKeyDown(OIS::KC_LSHIFT))
-        m_pCamera->moveRelative(m_TranslateVector);
-    m_pCamera->moveRelative(m_TranslateVector / 10);
+        m_pCamera->moveRelative(m_TranslateVector / 3);
+    else m_pCamera->moveRelative(m_TranslateVector / 10);   
+    if(OgreFramework::getSingletonPtr()->m_pKeyboard->isKeyDown(OIS::KC_D) || OgreFramework::getSingletonPtr()->m_pKeyboard->isKeyDown(OIS::KC_A)){
+	x2 = m_pCamera->getPosition().x * m_pCamera->getPosition().x;
+        y2 = m_pCamera->getPosition().y * m_pCamera->getPosition().y;
+	float newz = sqrt(fabs(distance * distance - x2 - y2));
+	if(m_pCamera->getPosition().z < 0){
+		m_pCamera->setPosition(m_pCamera->getPosition().x, m_pCamera->getPosition().y, -newz);
+	}
+    	else m_pCamera->setPosition(m_pCamera->getPosition().x, m_pCamera->getPosition().y, newz);
+    }
+    /*if(OgreFramework::getSingletonPtr()->m_pKeyboard->isKeyDown(OIS::KC_W) || OgreFramework::getSingletonPtr()->m_pKeyboard->isKeyDown(OIS::KC_S)){
+	
+    }*/
 }
 
 void SingleGameState::getInput()
 {
     if(m_bSettingsMode == false)
     {
-        if(OgreFramework::getSingletonPtr()->m_pKeyboard->isKeyDown(OIS::KC_A))
+	float z2 = m_pCamera->getPosition().z * m_pCamera->getPosition().z;
+	float y2 = m_pCamera->getPosition().y * m_pCamera->getPosition().y;
+	float x2 = m_pCamera->getPosition().x * m_pCamera->getPosition().x;
+	float distance = sqrt(x2 + y2 + z2);
+        if(OgreFramework::getSingletonPtr()->m_pKeyboard->isKeyDown(OIS::KC_A)){
             m_TranslateVector.x = -m_MoveScale;
+	}
  
-        if(OgreFramework::getSingletonPtr()->m_pKeyboard->isKeyDown(OIS::KC_D))
+        if(OgreFramework::getSingletonPtr()->m_pKeyboard->isKeyDown(OIS::KC_D)){
             m_TranslateVector.x = m_MoveScale;
+	}
  
-        if(OgreFramework::getSingletonPtr()->m_pKeyboard->isKeyDown(OIS::KC_W))
-        if(m_pCamera->getPosition().z > 200 || m_pCamera->getPosition().z < -200)
-                m_TranslateVector.y = m_MoveScale;
- 
-        if(OgreFramework::getSingletonPtr()->m_pKeyboard->isKeyDown(OIS::KC_S))
-        if(m_pCamera->getPosition().z > 200 || m_pCamera->getPosition().z < -200)
-                m_TranslateVector.y = -m_MoveScale;
+        if(OgreFramework::getSingletonPtr()->m_pKeyboard->isKeyDown(OIS::KC_W)){
+		if(distance - m_pCamera->getPosition().y > 1000)
+                	m_TranslateVector.y = m_MoveScale;
 
-    if(OgreFramework::getSingletonPtr()->m_pKeyboard->isKeyDown(OIS::KC_F)){
-        if(camDistance < 20000){
-                m_TranslateVector.z = m_MoveScale;
-        camDistance += 100;
-        }
-    }
+	}
  
-    if(OgreFramework::getSingletonPtr()->m_pKeyboard->isKeyDown(OIS::KC_G)){
-        if(camDistance > 7000){
+	if(OgreFramework::getSingletonPtr()->m_pKeyboard->isKeyDown(OIS::KC_S)){
+		if(distance + m_pCamera->getPosition().y > 1000)
+			m_TranslateVector.y = -m_MoveScale;
+	}
+
+	if(OgreFramework::getSingletonPtr()->m_pKeyboard->isKeyDown(OIS::KC_F)){
+	    if(distance < 20000){
+		m_TranslateVector.z = m_MoveScale;
+	    }
+	}
+	 
+	if(OgreFramework::getSingletonPtr()->m_pKeyboard->isKeyDown(OIS::KC_G)){
+
+            if(distance > 11000){
                 m_TranslateVector.z = -m_MoveScale;
-        camDistance -= 100;
+            }
         }
-    }
 
  
         //reset roll
