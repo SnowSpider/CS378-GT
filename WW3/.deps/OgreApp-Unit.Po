@@ -815,7 +815,8 @@ OgreApp-Unit.o: Unit.cpp Unit.h /usr/include/OGRE/OgreSubEntity.h \
  /usr/include/OGRE/OgrePolygon.h /usr/include/OGRE/OgreConvexBody.h \
  /usr/include/OGRE/OgreShadowCameraSetupLiSPSM.h \
  /usr/include/OGRE/OgreShadowCameraSetupPlaneOptimal.h \
- /usr/include/OGRE/OgreShadowCameraSetupPSSM.h Planet.h imageloader.h
+ /usr/include/OGRE/OgreShadowCameraSetupPSSM.h Planet.h Unit.h \
+ imageloader.h
 
 Unit.h:
 
@@ -2710,5 +2711,7 @@ Unit.h:
 /usr/include/OGRE/OgreShadowCameraSetupPSSM.h:
 
 Planet.h:
+
+Unit.h:
 
 imageloader.h:

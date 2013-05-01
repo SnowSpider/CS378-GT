@@ -54,6 +54,10 @@ SingleGameState::SingleGameState()
     population = 0;
     onButton = false;
     showWaterLand = false;
+    acceptNeighbors[6] = {0};
+    unitBuilding = 0;
+    unitMoney = 0;
+    unitPlutonium = 0;
 }
  
 //|||||||||||||||||||||||||||||||||||||||||||||||
@@ -593,6 +597,16 @@ void SingleGameState::onLeftPressed(const OIS::MouseEvent &evt)
                 //cout << "gets here" << endl;
                 
                 m_pCurrentObject->showBoundingBox(true);
+                if(unitBuilding)
+                {
+                    string name = (m_pSceneMgr->getEntity(itr->movable->getName()))->getName();
+                    string idNumber = name.substr(5, name.length()-1);
+                    int intId;
+                    istringstream(idNumber) >> intId;
+                    PlanetCell& cell = earth.cells[intId];
+                    SingleGameState::unitCreate(cell);
+                    unitBuilding = 0;
+                }
                 m_pCurrentEntity = m_pSceneMgr->getEntity(itr->movable->getName());
                 //m_pCurrentEntity->setMaterialName("MyMaterials/earth_day_bright");
                 
@@ -908,6 +922,7 @@ bool SingleGameState::NuclearPlantButton(const CEGUI::EventArgs &e)
     Unit newUnit(Owner_BLUE);
     newUnit.createManualObject(m_pSceneMgr);
     newUnit.relocate(earth.vertices[intId]); 
+    BuildingImages1(earth.cells[intId]); 
     onButton = true;
     return true;
 }
@@ -922,42 +937,183 @@ bool SingleGameState::ICBMSiloButton(const CEGUI::EventArgs &e)
     plutonium -= Pt_ICBMSILO;
     Unit newUnit(Owner_BLUE);
     newUnit.createManualObject(m_pSceneMgr);
-    newUnit.relocate(earth.vertices[intId]); 
+    newUnit.relocate(earth.vertices[intId]);
+    BuildingImages1(earth.cells[intId]);
     onButton = true;
     return true;
 }
 bool SingleGameState::InfantryButton(const CEGUI::EventArgs &e)
 {
+    string name = m_pCurrentEntity->getName();
+    string idNumber = name.substr(5, name.length()-1);
+    int intId;
+    istringstream(idNumber) >> intId;
+    for (int i=0;i<earth.cells[intId].neighbors.size();i++){
+        PlanetCell& temp = earth.cells[earth.cells[intId].neighbors[i]];
+        if (temp.terrain != Terrain_WATER && temp.myUnit == Unit_EMPTY)
+        {
+            acceptNeighbors[i] = earth.cells[intId].neighbors[i];
+            earth.changeMaterial(m_pSceneMgr, temp, "MyMaterials/earth_day_green");
+        }
+        else
+        {
+            acceptNeighbors[i] = 0;
+            earth.changeMaterial(m_pSceneMgr, temp, "MyMaterials/earth_day_red");
+        }
+    }
+    unitBuilding = Unit_INFANTRY;
+    unitMoney = Au_INFANTRY;
+    unitPlutonium = Pt_INFANTRY;
     onButton = true;
     return true;
 }
 bool SingleGameState::TankButton(const CEGUI::EventArgs &e)
 {
+    string name = m_pCurrentEntity->getName();
+    string idNumber = name.substr(5, name.length()-1);
+    int intId;
+    istringstream(idNumber) >> intId;
+    for (int i=0;i<earth.cells[intId].neighbors.size();i++){
+        PlanetCell& temp = earth.cells[earth.cells[intId].neighbors[i]];
+        if (temp.terrain != Terrain_WATER && temp.myUnit == Unit_EMPTY)
+        {
+            acceptNeighbors[i] = earth.cells[intId].neighbors[i];
+            earth.changeMaterial(m_pSceneMgr, temp, "MyMaterials/earth_day_green");
+        }
+        else
+        {
+            acceptNeighbors[i] = 0;
+            earth.changeMaterial(m_pSceneMgr, temp, "MyMaterials/earth_day_red");
+        }
+    }
+    unitBuilding = Unit_TANK;
+    unitMoney = Au_TANK;
+    unitPlutonium = Pt_TANK;
     onButton = true;
     return true;
 }
 bool SingleGameState::ScudButton(const CEGUI::EventArgs &e)
 {
+    string name = m_pCurrentEntity->getName();
+    string idNumber = name.substr(5, name.length()-1);
+    int intId;
+    istringstream(idNumber) >> intId;
+    for (int i=0;i<earth.cells[intId].neighbors.size();i++){
+        PlanetCell& temp = earth.cells[earth.cells[intId].neighbors[i]];
+        if (temp.terrain != Terrain_WATER && temp.myUnit == Unit_EMPTY)
+        {
+            acceptNeighbors[i] = earth.cells[intId].neighbors[i];
+            earth.changeMaterial(m_pSceneMgr, temp, "MyMaterials/earth_day_green");
+        }
+        else
+        {
+            acceptNeighbors[i] = 0;
+            earth.changeMaterial(m_pSceneMgr, temp, "MyMaterials/earth_day_red");
+        }
+    }
+    unitBuilding = Unit_SCUD;
+    unitMoney = Au_SCUD;
+    unitPlutonium = Pt_SCUD;
     onButton = true;
     return true;
 }
 bool SingleGameState::SubmarineButton(const CEGUI::EventArgs &e)
 {
+    string name = m_pCurrentEntity->getName();
+    string idNumber = name.substr(5, name.length()-1);
+    int intId;
+    istringstream(idNumber) >> intId;
+    for (int i=0;i<earth.cells[intId].neighbors.size();i++){
+        PlanetCell& temp = earth.cells[earth.cells[intId].neighbors[i]];
+        if (temp.terrain != Terrain_LAND && temp.myUnit == Unit_EMPTY)
+        {
+            acceptNeighbors[i] = earth.cells[intId].neighbors[i];
+            earth.changeMaterial(m_pSceneMgr, temp, "MyMaterials/earth_day_green");
+        }
+        else
+        {
+            acceptNeighbors[i] = 0;
+            earth.changeMaterial(m_pSceneMgr, temp, "MyMaterials/earth_day_red");
+        }
+    }
+    unitBuilding = Unit_SUBMARINE;
+    unitMoney = Au_SUBMARINE;
+    unitPlutonium = Pt_SUBMARINE;
     onButton = true;
     return true;
 }
 bool SingleGameState::DestroyerButton(const CEGUI::EventArgs &e)
 {
+    string name = m_pCurrentEntity->getName();
+    string idNumber = name.substr(5, name.length()-1);
+    int intId;
+    istringstream(idNumber) >> intId;
+    for (int i=0;i<earth.cells[intId].neighbors.size();i++){
+        PlanetCell& temp = earth.cells[earth.cells[intId].neighbors[i]];
+        if (temp.terrain != Terrain_LAND && temp.myUnit == Unit_EMPTY)
+        {
+            acceptNeighbors[i] = earth.cells[intId].neighbors[i];
+            earth.changeMaterial(m_pSceneMgr, temp, "MyMaterials/earth_day_green");
+        }
+        else
+        {
+            acceptNeighbors[i] = 0;
+            earth.changeMaterial(m_pSceneMgr, temp, "MyMaterials/earth_day_red");
+        }
+    }
+    unitBuilding = Unit_DESTROYER;
+    unitMoney = Au_DESTROYER;
+    unitPlutonium = Pt_DESTROYER;
     onButton = true;
     return true;
 }
 bool SingleGameState::BomberButton(const CEGUI::EventArgs &e)
 {
+    string name = m_pCurrentEntity->getName();
+    string idNumber = name.substr(5, name.length()-1);
+    int intId;
+    istringstream(idNumber) >> intId;
+    for (int i=0;i<earth.cells[intId].neighbors.size();i++){
+        PlanetCell& temp = earth.cells[earth.cells[intId].neighbors[i]];
+        if (temp.myUnit == Unit_EMPTY)
+        {
+            acceptNeighbors[i] = earth.cells[intId].neighbors[i];
+            earth.changeMaterial(m_pSceneMgr, temp, "MyMaterials/earth_day_green");
+        }
+        else
+        {
+            acceptNeighbors[i] = 0;
+            earth.changeMaterial(m_pSceneMgr, temp, "MyMaterials/earth_day_red");
+        }
+    }
+    unitBuilding = Unit_BOMBER;
+    unitMoney = Au_BOMBER;
+    unitPlutonium = Pt_BOMBER;
     onButton = true;
     return true;
 }
 bool SingleGameState::FighterButton(const CEGUI::EventArgs &e)
 {
+    string name = m_pCurrentEntity->getName();
+    string idNumber = name.substr(5, name.length()-1);
+    int intId;
+    istringstream(idNumber) >> intId;
+    for (int i=0;i<earth.cells[intId].neighbors.size();i++){
+        PlanetCell& temp = earth.cells[earth.cells[intId].neighbors[i]];
+        if (temp.myUnit == Unit_EMPTY)
+        {
+            acceptNeighbors[i] = earth.cells[intId].neighbors[i];
+            earth.changeMaterial(m_pSceneMgr, temp, "MyMaterials/earth_day_green");
+        }
+        else
+        {
+            acceptNeighbors[i] = 0;
+            earth.changeMaterial(m_pSceneMgr, temp, "MyMaterials/earth_day_red");
+        }
+    }
+    unitBuilding = Unit_FIGHTER;
+    unitMoney = Au_FIGHTER;
+    unitPlutonium = Pt_FIGHTER;
     onButton = true;
     return true;
 }
@@ -1029,7 +1185,7 @@ void SingleGameState::BuildingImages1(PlanetCell &cell)
         w->enable();
     }
 
-    if(cell.owner != myOwner || cell.terrain == Terrain_WATER)
+    if(cell.owner != myOwner || cell.terrain == Terrain_WATER || cell.myUnit != 0)
     {
         w = CEGUI::WindowManager::getSingleton().getWindow("CommandBase");
         w->disable();
@@ -1130,6 +1286,11 @@ void SingleGameState::BuildingImagesCB2(PlanetCell &cell)
         w = CEGUI::WindowManager::getSingleton().getWindow("Infantry");
         w->enable();
     }
+    if(money < Au_INFANTRY || plutonium < Pt_INFANTRY)
+    {
+        w = CEGUI::WindowManager::getSingleton().getWindow("Infantry");
+        w->disable();
+    }
 }
 void SingleGameState::BuildingImagesA3(PlanetCell &cell)
 {
@@ -1184,6 +1345,16 @@ void SingleGameState::BuildingImagesA3(PlanetCell &cell)
         w->enable();
         w = CEGUI::WindowManager::getSingleton().getWindow("Scud");
         w->enable();
+    }
+    if(money < Au_TANK || plutonium < Pt_TANK)
+    {
+        w = CEGUI::WindowManager::getSingleton().getWindow("Tank");
+        w->disable();
+    }
+    if(money < Au_SCUD || plutonium < Pt_SCUD)
+    {
+        w = CEGUI::WindowManager::getSingleton().getWindow("Scud");
+        w->disable();
     }
 }
 void SingleGameState::BuildingImagesN4(PlanetCell &cell)
@@ -1240,6 +1411,16 @@ void SingleGameState::BuildingImagesN4(PlanetCell &cell)
         w = CEGUI::WindowManager::getSingleton().getWindow("Destroyer");
         w->enable();
     }
+    if(money < Au_SUBMARINE || plutonium < Pt_SUBMARINE)
+    {
+        w = CEGUI::WindowManager::getSingleton().getWindow("Submarine");
+        w->disable();
+    }
+    if(money < Au_DESTROYER || plutonium < Pt_DESTROYER)
+    {
+        w = CEGUI::WindowManager::getSingleton().getWindow("Destroyer");
+        w->disable();
+    }
 }
 void SingleGameState::BuildingImagesAF5(PlanetCell &cell)
 {
@@ -1295,4 +1476,35 @@ void SingleGameState::BuildingImagesAF5(PlanetCell &cell)
         w = CEGUI::WindowManager::getSingleton().getWindow("Fighter");
         w->enable();
     }
+    if(money < Au_BOMBER || plutonium < Pt_BOMBER)
+    {
+        w = CEGUI::WindowManager::getSingleton().getWindow("Bomber");
+        w->disable();
+    }
+    if(money < Au_FIGHTER || plutonium < Pt_FIGHTER)
+    {
+        w = CEGUI::WindowManager::getSingleton().getWindow("Fighter");
+        w->disable();
+    }
+}
+
+void SingleGameState::unitCreate(PlanetCell &cell)
+{
+    string name = m_pCurrentEntity->getName();
+    string idNumber = name.substr(5, name.length()-1);
+    int intId;
+    istringstream(idNumber) >> intId;
+    for (int i=0;i<earth.cells[intId].neighbors.size();i++){
+        if (cell.id == acceptNeighbors[i])
+        {
+            cell.myUnit = unitBuilding;
+            money -= unitMoney;
+            plutonium -= unitPlutonium;
+            Unit newUnit(Owner_BLUE);
+            newUnit.createManualObject(m_pSceneMgr);
+            newUnit.relocate(earth.vertices[cell.id]);
+            break;
+        }
+    }
+    earth.own(m_pSceneMgr, earth.cells[intId]);
 }

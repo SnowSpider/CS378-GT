@@ -83,6 +83,8 @@ public:
     void BuildingImagesA3(PlanetCell &cell);
     void BuildingImagesN4(PlanetCell &cell);
     void BuildingImagesAF5(PlanetCell &cell);
+
+    void unitCreate(PlanetCell &cell);
     
  
 private:
@@ -134,7 +136,11 @@ private:
     int plutonium;
     int population;
     bool onButton;
-    
+    int acceptNeighbors[6];
+    int unitBuilding;
+    int unitMoney;
+    int unitPlutonium;
+
     Planet earth;
     ofstream myfile;
     

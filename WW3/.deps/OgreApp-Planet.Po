@@ -819,7 +819,8 @@ OgreApp-Planet.o: Planet.cpp /usr/include/c++/4.6/algorithm \
  /usr/include/OGRE/OgrePolygon.h /usr/include/OGRE/OgreConvexBody.h \
  /usr/include/OGRE/OgreShadowCameraSetupLiSPSM.h \
  /usr/include/OGRE/OgreShadowCameraSetupPlaneOptimal.h \
- /usr/include/OGRE/OgreShadowCameraSetupPSSM.h Unit.h imageloader.h
+ /usr/include/OGRE/OgreShadowCameraSetupPSSM.h Unit.h Planet.h \
+ imageloader.h
 
 /usr/include/c++/4.6/algorithm:
 
@@ -2714,5 +2715,7 @@ Planet.h:
 /usr/include/OGRE/OgreShadowCameraSetupPSSM.h:
 
 Unit.h:
+
+Planet.h:
 
 imageloader.h:

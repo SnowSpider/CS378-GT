@@ -14,7 +14,7 @@
 #include <algorithm>
 #include <btBulletCollisionCommon.h>
 #include "Ogre.h"
-#include "Unit.h"
+#include <Unit.h>
 
 #define PI 3.1415926535897932384626433832795
 
@@ -254,6 +254,7 @@ class PlanetCell{
         popDensity = 0;
         visible = false;
         selected = false;
+        myUnit = 0;
     }
     
     PlanetCell(PlanetVertex& v){
@@ -269,6 +270,7 @@ class PlanetCell{
         popDensity = 0;
         visible = false;
         selected = false;
+        myUnit = 0;
     }
     
     PlanetCell( const PlanetCell& c ){
@@ -286,6 +288,7 @@ class PlanetCell{
         popDensity = c.popDensity;
         visible = false;
         selected = false;
+        myUnit = 0;
     }
         
     PlanetCell( PlanetCell& c ){
@@ -303,6 +306,7 @@ class PlanetCell{
         popDensity = c.popDensity;
         visible = false;
         selected = false;
+        myUnit = 0;
     }
     
     PlanetCell& operator=( const PlanetCell& c ){
@@ -320,6 +324,7 @@ class PlanetCell{
         popDensity = c.popDensity;
         visible = false;
         selected = false;
+        myUnit = 0;
     }
     
     void setOwner(size_t him){

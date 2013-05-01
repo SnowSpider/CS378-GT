@@ -110,7 +110,7 @@ class Unit {
     
     Unit(size_t myOwner){
         owner = myOwner;
-        myType = 0;
+        myType = Unit_EMPTY;
     }
     
     void createManualObject(Ogre::SceneManager* scnMgr);
