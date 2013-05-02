@@ -704,13 +704,13 @@ void SingleGameState::getInput()
 			m_TranslateVector.y = -m_MoveScale;
 	}
 
-	if(OgreFramework::getSingletonPtr()->m_pKeyboard->isKeyDown(OIS::KC_F)){
+	if(OgreFramework::getSingletonPtr()->m_pKeyboard->isKeyDown(OIS::KC_G)){
 	    if(distance < 20000){
 		m_TranslateVector.z = m_MoveScale;
 	    }
 	}
 	 
-	if(OgreFramework::getSingletonPtr()->m_pKeyboard->isKeyDown(OIS::KC_G)){
+	if(OgreFramework::getSingletonPtr()->m_pKeyboard->isKeyDown(OIS::KC_F)){
 
             if(distance > 11000){
                 m_TranslateVector.z = -m_MoveScale;
