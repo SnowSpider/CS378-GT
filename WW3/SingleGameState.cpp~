@@ -594,6 +594,13 @@ void SingleGameState::onLeftPressed(const OIS::MouseEvent &evt)
             string idType = name.substr(0, 5);
             
             if(idType == "Unit_"){ // Select a unit.
+                if(unitSelected){
+                    PlanetCell& start = earth.cells[unitSelected->currentCellId];
+                    for (int i=0;i<start.neighbors.size();i++){
+                        earth.changeMaterial(m_pSceneMgr, earth.cells[start.neighbors[i]], earth.cells[start.neighbors[i]].baseMaterial);
+                    }
+                }
+                
                 m_pCurrentObject = m_pSceneMgr->getEntity(name)->getParentSceneNode(); 
                 m_pCurrentObject->showBoundingBox(true); 
                 m_pCurrentEntity = m_pSceneMgr->getEntity(name); 
@@ -614,7 +621,7 @@ void SingleGameState::onLeftPressed(const OIS::MouseEvent &evt)
                 else{
                     BuildingImages1(currentCell);
                     
-                    if(unitSelected->myType >=1 && unitSelected->myType <= 5){ //land unit
+                    if(unitSelected->myType >= 1 && unitSelected->myType <= 5){ //land unit
                         for (int i=0;i<currentCell.neighbors.size();i++){
                             PlanetCell& temp = earth.cells[currentCell.neighbors[i]];
                             if (temp.terrain != Terrain_WATER && temp.myUnit == Unit_EMPTY){
@@ -627,7 +634,7 @@ void SingleGameState::onLeftPressed(const OIS::MouseEvent &evt)
                             }
                         }
                     }
-                    else if(unitSelected->myType >=6 && unitSelected->myType <= 9){ //naval unit
+                    else if(unitSelected->myType >= 6 && unitSelected->myType <= 9){ //naval unit
                         for (int i=0;i<currentCell.neighbors.size();i++){
                             PlanetCell& temp = earth.cells[currentCell.neighbors[i]];
                             if (temp.terrain != Terrain_LAND && temp.myUnit == Unit_EMPTY){
@@ -640,7 +647,7 @@ void SingleGameState::onLeftPressed(const OIS::MouseEvent &evt)
                             }
                         }
                     }
-                    else if(unitSelected->myType >=10 && unitSelected->myType <= 12){ //air unit
+                    else if(unitSelected->myType >= 10 && unitSelected->myType <= 12){ //air unit
                         for (int i=0;i<currentCell.neighbors.size();i++){
                             PlanetCell& temp = earth.cells[currentCell.neighbors[i]];
                             acceptNeighbors[i] = currentCell.neighbors[i];
@@ -664,8 +671,9 @@ void SingleGameState::onLeftPressed(const OIS::MouseEvent &evt)
                 }
                 
                 else if(unitSelected){
-                    SingleGameState::unitMove(unitSelected, currentCell);
-                    unitSelected = NULL;
+                    if(currentCell.myUnit == Unit_EMPTY && unitSelected->myType >= 1 && unitSelected->myType <= 12){
+                        SingleGameState::unitMove(unitSelected, currentCell);
+                    }
                 }
                 
                 else{
@@ -1629,11 +1637,23 @@ void SingleGameState::unitCreate(PlanetCell &cell)
 
 void SingleGameState::unitMove(Unit* unit, PlanetCell& targetCell){
     PlanetCell& start = earth.cells[unit->currentCellId];
-    unit->relocate(earth.vertices[targetCell.id]);
-    unit->currentCellId = targetCell.id; //critical
-    start.myUnit = 0;
-    targetCell.myUnit = unit->myType;
-    //earth.disown(m_pSceneMgr, start);
-    earth.own(m_pSceneMgr, targetCell);
+    for (int i=0;i<start.neighbors.size();i++){
+        if (targetCell.id == acceptNeighbors[i]){
+            unit->relocate(earth.vertices[targetCell.id]);
+            unit->currentCellId = targetCell.id; //critical
+            start.myUnit = 0;
+            targetCell.myUnit = unit->myType;
+            for (int i=0;i<start.neighbors.size();i++){
+                earth.changeMaterial(m_pSceneMgr, earth.cells[start.neighbors[i]], earth.cells[start.neighbors[i]].baseMaterial);
+            }
+            earth.changeMaterial(m_pSceneMgr, targetCell, "MyMaterials/earth_day");
+            for (int i=0;i<targetCell.neighbors.size();i++){
+                earth.changeMaterial(m_pSceneMgr, earth.cells[targetCell.neighbors[i]], "MyMaterials/earth_day");
+            }
+            break;
+        }
+    }
+    
+    //unitSelected = NULL;
 }
 

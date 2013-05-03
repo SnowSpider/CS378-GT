@@ -241,6 +241,9 @@ class PlanetCell{
     bool visible;
     bool selected;
     
+    int myUnit;
+    string baseMaterial;
+    
     PlanetCell(){
         id = -1;
         owner = Owner_NEUTRAL;
@@ -252,6 +255,8 @@ class PlanetCell{
         popDensity = 0;
         visible = false;
         selected = false;
+        myUnit = 0;
+        baseMaterial = "MyMaterials/earth_day_bw";
     }
     
     PlanetCell(PlanetVertex& v){
@@ -267,6 +272,8 @@ class PlanetCell{
         popDensity = 0;
         visible = false;
         selected = false;
+        myUnit = 0;
+        baseMaterial = "MyMaterials/earth_day_bw";
     }
     
     PlanetCell( const PlanetCell& c ){
@@ -284,6 +291,8 @@ class PlanetCell{
         popDensity = c.popDensity;
         visible = false;
         selected = false;
+        myUnit = 0;
+        baseMaterial = "MyMaterials/earth_day_bw";
     }
         
     PlanetCell( PlanetCell& c ){
@@ -301,6 +310,8 @@ class PlanetCell{
         popDensity = c.popDensity;
         visible = false;
         selected = false;
+        myUnit = 0;
+        baseMaterial = "MyMaterials/earth_day_bw";
     }
     
     PlanetCell& operator=( const PlanetCell& c ){
@@ -318,6 +329,7 @@ class PlanetCell{
         popDensity = c.popDensity;
         visible = false;
         selected = false;
+        myUnit = 0;
     }
     
     void setOwner(size_t him){

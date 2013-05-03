@@ -912,20 +912,24 @@ void Planet::changeMaterial(Ogre::SceneManager* scnMgr, PlanetCell& targetCell, 
 void Planet::own(Ogre::SceneManager* scnMgr, PlanetCell& targetCell){
     targetCell.visible = true;
     changeMaterial(scnMgr, targetCell, "MyMaterials/earth_day");
+    targetCell.baseMaterial = "MyMaterials/earth_day";
     for (int i=0;i<targetCell.neighbors.size();i++){
         PlanetCell& temp = cells[targetCell.neighbors[i]];
         temp.visible = true;
         changeMaterial(scnMgr, temp, "MyMaterials/earth_day");
+        temp.baseMaterial = "MyMaterials/earth_day";
     }
 }
 
 void Planet::disown(Ogre::SceneManager* scnMgr, PlanetCell& targetCell){
     targetCell.visible = false;
     changeMaterial(scnMgr, targetCell, "MyMaterials/earth_day_bw");
+    targetCell.baseMaterial = "MyMaterials/earth_day_bw";
     for (int i=0;i<targetCell.neighbors.size();i++){
         PlanetCell& temp = cells[targetCell.neighbors[i]];
         temp.visible = false;
         changeMaterial(scnMgr, temp, "MyMaterials/earth_day_bw");
+        temp.baseMaterial = "MyMaterials/earth_day_bw";
     }
 }
 

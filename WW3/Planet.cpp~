@@ -912,6 +912,7 @@ void Planet::changeMaterial(Ogre::SceneManager* scnMgr, PlanetCell& targetCell, 
 void Planet::own(Ogre::SceneManager* scnMgr, PlanetCell& targetCell){
     targetCell.visible = true;
     changeMaterial(scnMgr, targetCell, "MyMaterials/earth_day");
+    targetCell.baseMaterial = "MyMaterials/earth_day";
     for (int i=0;i<targetCell.neighbors.size();i++){
         PlanetCell& temp = cells[targetCell.neighbors[i]];
         temp.visible = true;

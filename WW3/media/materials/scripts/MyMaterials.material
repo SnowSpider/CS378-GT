@@ -1,3 +1,45 @@
+material MyMaterials/Red
+{
+    technique
+    {
+        pass
+        {
+            texture_unit
+            {
+                colour_op_ex source1 src_manual src_current 1 0 0
+            }
+        } 
+    }
+}
+
+material MyMaterials/Yellow
+{
+    technique
+    {
+        pass
+        {
+            texture_unit
+            {
+                colour_op_ex source1 src_manual src_current 1 1 0
+            }
+        } 
+    }
+}
+
+material MyMaterials/Blue
+{
+    technique
+    {
+        pass
+        {
+            texture_unit
+            {
+                colour_op_ex source1 src_manual src_current 0 0 1
+            }
+        } 
+    }
+}
+
 material MyMaterials/earth_day
 {
    technique

@@ -242,6 +242,7 @@ class PlanetCell{
     bool selected;
     
     int myUnit;
+    string baseMaterial;
     
     PlanetCell(){
         id = -1;
@@ -255,6 +256,7 @@ class PlanetCell{
         visible = false;
         selected = false;
         myUnit = 0;
+        baseMaterial = "MyMaterials/earth_day_bw";
     }
     
     PlanetCell(PlanetVertex& v){
@@ -271,6 +273,7 @@ class PlanetCell{
         visible = false;
         selected = false;
         myUnit = 0;
+        baseMaterial = "MyMaterials/earth_day_bw";
     }
     
     PlanetCell( const PlanetCell& c ){
@@ -289,6 +292,7 @@ class PlanetCell{
         visible = false;
         selected = false;
         myUnit = 0;
+        baseMaterial = "MyMaterials/earth_day_bw";
     }
         
     PlanetCell( PlanetCell& c ){
@@ -307,6 +311,7 @@ class PlanetCell{
         visible = false;
         selected = false;
         myUnit = 0;
+        baseMaterial = "MyMaterials/earth_day_bw";
     }
     
     PlanetCell& operator=( const PlanetCell& c ){
@@ -325,6 +330,7 @@ class PlanetCell{
         visible = false;
         selected = false;
         myUnit = 0;
+        baseMaterial = "MyMaterials/earth_day_bw";
     }
     
     void setOwner(size_t him){
