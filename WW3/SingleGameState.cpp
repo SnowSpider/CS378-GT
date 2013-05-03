@@ -601,9 +601,7 @@ void SingleGameState::onLeftPressed(const OIS::MouseEvent &evt)
                 string idNumber = name.substr(5, name.length()-1);
                 istringstream(idNumber) >> intId;
                 unitSelected = &(units[intId]);
-                
                 PlanetCell& currentCell = earth.cells[unitSelected->currentCellId]; 
-                cout << "name = " << name << endl;
                 
                 if(unitSelected->myType == Unit_COMMANDBASE)
                     BuildingImagesCB2(currentCell);
@@ -614,7 +612,6 @@ void SingleGameState::onLeftPressed(const OIS::MouseEvent &evt)
                 else if(unitSelected->myType == Unit_AIRFORCEBASE)
                     BuildingImagesAF5(currentCell);
                 else{
-                    cout << "currentCellId = " << unitSelected->currentCellId << endl;
                     BuildingImages1(currentCell);
                     /*
                     for (int i=0;i<currentCell.neighbors.size();i++){
@@ -629,19 +626,16 @@ void SingleGameState::onLeftPressed(const OIS::MouseEvent &evt)
                         }
                     }
                     */
-                    cout << "5678" << endl;
                 }
-                cout << "2222" << endl;
                 
                 
                 break;
             }
             if(idType == "Cell_"){ // Select a cell.
                 
-                cout << "AAAA" << endl;
-                string idNumber = name.substr(5, name.length()-1); cout << "1" << endl;
-                istringstream(idNumber) >> intId; cout << "2" << endl;
-                PlanetCell& currentCell = earth.cells[intId]; cout << "3" << endl;
+                string idNumber = name.substr(5, name.length()-1); 
+                istringstream(idNumber) >> intId; 
+                PlanetCell& currentCell = earth.cells[intId]; 
                 
                 if(unitBuilding){
                     SingleGameState::unitCreate(currentCell);
@@ -663,6 +657,7 @@ void SingleGameState::onLeftPressed(const OIS::MouseEvent &evt)
                 
                 if(currentCell.myUnit == Unit_EMPTY)
                     BuildingImages1(currentCell);
+                /*
                 else if(currentCell.myUnit == Unit_COMMANDBASE)
                     BuildingImagesCB2(currentCell);
                 else if(currentCell.myUnit == Unit_ARMYBASE)
@@ -674,8 +669,8 @@ void SingleGameState::onLeftPressed(const OIS::MouseEvent &evt)
                 else{
                     BuildingImages1(currentCell);
                 }
-                cout << "BBBB" << endl; 
-                /*  
+                */
+                /*
                 cout << tempLandCellId << " = " << earth.cells[intId].terrain << endl;
                 cout << "Average color = " << earth.cells[intId].avg_color << endl;
                 cout << "Longitude = " << earth.cells[intId].longitude << ", latitude = " << earth.cells[intId].latitude << endl;
@@ -908,9 +903,10 @@ bool SingleGameState::CommandBaseButton(const CEGUI::EventArgs &e)
 {
     string name = m_pCurrentEntity->getName();
     string idNumber = name.substr(5, name.length()-1);
-    
     istringstream(idNumber) >> intId;
-    earth.cells[intId].myUnit = Unit_COMMANDBASE;
+    PlanetCell& currentCell = earth.cells[intId]; 
+    
+    currentCell.myUnit = Unit_COMMANDBASE;
     money -= Au_COMMANDBASE;
     plutonium -= Pt_COMMANDBASE;
     Unit newUnit(Owner_BLUE, Unit_COMMANDBASE);
@@ -918,7 +914,7 @@ bool SingleGameState::CommandBaseButton(const CEGUI::EventArgs &e)
     newUnit.createManualObject(m_pSceneMgr);
     newUnit.relocate(earth.vertices[intId]);
     units.push_back(newUnit);
-    BuildingImagesCB2(earth.cells[intId]); 
+    BuildingImages1(currentCell); 
     onButton = true;
     return true;
 }
@@ -926,9 +922,10 @@ bool SingleGameState::ArmyBaseButton(const CEGUI::EventArgs &e)
 {
     string name = m_pCurrentEntity->getName();
     string idNumber = name.substr(5, name.length()-1);
-    
     istringstream(idNumber) >> intId;
-    earth.cells[intId].myUnit = Unit_ARMYBASE;
+    PlanetCell& currentCell = earth.cells[intId]; 
+    
+    currentCell.myUnit = Unit_ARMYBASE;
     money -= Au_ARMYBASE;
     plutonium -= Pt_ARMYBASE;
     Unit newUnit(Owner_BLUE, Unit_ARMYBASE);
@@ -936,7 +933,7 @@ bool SingleGameState::ArmyBaseButton(const CEGUI::EventArgs &e)
     newUnit.createManualObject(m_pSceneMgr);
     newUnit.relocate(earth.vertices[intId]); 
     units.push_back(newUnit);
-    BuildingImagesA3(earth.cells[intId]);
+    BuildingImages1(currentCell);
     onButton = true;
     return true;
 }
@@ -944,9 +941,10 @@ bool SingleGameState::NavyBaseButton(const CEGUI::EventArgs &e)
 {
     string name = m_pCurrentEntity->getName();
     string idNumber = name.substr(5, name.length()-1);
-    
     istringstream(idNumber) >> intId;
-    earth.cells[intId].myUnit = Unit_NAVYBASE;
+    PlanetCell& currentCell = earth.cells[intId]; 
+    
+    currentCell.myUnit = Unit_NAVYBASE;
     money -= Au_NAVYBASE;
     plutonium -= Pt_NAVYBASE;
     Unit newUnit(Owner_BLUE, Unit_NAVYBASE);
@@ -954,7 +952,7 @@ bool SingleGameState::NavyBaseButton(const CEGUI::EventArgs &e)
     newUnit.createManualObject(m_pSceneMgr);
     newUnit.relocate(earth.vertices[intId]);
     units.push_back(newUnit);
-    BuildingImagesN4(earth.cells[intId]);
+    BuildingImages1(currentCell);
     onButton = true;
     return true;
 }
@@ -962,9 +960,10 @@ bool SingleGameState::AirForceBaseButton(const CEGUI::EventArgs &e)
 {
     string name = m_pCurrentEntity->getName();
     string idNumber = name.substr(5, name.length()-1);
-    
     istringstream(idNumber) >> intId;
-    earth.cells[intId].myUnit = Unit_AIRFORCEBASE;
+    PlanetCell& currentCell = earth.cells[intId]; 
+    
+    currentCell.myUnit = Unit_AIRFORCEBASE;
     money -= Au_AIRFORCEBASE;
     plutonium -= Pt_AIRFORCEBASE;
     Unit newUnit(Owner_BLUE, Unit_AIRFORCEBASE);
@@ -972,7 +971,7 @@ bool SingleGameState::AirForceBaseButton(const CEGUI::EventArgs &e)
     newUnit.createManualObject(m_pSceneMgr);
     newUnit.relocate(earth.vertices[intId]); 
     units.push_back(newUnit);
-    BuildingImagesAF5(earth.cells[intId]);
+    BuildingImages1(currentCell);
     onButton = true;
     return true;
 }
@@ -980,9 +979,10 @@ bool SingleGameState::NuclearPlantButton(const CEGUI::EventArgs &e)
 {
     string name = m_pCurrentEntity->getName();
     string idNumber = name.substr(5, name.length()-1);
-    
     istringstream(idNumber) >> intId;
-    earth.cells[intId].myUnit = Unit_NUCLEARPLANT;
+    PlanetCell& currentCell = earth.cells[intId]; 
+    
+    currentCell.myUnit = Unit_NUCLEARPLANT;
     money -= Au_NUCLEARPLANT;
     plutonium -= Pt_NUCLEARPLANT;
     Unit newUnit(Owner_BLUE, Unit_NUCLEARPLANT);
@@ -990,7 +990,7 @@ bool SingleGameState::NuclearPlantButton(const CEGUI::EventArgs &e)
     newUnit.createManualObject(m_pSceneMgr);
     newUnit.relocate(earth.vertices[intId]); 
     units.push_back(newUnit);
-    BuildingImages1(earth.cells[intId]); 
+    BuildingImages1(currentCell); 
     onButton = true;
     return true;
 }
@@ -998,9 +998,10 @@ bool SingleGameState::ICBMSiloButton(const CEGUI::EventArgs &e)
 {
     string name = m_pCurrentEntity->getName();
     string idNumber = name.substr(5, name.length()-1);
-    
     istringstream(idNumber) >> intId;
-    earth.cells[intId].myUnit = Unit_ICBMSILO;
+    PlanetCell& currentCell = earth.cells[intId]; 
+    
+    currentCell.myUnit = Unit_ICBMSILO;
     money -= Au_ICBMSILO;
     plutonium -= Pt_ICBMSILO;
     Unit newUnit(Owner_BLUE, Unit_ICBMSILO);
@@ -1008,7 +1009,7 @@ bool SingleGameState::ICBMSiloButton(const CEGUI::EventArgs &e)
     newUnit.createManualObject(m_pSceneMgr);
     newUnit.relocate(earth.vertices[intId]);
     units.push_back(newUnit);
-    BuildingImages1(earth.cells[intId]);
+    BuildingImages1(currentCell);
     onButton = true;
     return true;
 }
@@ -1016,13 +1017,15 @@ bool SingleGameState::InfantryButton(const CEGUI::EventArgs &e)
 {
     string name = m_pCurrentEntity->getName();
     string idNumber = name.substr(5, name.length()-1);
-    
     istringstream(idNumber) >> intId;
-    for (int i=0;i<earth.cells[intId].neighbors.size();i++){
-        PlanetCell& temp = earth.cells[earth.cells[intId].neighbors[i]];
+    unitSelected = &(units[intId]);
+    PlanetCell& currentCell = earth.cells[unitSelected->currentCellId]; 
+    
+    for (int i=0;i<currentCell.neighbors.size();i++){
+        PlanetCell& temp = earth.cells[currentCell.neighbors[i]];
         if (temp.terrain != Terrain_WATER && temp.myUnit == Unit_EMPTY)
         {
-            acceptNeighbors[i] = earth.cells[intId].neighbors[i];
+            acceptNeighbors[i] = currentCell.neighbors[i];
             earth.changeMaterial(m_pSceneMgr, temp, "MyMaterials/earth_day_green");
         }
         else
@@ -1041,13 +1044,15 @@ bool SingleGameState::TankButton(const CEGUI::EventArgs &e)
 {
     string name = m_pCurrentEntity->getName();
     string idNumber = name.substr(5, name.length()-1);
-    
     istringstream(idNumber) >> intId;
-    for (int i=0;i<earth.cells[intId].neighbors.size();i++){
-        PlanetCell& temp = earth.cells[earth.cells[intId].neighbors[i]];
+    unitSelected = &(units[intId]);
+    PlanetCell& currentCell = earth.cells[unitSelected->currentCellId]; 
+    
+    for (int i=0;i<currentCell.neighbors.size();i++){
+        PlanetCell& temp = earth.cells[currentCell.neighbors[i]];
         if (temp.terrain != Terrain_WATER && temp.myUnit == Unit_EMPTY)
         {
-            acceptNeighbors[i] = earth.cells[intId].neighbors[i];
+            acceptNeighbors[i] = currentCell.neighbors[i];
             earth.changeMaterial(m_pSceneMgr, temp, "MyMaterials/earth_day_green");
         }
         else
@@ -1066,13 +1071,15 @@ bool SingleGameState::ScudButton(const CEGUI::EventArgs &e)
 {
     string name = m_pCurrentEntity->getName();
     string idNumber = name.substr(5, name.length()-1);
-    
     istringstream(idNumber) >> intId;
-    for (int i=0;i<earth.cells[intId].neighbors.size();i++){
-        PlanetCell& temp = earth.cells[earth.cells[intId].neighbors[i]];
+    unitSelected = &(units[intId]);
+    PlanetCell& currentCell = earth.cells[unitSelected->currentCellId]; 
+    
+    for (int i=0;i<currentCell.neighbors.size();i++){
+        PlanetCell& temp = earth.cells[currentCell.neighbors[i]];
         if (temp.terrain != Terrain_WATER && temp.myUnit == Unit_EMPTY)
         {
-            acceptNeighbors[i] = earth.cells[intId].neighbors[i];
+            acceptNeighbors[i] = currentCell.neighbors[i];
             earth.changeMaterial(m_pSceneMgr, temp, "MyMaterials/earth_day_green");
         }
         else
@@ -1091,13 +1098,14 @@ bool SingleGameState::SubmarineButton(const CEGUI::EventArgs &e)
 {
     string name = m_pCurrentEntity->getName();
     string idNumber = name.substr(5, name.length()-1);
-    
     istringstream(idNumber) >> intId;
-    for (int i=0;i<earth.cells[intId].neighbors.size();i++){
-        PlanetCell& temp = earth.cells[earth.cells[intId].neighbors[i]];
+    PlanetCell& currentCell = earth.cells[units[intId].currentCellId];
+    
+    for (int i=0;i<currentCell.neighbors.size();i++){
+        PlanetCell& temp = earth.cells[currentCell.neighbors[i]];
         if (temp.terrain != Terrain_LAND && temp.myUnit == Unit_EMPTY)
         {
-            acceptNeighbors[i] = earth.cells[intId].neighbors[i];
+            acceptNeighbors[i] = currentCell.neighbors[i];
             earth.changeMaterial(m_pSceneMgr, temp, "MyMaterials/earth_day_green");
         }
         else
@@ -1116,13 +1124,14 @@ bool SingleGameState::DestroyerButton(const CEGUI::EventArgs &e)
 {
     string name = m_pCurrentEntity->getName();
     string idNumber = name.substr(5, name.length()-1);
-    
     istringstream(idNumber) >> intId;
-    for (int i=0;i<earth.cells[intId].neighbors.size();i++){
-        PlanetCell& temp = earth.cells[earth.cells[intId].neighbors[i]];
+    PlanetCell& currentCell = earth.cells[units[intId].currentCellId];
+    
+    for (int i=0;i<currentCell.neighbors.size();i++){
+        PlanetCell& temp = earth.cells[currentCell.neighbors[i]];
         if (temp.terrain != Terrain_LAND && temp.myUnit == Unit_EMPTY)
         {
-            acceptNeighbors[i] = earth.cells[intId].neighbors[i];
+            acceptNeighbors[i] = currentCell.neighbors[i];
             earth.changeMaterial(m_pSceneMgr, temp, "MyMaterials/earth_day_green");
         }
         else
@@ -1141,13 +1150,14 @@ bool SingleGameState::BomberButton(const CEGUI::EventArgs &e)
 {
     string name = m_pCurrentEntity->getName();
     string idNumber = name.substr(5, name.length()-1);
-    
     istringstream(idNumber) >> intId;
-    for (int i=0;i<earth.cells[intId].neighbors.size();i++){
-        PlanetCell& temp = earth.cells[earth.cells[intId].neighbors[i]];
+    PlanetCell& currentCell = earth.cells[units[intId].currentCellId];
+    
+    for (int i=0;i<currentCell.neighbors.size();i++){
+        PlanetCell& temp = earth.cells[currentCell.neighbors[i]];
         if (temp.myUnit == Unit_EMPTY)
         {
-            acceptNeighbors[i] = earth.cells[intId].neighbors[i];
+            acceptNeighbors[i] = currentCell.neighbors[i];
             earth.changeMaterial(m_pSceneMgr, temp, "MyMaterials/earth_day_green");
         }
         else
@@ -1166,13 +1176,14 @@ bool SingleGameState::FighterButton(const CEGUI::EventArgs &e)
 {
     string name = m_pCurrentEntity->getName();
     string idNumber = name.substr(5, name.length()-1);
-    
     istringstream(idNumber) >> intId;
-    for (int i=0;i<earth.cells[intId].neighbors.size();i++){
-        PlanetCell& temp = earth.cells[earth.cells[intId].neighbors[i]];
+    PlanetCell& currentCell = earth.cells[units[intId].currentCellId];
+    
+    for (int i=0;i<currentCell.neighbors.size();i++){
+        PlanetCell& temp = earth.cells[currentCell.neighbors[i]];
         if (temp.myUnit == Unit_EMPTY)
         {
-            acceptNeighbors[i] = earth.cells[intId].neighbors[i];
+            acceptNeighbors[i] = currentCell.neighbors[i];
             earth.changeMaterial(m_pSceneMgr, temp, "MyMaterials/earth_day_green");
         }
         else
@@ -1562,9 +1573,10 @@ void SingleGameState::unitCreate(PlanetCell &cell)
 {
     string name = m_pCurrentEntity->getName();
     string idNumber = name.substr(5, name.length()-1);
-    
     istringstream(idNumber) >> intId;
-    for (int i=0;i<earth.cells[intId].neighbors.size();i++){
+    PlanetCell& currentCell = earth.cells[units[intId].currentCellId];
+    
+    for (int i=0;i<currentCell.neighbors.size();i++){
         if (cell.id == acceptNeighbors[i]){
             cell.myUnit = unitBuilding;
             money -= unitMoney;
@@ -1585,7 +1597,7 @@ void SingleGameState::unitCreate(PlanetCell &cell)
             break;
         }
     }
-    earth.own(m_pSceneMgr, earth.cells[intId]);
+    earth.own(m_pSceneMgr, currentCell);
 }
 
 void SingleGameState::unitMove(Unit* unit, PlanetCell& targetCell){
