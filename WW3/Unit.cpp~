@@ -5,14 +5,34 @@ using namespace Ogre;
 
 int unitId = 0;
 
+string intToStr(int number){
+   stringstream ss;
+   ss << number;
+   return ss.str();
+}
+
+void Unit::createObject(Ogre::SceneManager* scnMgr, char* mesh, char* mat){
+    string s = "Unit_";
+    id = unitId;
+    name = s.append(intToStr(unitId));
+    cout << "name = " << name << endl;
+    unitId += 1;
+    rootNode = scnMgr->getRootSceneNode()->createChildSceneNode(name);
+    myEntity = scnMgr->createEntity(name, mesh);
+    myEntity->setMaterialName(mat);
+    myEntity->setCastShadows(true);
+    rootNode->attachObject(myEntity);
+    rootNode->scale(30, 30, 30);
+}
+
 void Unit::createManualObject(Ogre::SceneManager* scnMgr){
     string s = "Unit_";
-    stringstream ss;
-    Ogre::String name_manobj;
-    ss << unitId++;
-    name_manobj = s.append(ss.str()); // Be careful not to append indefinitely.
+    id = unitId;
+    name = s.append(intToStr(unitId));
+    cout << "name = " << name << endl;
+    unitId += 1;
     
-    ManualObject* manual = scnMgr->createManualObject(name_manobj);
+    ManualObject* manual = scnMgr->createManualObject(name);
     manual->setDynamic(true);
     manual->begin("SolidColour", RenderOperation::OT_TRIANGLE_LIST);
     if (owner == Owner_RED) manual->colour(1,0,0);
@@ -68,14 +88,19 @@ void Unit::createManualObject(Ogre::SceneManager* scnMgr){
     manual->quad(20,21,22,23);
     
     manual->end();
-    rootNode = scnMgr->getRootSceneNode()->createChildSceneNode(name_manobj);
-    rootNode->attachObject(manual);
-    
+    rootNode = scnMgr->getRootSceneNode()->createChildSceneNode(name);
+    Ogre::MeshPtr newMesh = manual->convertToMesh(name);
+    myEntity = scnMgr->createEntity(name, name);
+    rootNode->attachObject(myEntity);
     rootNode->scale(150, 150, 150);
 }
+/*
+void Unit::applyTexture(char* mat){
 
-
+}
+*/
 void Unit::relocate(btVector3& destination){
+    
     rootNode->translate(Ogre::Vector3(destination.x(), destination.y(), destination.z()));
     rootNode->setDirection(Ogre::Vector3(destination.x(), destination.y(), destination.z()));
 }

@@ -995,22 +995,22 @@ void Planet::createBorderSegments(Ogre::SceneManager* scnMgr, float k){
             manual->position( inside_right.x(), inside_right.y(), inside_right.z() );
             manual->normal( inside_right.x(), inside_right.y(), inside_right.z() );
             if(cells[i].owner==Owner_RED) manual->colour( 1, 0, 0);
-            else if(cells[i].owner==Owner_BLUE) manual->colour( 0, 0, 1);
+            else if(cells[i].owner==Owner_BLUE) manual->colour( 0, 1, 1);
             
             manual->position( outside_right.x(), outside_right.y(), outside_right.z() );
             manual->normal( outside_right.x(), outside_right.y(), outside_right.z() );
             if(cells[i].owner==Owner_RED) manual->colour( 1, 0, 0);
-            else if(cells[i].owner==Owner_BLUE) manual->colour( 0, 0, 1);
+            else if(cells[i].owner==Owner_BLUE) manual->colour( 0, 1, 1);
             
             manual->position( outside_left.x(), outside_left.y(), outside_left.z() );
             manual->normal( outside_left.x(), outside_left.y(), outside_left.z() );
             if(cells[i].owner==Owner_RED) manual->colour( 1, 0, 0);
-            else if(cells[i].owner==Owner_BLUE) manual->colour( 0, 0, 1);
+            else if(cells[i].owner==Owner_BLUE) manual->colour( 0, 1, 1);
             
             manual->position( inside_left.x(), inside_left.y(), inside_left.z() );
             manual->normal( inside_left.x(), inside_left.y(), inside_left.z() );
             if(cells[i].owner==Owner_RED) manual->colour( 1, 0, 0);
-            else if(cells[i].owner==Owner_BLUE) manual->colour( 0, 0, 1);
+            else if(cells[i].owner==Owner_BLUE) manual->colour( 0, 1, 1);
             
             manual->end();
             Ogre::SceneNode* segmentNode = scnMgr->getRootSceneNode()->createChildSceneNode(name_manobj);

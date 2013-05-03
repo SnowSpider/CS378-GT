@@ -241,7 +241,7 @@ class PlanetCell{
     bool visible;
     bool selected;
     
-    size_t myUnit;
+    int myUnit;
     
     PlanetCell(){
         id = -1;

@@ -57,6 +57,7 @@ public:
     bool mouseReleased(const OIS::MouseEvent &arg, OIS::MouseButtonID id);
  
     void onLeftPressed(const OIS::MouseEvent &evt);
+    void onRightPressed(const OIS::MouseEvent &evt);
         void itemSelected(OgreBites::SelectMenu* menu);
  
     void update(double timeSinceLastFrame);
@@ -85,7 +86,7 @@ public:
     void BuildingImagesAF5(PlanetCell &cell);
 
     void unitCreate(PlanetCell &cell);
-    
+    void unitMove(Unit* unit, PlanetCell& end);  
  
 private:
     Ogre::SceneNode*        m_pOgreHeadNode;
@@ -140,6 +141,8 @@ private:
     int unitBuilding;
     int unitMoney;
     int unitPlutonium;
+    
+    Unit* unitSelected;
 
     Planet earth;
     ofstream myfile;
@@ -155,6 +158,8 @@ private:
     bool showWaterLand;
     
     int intId;
+    
+    std::vector<Unit> units;
 };
  
 //|||||||||||||||||||||||||||||||||||||||||||||||

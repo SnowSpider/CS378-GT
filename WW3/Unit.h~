@@ -71,7 +71,7 @@ enum unitCost_plutonium{
 };
 
 enum unitType{
-    Unit_EMPTY = 0;
+    Unit_EMPTY = 0,
     Unit_INFANTRY = 1,
     Unit_TANK = 2,
     Unit_ARTILLERY = 3,
@@ -99,6 +99,9 @@ enum unitType{
 class Unit {
     public:
     Ogre::SceneNode* rootNode;
+    Ogre::Entity* myEntity;
+    size_t id;
+    string name;
     int myType;
     int owner;
     int currentCellId;
@@ -108,50 +111,16 @@ class Unit {
     int damage; // Attack value
     int moveInterval; // The number of seconds this unit takes to move to a neighboring cell
     
-    Unit(size_t myOwner){
+    Unit(size_t myOwner, size_t label){
         owner = myOwner;
-        myType = 0;
+        myType = Unit_EMPTY;
     }
     
+    void createObject(Ogre::SceneManager* scnMgr, char* mesh, char* mat);
     void createManualObject(Ogre::SceneManager* scnMgr);
-    //void applyTexture();
+    //void applyTexture(char* mat);
     void relocate(btVector3& destination);
 
 };
-
-
-/*
-class UnitList{
-    public:
-    std::vector<Unit> _units;
-    size_t currentId;
-    
-    UnitList(){
-        currentId = 0;
-    }
-    
-    void add(Unit& u){
-        u.id = currentId++;
-        _units.push_back(u);
-    }
-    
-    Unit& operator []( int i ){ 
-        return _units[i];
-    }
-    
-    Unit operator []( int i ) const { 
-        return _units[i]; 
-    }
-    
-    int size(){
-        return _units.size();
-    }
-    
-    void clear(){
-        _units.clear();
-        currentId = 0;
-    }
-};
-*/
 
 #endif
