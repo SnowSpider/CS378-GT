@@ -613,19 +613,40 @@ void SingleGameState::onLeftPressed(const OIS::MouseEvent &evt)
                     BuildingImagesAF5(currentCell);
                 else{
                     BuildingImages1(currentCell);
-                    /*
-                    for (int i=0;i<currentCell.neighbors.size();i++){
-                        PlanetCell& temp = earth.cells[currentCell.neighbors[i]];
-                        if (temp.terrain != Terrain_WATER && temp.myUnit == Unit_EMPTY){
+                    
+                    if(unitSelected->myType >=1 && unitSelected->myType <= 5){ //land unit
+                        for (int i=0;i<currentCell.neighbors.size();i++){
+                            PlanetCell& temp = earth.cells[currentCell.neighbors[i]];
+                            if (temp.terrain != Terrain_WATER && temp.myUnit == Unit_EMPTY){
+                                acceptNeighbors[i] = currentCell.neighbors[i];
+                                earth.changeMaterial(m_pSceneMgr, temp, "MyMaterials/earth_day_green");
+                            }
+                            else{
+                                acceptNeighbors[i] = 0;
+                                earth.changeMaterial(m_pSceneMgr, temp, "MyMaterials/earth_day_red");
+                            }
+                        }
+                    }
+                    else if(unitSelected->myType >=6 && unitSelected->myType <= 9){ //naval unit
+                        for (int i=0;i<currentCell.neighbors.size();i++){
+                            PlanetCell& temp = earth.cells[currentCell.neighbors[i]];
+                            if (temp.terrain != Terrain_LAND && temp.myUnit == Unit_EMPTY){
+                                acceptNeighbors[i] = currentCell.neighbors[i];
+                                earth.changeMaterial(m_pSceneMgr, temp, "MyMaterials/earth_day_green");
+                            }
+                            else{
+                                acceptNeighbors[i] = 0;
+                                earth.changeMaterial(m_pSceneMgr, temp, "MyMaterials/earth_day_red");
+                            }
+                        }
+                    }
+                    else if(unitSelected->myType >=10 && unitSelected->myType <= 12){ //air unit
+                        for (int i=0;i<currentCell.neighbors.size();i++){
+                            PlanetCell& temp = earth.cells[currentCell.neighbors[i]];
                             acceptNeighbors[i] = currentCell.neighbors[i];
                             earth.changeMaterial(m_pSceneMgr, temp, "MyMaterials/earth_day_green");
                         }
-                        else{
-                            acceptNeighbors[i] = 0;
-                            earth.changeMaterial(m_pSceneMgr, temp, "MyMaterials/earth_day_red");
-                        }
                     }
-                    */
                 }
                 
                 
@@ -641,12 +662,12 @@ void SingleGameState::onLeftPressed(const OIS::MouseEvent &evt)
                     SingleGameState::unitCreate(currentCell);
                     unitBuilding = 0;
                 }
-                /*
+                
                 else if(unitSelected){
                     SingleGameState::unitMove(unitSelected, currentCell);
                     unitSelected = NULL;
                 }
-                */
+                
                 else{
                     m_pCurrentObject = m_pSceneMgr->getEntity(name)->getParentSceneNode();
                     m_pCurrentObject->showBoundingBox(true);
@@ -684,12 +705,18 @@ void SingleGameState::onLeftPressed(const OIS::MouseEvent &evt)
 
 void SingleGameState::onRightPressed(const OIS::MouseEvent &evt){
     if(m_pCurrentObject){
+        if(unitBuilding){
+            string name = m_pCurrentEntity->getName();
+            string idNumber = name.substr(5, name.length()-1);
+            istringstream(idNumber) >> intId;
+            earth.own(m_pSceneMgr, earth.cells[units[intId].currentCellId]);
+            unitBuilding = 0;
+        }
         m_pCurrentObject->showBoundingBox(false);
         m_pCurrentObject = NULL;
         m_pCurrentEntity = NULL;
         cout << "deselect" << endl;
         unitSelected = NULL;
-        unitBuilding = 0;
         BuildingImages1(earth.cells[intId]);
     }
 }
@@ -1605,7 +1632,7 @@ void SingleGameState::unitMove(Unit* unit, PlanetCell& targetCell){
     unit->relocate(earth.vertices[targetCell.id]);
     unit->currentCellId = targetCell.id; //critical
     start.myUnit = 0;
-    targetCell.myUnit = unitSelected->myType;
+    targetCell.myUnit = unit->myType;
     //earth.disown(m_pSceneMgr, start);
     earth.own(m_pSceneMgr, targetCell);
 }

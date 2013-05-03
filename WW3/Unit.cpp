@@ -100,7 +100,7 @@ void Unit::applyTexture(char* mat){
 }
 */
 void Unit::relocate(btVector3& destination){
-    rootNode->translate(Ogre::Vector3(destination.x(), destination.y(), destination.z()));
+    rootNode->setPosition(Ogre::Vector3(destination.x(), destination.y(), destination.z()));
     rootNode->setDirection(Ogre::Vector3(destination.x(), destination.y(), destination.z()));
 }
 
