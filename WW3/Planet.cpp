@@ -405,11 +405,12 @@ void Planet::genCells(){
             
             // At this point, paramVerts may start at a vertex or at the middle of an edge.
             // They should start at the middle of an edge.
+            
             for(int j=0;j<faces.size();j++){
                 btVector3 triCenter = midpointOnSphere( vertices[faces[j].v[0]], 
                                                         vertices[faces[j].v[1]], 
                                                         vertices[faces[j].v[2]] );
-                if ((btVector3)vertices[paramVerts_sorted[0]] == triCenter){
+                if (vertices[paramVerts_sorted[0]].angle(triCenter)<0.01){ //critical
                     size_t firstElement = paramVerts_sorted[0];
                     for(int k=1;k<paramVerts_sorted.size();k++){
                         paramVerts_sorted[k-1] = paramVerts_sorted[k];
@@ -418,6 +419,7 @@ void Planet::genCells(){
                     break;
                 }
             }
+            
             
             // Store the new little triangle faces.
             std::vector<size_t> p = paramVerts_sorted;

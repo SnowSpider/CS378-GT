@@ -109,11 +109,13 @@ class Unit {
     btVector3 front;
     int hitPoints; 
     int damage; // Attack value
-    int moveInterval; // The number of seconds this unit takes to move to a neighboring cell
+    int moveTime; // The number of seconds this unit takes to move to a neighboring cell
+    int timeLeft;
     
     Unit(size_t myOwner, size_t label){
         owner = myOwner;
         myType = label;
+        moveTime = 30;
     }
     
     void createObject(Ogre::SceneManager* scnMgr, char* mesh, char* mat);

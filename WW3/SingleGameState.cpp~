@@ -568,7 +568,7 @@ bool SingleGameState::mouseReleased(const OIS::MouseEvent &evt, OIS::MouseButton
 
 void SingleGameState::deselect(){
     if(unitSelected != NULL){
-        PlanetCell& currentCell = earth.cells[intId]; 
+        PlanetCell& currentCell = earth.cells[unitSelected->currentCellId]; 
         for (int i=0;i<currentCell.neighbors.size();i++){
             earth.changeMaterial(m_pSceneMgr, earth.cells[currentCell.neighbors[i]], earth.cells[currentCell.neighbors[i]].baseMaterial);
         }
@@ -1647,9 +1647,10 @@ bool SingleGameState::unitCreate(PlanetCell &targetCell)
             earth.own(m_pSceneMgr, currentCell);
             
             earth.changeMaterial(m_pSceneMgr, targetCell, "MyMaterials/earth_day");
-            for (int j=0;j<targetCell.neighbors.size();j++){
+            for (int j=0;j<targetCell.neighbors.size();j++){    
                 earth.changeMaterial(m_pSceneMgr, earth.cells[targetCell.neighbors[j]], "MyMaterials/earth_day");
             }
+            deselect();
             return true;
         }
     }
@@ -1664,17 +1665,56 @@ bool SingleGameState::unitMove(Unit* unit, PlanetCell& targetCell){
             unit->currentCellId = targetCell.id; //critical
             start.myUnit = 0;
             targetCell.myUnit = unit->myType;
+            deluminate(start);
+            /*
             for (int j=0;j<start.neighbors.size();j++){
                 earth.changeMaterial(m_pSceneMgr, earth.cells[start.neighbors[j]], earth.cells[start.neighbors[j]].baseMaterial);
             }
+            */
             earth.changeMaterial(m_pSceneMgr, targetCell, "MyMaterials/earth_day");
+            illuminate(targetCell);
+            /*
             for (int j=0;j<targetCell.neighbors.size();j++){
                 earth.changeMaterial(m_pSceneMgr, earth.cells[targetCell.neighbors[j]], "MyMaterials/earth_day");
             }
+            */
             deselect();
             return true;
         }
     }
     return false;
+}
+
+// TODO
+
+void SingleGameState::illuminate(PlanetCell& targetCell){
+    for (int i=0;i<targetCell.neighbors.size();i++){
+        earth.cells[targetCell.neighbors[i]].baseMaterial = "MyMaterials/earth_day";
+        earth.changeMaterial(m_pSceneMgr, earth.cells[targetCell.neighbors[i]], "MyMaterials/earth_day");
+    }
+}
+
+void SingleGameState::deluminate(PlanetCell& targetCell){
+    bool unseen = true;
+    for (int i=0;i<targetCell.neighbors.size();i++){
+        PlanetCell& temp1 = earth.cells[targetCell.neighbors[i]];
+        for (int j=0;j<temp1.neighbors.size();j++){
+            PlanetCell& temp2 = earth.cells[temp1.neighbors[j]];
+            if(temp2.id != targetCell.id){
+                if(temp2.owner == Owner_BLUE || temp2.myUnit != 0)
+                unseen = false;
+                break;
+            }
+        }
+        if(unseen){
+            temp1.baseMaterial = "MyMaterials/earth_day_bw";
+            earth.changeMaterial(m_pSceneMgr, temp1, "MyMaterials/earth_day_bw");
+        }
+        else{
+            temp1.baseMaterial = "MyMaterials/earth_day";
+            earth.changeMaterial(m_pSceneMgr, temp1, "MyMaterials/earth_day");
+        }
+        unseen = true;
+    }
 }
 

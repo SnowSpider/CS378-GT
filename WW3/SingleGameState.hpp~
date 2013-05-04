@@ -87,7 +87,8 @@ public:
     void BuildingImagesAF5(PlanetCell &cell);
 
     bool unitCreate(PlanetCell &cell);
-    bool unitMove(Unit* unit, PlanetCell& end);  
+    bool unitMove(Unit* unit, PlanetCell& end);
+    void illuminate(PlanetCell& targetCell);
  
 private:
     Ogre::SceneNode*        m_pOgreHeadNode;
