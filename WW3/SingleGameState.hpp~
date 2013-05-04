@@ -56,6 +56,7 @@ public:
     bool mousePressed(const OIS::MouseEvent &arg, OIS::MouseButtonID id);
     bool mouseReleased(const OIS::MouseEvent &arg, OIS::MouseButtonID id);
  
+    void deselect();
     void onLeftPressed(const OIS::MouseEvent &evt);
     void onRightPressed(const OIS::MouseEvent &evt);
         void itemSelected(OgreBites::SelectMenu* menu);

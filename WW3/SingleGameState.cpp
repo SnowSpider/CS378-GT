@@ -567,8 +567,27 @@ bool SingleGameState::mouseReleased(const OIS::MouseEvent &evt, OIS::MouseButton
 }
 
 void SingleGameState::deselect(){
+    if(unitSelected != NULL){
+        PlanetCell& currentCell = earth.cells[unitSelected->currentCellId]; 
+        for (int i=0;i<currentCell.neighbors.size();i++){
+            earth.changeMaterial(m_pSceneMgr, earth.cells[currentCell.neighbors[i]], earth.cells[currentCell.neighbors[i]].baseMaterial);
+        }
+    }
+    
+    if(unitBuilding){
+        string name = m_pCurrentEntity->getName();
+        string idNumber = name.substr(5, name.length()-1); 
+        istringstream(idNumber) >> intId; 
+        PlanetCell& currentCell = earth.cells[intId]; 
+        for (int i=0;i<currentCell.neighbors.size();i++){
+            earth.changeMaterial(m_pSceneMgr, earth.cells[currentCell.neighbors[i]], earth.cells[currentCell.neighbors[i]].baseMaterial);
+        }
+    }
+    
     unitBuilding = 0;
-    m_pCurrentObject->showBoundingBox(false);
+    if(m_pCurrentObject){
+        m_pCurrentObject->showBoundingBox(false);
+    }
     m_pCurrentObject = NULL;
     m_pCurrentEntity = NULL;
     unitSelected = NULL;
@@ -1600,7 +1619,7 @@ void SingleGameState::BuildingImagesAF5(PlanetCell &cell)
     }
 }
 
-bool SingleGameState::unitCreate(PlanetCell &cell)
+bool SingleGameState::unitCreate(PlanetCell &targetCell)
 {
     string name = m_pCurrentEntity->getName();
     string idNumber = name.substr(5, name.length()-1);
@@ -1608,8 +1627,8 @@ bool SingleGameState::unitCreate(PlanetCell &cell)
     PlanetCell& currentCell = earth.cells[units[intId].currentCellId];
     
     for (int i=0;i<currentCell.neighbors.size();i++){
-        if (cell.id == acceptNeighbors[i]){
-            cell.myUnit = unitBuilding;
+        if (targetCell.id == acceptNeighbors[i]){
+            targetCell.myUnit = unitBuilding;
             money -= unitMoney;
             plutonium -= unitPlutonium;
             Unit newUnit(Owner_BLUE, unitBuilding);
@@ -1622,10 +1641,15 @@ bool SingleGameState::unitCreate(PlanetCell &cell)
             else{
                 newUnit.createManualObject(m_pSceneMgr);
             }
-            newUnit.currentCellId = cell.id; //critical
-            newUnit.relocate(earth.vertices[cell.id]);
+            newUnit.currentCellId = targetCell.id; //critical
+            newUnit.relocate(earth.vertices[targetCell.id]);
             units.push_back(newUnit);
             earth.own(m_pSceneMgr, currentCell);
+            
+            earth.changeMaterial(m_pSceneMgr, targetCell, "MyMaterials/earth_day");
+            for (int j=0;j<targetCell.neighbors.size();j++){
+                earth.changeMaterial(m_pSceneMgr, earth.cells[targetCell.neighbors[j]], "MyMaterials/earth_day");
+            }
             return true;
         }
     }
