@@ -56,6 +56,7 @@ public:
     bool mousePressed(const OIS::MouseEvent &arg, OIS::MouseButtonID id);
     bool mouseReleased(const OIS::MouseEvent &arg, OIS::MouseButtonID id);
  
+    void deselect();
     void onLeftPressed(const OIS::MouseEvent &evt);
     void onRightPressed(const OIS::MouseEvent &evt);
         void itemSelected(OgreBites::SelectMenu* menu);
@@ -85,8 +86,8 @@ public:
     void BuildingImagesN4(PlanetCell &cell);
     void BuildingImagesAF5(PlanetCell &cell);
 
-    void unitCreate(PlanetCell &cell);
-    void unitMove(Unit* unit, PlanetCell& end);  
+    bool unitCreate(PlanetCell &cell);
+    bool unitMove(Unit* unit, PlanetCell& end);  
  
 private:
     Ogre::SceneNode*        m_pOgreHeadNode;
