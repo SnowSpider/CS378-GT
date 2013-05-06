@@ -14,7 +14,6 @@
 #include <algorithm>
 #include <btBulletCollisionCommon.h>
 #include "Ogre.h"
-#include "Unit.h"
 
 #define PI 3.1415926535897932384626433832795
 
@@ -242,6 +241,13 @@ class PlanetCell{
     bool selected;
     
     int myUnit;
+    int myUnitId;
+    int goalId;
+    
+    bool moving;
+    int timer;
+    
+    btVector3 myUnitDirection;
     string baseMaterial;
     
     PlanetCell(){
@@ -255,7 +261,10 @@ class PlanetCell{
         popDensity = 0;
         visible = false;
         selected = false;
+        moving = false;
         myUnit = 0;
+        myUnitId = -1;
+        goalId = -1;
         baseMaterial = "MyMaterials/earth_day_bw";
     }
     
@@ -273,6 +282,8 @@ class PlanetCell{
         visible = false;
         selected = false;
         myUnit = 0;
+        myUnitId = -1;
+        goalId = -1;
         baseMaterial = "MyMaterials/earth_day_bw";
     }
     
@@ -292,6 +303,8 @@ class PlanetCell{
         visible = false;
         selected = false;
         myUnit = 0;
+        myUnitId = -1;
+        goalId = -1;
         baseMaterial = "MyMaterials/earth_day_bw";
     }
         
@@ -311,6 +324,8 @@ class PlanetCell{
         visible = false;
         selected = false;
         myUnit = 0;
+        myUnitId = -1;
+        goalId = -1;
         baseMaterial = "MyMaterials/earth_day_bw";
     }
     
@@ -330,6 +345,8 @@ class PlanetCell{
         visible = false;
         selected = false;
         myUnit = 0;
+        myUnitId = -1;
+        goalId = -1;
         baseMaterial = "MyMaterials/earth_day_bw";
     }
     

@@ -88,8 +88,8 @@ public:
     void BuildingImagesAF5(PlanetCell &cell);
 
     bool createUnit(PlanetCell &cell);
-    bool issueMoveOrder(Unit* unit, PlanetCell& end);
-    void moveUnit(Unit* unit, PlanetCell& targetCell);
+    bool issueMoveOrder(Unit& unit, PlanetCell& origin, PlanetCell& goal);
+    bool moveUnit(Unit& unit, PlanetCell& origin, PlanetCell& goal);
     void illuminate(PlanetCell& targetCell);
     void deluminate(PlanetCell& targetCell);
  
@@ -144,10 +144,12 @@ private:
     bool onButton;
     int acceptNeighbors[6];
     int unitBuilding;
+    int unitMoving;
     int unitMoney;
     int unitPlutonium;
     
-    Unit* unitSelected;
+    PlanetCell* currentCell;
+    PlanetCell* lastCell;
 
     Planet earth;
     ofstream myfile;

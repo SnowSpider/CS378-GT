@@ -96,6 +96,48 @@ enum unitType{
     Unit_SAMSITE = 19
 };
 
+enum buildTime{
+    BuildTime_INFANTRY = 15,
+    Unit_TANK = 30,
+    Unit_ARTILLERY = 30,
+    Unit_SCUD = 60,
+    Unit_ENGINEER = 15,
+    
+    Unit_SUBMARINE = 60,
+    Unit_DESTROYER = 60,
+    Unit_CARRIER = 300,
+    Unit_CRUISER = 60,
+    
+    Unit_BOMBER = 30,
+    Unit_FIGHTER = 30,
+    Unit_SPYPLANE = 30,
+    
+    Unit_COMMANDBASE = 60,
+    Unit_ARMYBASE = 60,
+    Unit_NAVYBASE = 60,
+    Unit_AIRFORCEBASE = 60,
+    Unit_NUCLEARPLANT = 300,
+    Unit_ICBMSILO = 60,
+    Unit_SAMSITE = 30
+};
+
+enum moveTime{
+    Unit_INFANTRY = 25,
+    Unit_TANK = 20,
+    Unit_ARTILLERY = 25,
+    Unit_SCUD = 25,
+    Unit_ENGINEER = 25,
+    
+    Unit_SUBMARINE = 25,
+    Unit_DESTROYER = 20,
+    Unit_CARRIER = 30,
+    Unit_CRUISER = 20,
+    
+    Unit_BOMBER = 5,
+    Unit_FIGHTER = 5,
+    Unit_SPYPLANE = 5,
+};
+
 class Arrow {
     public:
     Ogre::SceneNode* rootNode;
@@ -108,8 +150,6 @@ class Arrow {
     
     Arrow(){
         owner = Owner_NEUTRAL;
-        start = NULL;
-        end = NULL;
     }
     
     Arrow(size_t myOwner, btVector3 s, btVector3 e){
@@ -130,8 +170,6 @@ class Unit {
     string name;
     int myType;
     int owner;
-    PlanetCell* currentCell;
-    PlanetCell* destination;
     btVector3 position;
     btVector3 front;
     int hitPoints; 
@@ -145,7 +183,6 @@ class Unit {
         myType = label;
         moveTime = 60;
         timeLeft = 0;
-        destination = NULL;
     }
     
     void createObject(Ogre::SceneManager* scnMgr, char* mesh, char* mat);

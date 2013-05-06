@@ -241,6 +241,13 @@ class PlanetCell{
     bool selected;
     
     int myUnit;
+    int myUnitId;
+    int goalId;
+    
+    bool moving;
+    int timer;
+    
+    btVector3 myUnitDirection;
     string baseMaterial;
     
     PlanetCell(){
@@ -254,7 +261,10 @@ class PlanetCell{
         popDensity = 0;
         visible = false;
         selected = false;
+        moving = false;
         myUnit = 0;
+        myUnitId = -1;
+        goalId = -1;
         baseMaterial = "MyMaterials/earth_day_bw";
     }
     
@@ -271,7 +281,10 @@ class PlanetCell{
         popDensity = 0;
         visible = false;
         selected = false;
+        moving = false;
         myUnit = 0;
+        myUnitId = -1;
+        goalId = -1;
         baseMaterial = "MyMaterials/earth_day_bw";
     }
     
@@ -290,7 +303,10 @@ class PlanetCell{
         popDensity = c.popDensity;
         visible = false;
         selected = false;
+        moving = false;
         myUnit = 0;
+        myUnitId = -1;
+        goalId = -1;
         baseMaterial = "MyMaterials/earth_day_bw";
     }
         
@@ -309,7 +325,10 @@ class PlanetCell{
         popDensity = c.popDensity;
         visible = false;
         selected = false;
+        moving = false;
         myUnit = 0;
+        myUnitId = -1;
+        goalId = -1;
         baseMaterial = "MyMaterials/earth_day_bw";
     }
     
@@ -328,7 +347,10 @@ class PlanetCell{
         popDensity = c.popDensity;
         visible = false;
         selected = false;
+        moving = false;
         myUnit = 0;
+        myUnitId = -1;
+        goalId = -1;
         baseMaterial = "MyMaterials/earth_day_bw";
     }
     

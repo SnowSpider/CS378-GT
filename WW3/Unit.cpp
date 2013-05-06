@@ -57,7 +57,7 @@ void Unit::createManualObject(Ogre::SceneManager* scnMgr){
     
     ManualObject* manual = scnMgr->createManualObject(name);
     manual->setDynamic(true);
-    manual->begin("SolidColour", RenderOperation::OT_TRIANGLE_LIST);
+    manual->begin("MyMaterials/Blue", RenderOperation::OT_TRIANGLE_LIST);
     if (owner == Owner_RED) manual->colour(1,0,0);
     else if (owner == Owner_NEUTRAL) manual->colour(1,1,0);
     else if (owner == Owner_BLUE) manual->colour(0,0,1); 

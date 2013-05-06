@@ -45,7 +45,7 @@ void Unit::createObject(Ogre::SceneManager* scnMgr, char* mesh, char* mat){
     myEntity->setMaterialName(mat);
     myEntity->setCastShadows(true);
     rootNode->attachObject(myEntity);
-    rootNode->scale(1, 1, 1);
+    rootNode->scale(0.5, 0.5, 0.5);
 }
 
 void Unit::createManualObject(Ogre::SceneManager* scnMgr){
