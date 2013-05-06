@@ -14,7 +14,7 @@
 #include <algorithm>
 #include <btBulletCollisionCommon.h>
 #include "Ogre.h"
-#include <Unit.h>
+#include "Unit.h"
 
 #define PI 3.1415926535897932384626433832795
 
@@ -330,6 +330,7 @@ class PlanetCell{
         visible = false;
         selected = false;
         myUnit = 0;
+        baseMaterial = "MyMaterials/earth_day_bw";
     }
     
     void setOwner(size_t him){

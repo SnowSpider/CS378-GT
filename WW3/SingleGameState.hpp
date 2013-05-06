@@ -25,6 +25,7 @@
 #include <math.h>
 
 #include <string.h>
+#include "Unit.h"
 
 using namespace std;
 
@@ -86,8 +87,9 @@ public:
     void BuildingImagesN4(PlanetCell &cell);
     void BuildingImagesAF5(PlanetCell &cell);
 
-    bool unitCreate(PlanetCell &cell);
-    bool unitMove(Unit* unit, PlanetCell& end);
+    bool createUnit(PlanetCell &cell);
+    bool issueMoveOrder(Unit* unit, PlanetCell& end);
+    void moveUnit(Unit* unit, PlanetCell& targetCell);
     void illuminate(PlanetCell& targetCell);
     void deluminate(PlanetCell& targetCell);
  

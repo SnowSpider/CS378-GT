@@ -96,6 +96,32 @@ enum unitType{
     Unit_SAMSITE = 19
 };
 
+class Arrow {
+    public:
+    Ogre::SceneNode* rootNode;
+    Ogre::Entity* myEntity;
+    size_t id;
+    string name;
+    int owner;
+    btVector3 start;
+    btVector3 end;
+    
+    Arrow(){
+        owner = Owner_NEUTRAL;
+        start = NULL;
+        end = NULL;
+    }
+    
+    Arrow(size_t myOwner, btVector3 s, btVector3 e){
+        owner = myOwner;
+        start = s;
+        end = e;
+    }
+    void createObject(Ogre::SceneManager* scnMgr, char* mesh, char* mat);
+    void stretch(btVector3 s, btVector3 e);
+    void setVisibility(bool flag);
+};
+
 class Unit {
     public:
     Ogre::SceneNode* rootNode;
@@ -104,25 +130,29 @@ class Unit {
     string name;
     int myType;
     int owner;
-    int currentCellId;
+    PlanetCell* currentCell;
+    PlanetCell* destination;
     btVector3 position;
     btVector3 front;
     int hitPoints; 
     int damage; // Attack value
     int moveTime; // The number of seconds this unit takes to move to a neighboring cell
     int timeLeft;
+    Arrow myArrow;
     
     Unit(size_t myOwner, size_t label){
         owner = myOwner;
         myType = label;
-        moveTime = 10;
+        moveTime = 60;
+        timeLeft = 0;
+        destination = NULL;
     }
     
     void createObject(Ogre::SceneManager* scnMgr, char* mesh, char* mat);
     void createManualObject(Ogre::SceneManager* scnMgr);
     //void applyTexture(char* mat);
-    void relocate(btVector3& destination);
-
+    void extendArrow(btVector3& dest);
+    void relocate(btVector3& dest);
 };
 
 #endif

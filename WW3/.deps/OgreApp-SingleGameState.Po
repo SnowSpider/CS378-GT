@@ -1117,7 +1117,7 @@ OgreApp-SingleGameState.o: SingleGameState.cpp SingleGameState.hpp \
  /usr/include/SDL/SDL_joystick.h /usr/include/SDL/SDL_quit.h \
  /usr/include/SDL/SDL_loadso.h /usr/include/SDL/SDL_timer.h \
  /usr/include/SDL/SDL_version.h /usr/include/SDL/SDL_audio.h Planet.h \
- Unit.h Planet.h /usr/include/X11/Xlib.h /usr/include/X11/X.h \
+ Unit.h /usr/include/X11/Xlib.h /usr/include/X11/X.h \
  /usr/include/X11/Xfuncproto.h /usr/include/X11/Xosdefs.h
 
 SingleGameState.hpp:
@@ -3689,8 +3689,6 @@ SoundManager.h:
 Planet.h:
 
 Unit.h:
-
-Planet.h:
 
 /usr/include/X11/Xlib.h:
 

@@ -410,7 +410,7 @@ void Planet::genCells(){
                 btVector3 triCenter = midpointOnSphere( vertices[faces[j].v[0]], 
                                                         vertices[faces[j].v[1]], 
                                                         vertices[faces[j].v[2]] );
-                if (vertices[paramVerts_sorted[0]].angle(triCenter)<0.01){
+                if (vertices[paramVerts_sorted[0]].angle(triCenter)<0.01){ //critical
                     size_t firstElement = paramVerts_sorted[0];
                     for(int k=1;k<paramVerts_sorted.size();k++){
                         paramVerts_sorted[k-1] = paramVerts_sorted[k];

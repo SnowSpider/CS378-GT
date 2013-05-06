@@ -1,47 +1,156 @@
-==27151== Memcheck, a memory error detector
-==27151== Copyright (C) 2002-2011, and GNU GPL'd, by Julian Seward et al.
-==27151== Using Valgrind-3.7.0 and LibVEX; rerun with -h for copyright info
-==27151== Command: ./OgreApp
-==27151== Parent PID: 15262
-==27151== 
-==27151== Conditional jump or move depends on uninitialised value(s)
-==27151==    at 0xA22F4E0: inflateReset2 (in /lib/x86_64-linux-gnu/libz.so.1.2.3.4)
-==27151==    by 0xA22F5D8: inflateInit2_ (in /lib/x86_64-linux-gnu/libz.so.1.2.3.4)
-==27151==    by 0xBD450D3: png_create_read_struct_2 (in /lib/x86_64-linux-gnu/libpng12.so.0.46.0)
-==27151==    by 0xBD45296: png_create_read_struct (in /lib/x86_64-linux-gnu/libpng12.so.0.46.0)
-==27151==    by 0x8CF0C52: ??? (in /usr/lib/libfreeimage-3.15.1.so)
-==27151==    by 0x8CD9B62: FreeImage_LoadFromHandle (in /usr/lib/libfreeimage-3.15.1.so)
-==27151==    by 0x8CD7CEF: FreeImage_LoadFromMemory (in /usr/lib/libfreeimage-3.15.1.so)
-==27151==    by 0x60B7869: Ogre::FreeImageCodec::decode(Ogre::SharedPtr<Ogre::DataStream>&) const (in /usr/lib/x86_64-linux-gnu/libOgreMain.so.1.7.4)
-==27151==    by 0x5ECFA43: Ogre::Image::load(Ogre::SharedPtr<Ogre::DataStream>&, std::string const&) (in /usr/lib/x86_64-linux-gnu/libOgreMain.so.1.7.4)
-==27151==    by 0x60BFC28: ??? (in /usr/lib/x86_64-linux-gnu/libOgreMain.so.1.7.4)
-==27151==    by 0x60C09D8: ??? (in /usr/lib/x86_64-linux-gnu/libOgreMain.so.1.7.4)
-==27151==    by 0x60C0F0F: Ogre::ConfigDialog::display() (in /usr/lib/x86_64-linux-gnu/libOgreMain.so.1.7.4)
-==27151== 
-==27151== Conditional jump or move depends on uninitialised value(s)
-==27151==    at 0xA22F4E0: inflateReset2 (in /lib/x86_64-linux-gnu/libz.so.1.2.3.4)
-==27151==    by 0xA22F5D8: inflateInit2_ (in /lib/x86_64-linux-gnu/libz.so.1.2.3.4)
-==27151==    by 0x8FB1E62: zzip_file_open (in /usr/lib/libzzip-0.so.13.0.56)
-==27151==    by 0x60BDDEF: Ogre::ZipArchive::open(std::string const&, bool) const (in /usr/lib/x86_64-linux-gnu/libOgreMain.so.1.7.4)
-==27151==    by 0x5FCE0C0: Ogre::ResourceGroupManager::parseResourceGroupScripts(Ogre::ResourceGroupManager::ResourceGroup*) (in /usr/lib/x86_64-linux-gnu/libOgreMain.so.1.7.4)
-==27151==    by 0x5FCE6EE: Ogre::ResourceGroupManager::initialiseAllResourceGroups() (in /usr/lib/x86_64-linux-gnu/libOgreMain.so.1.7.4)
-==27151==    by 0x40E6A2: OgreFramework::initOgre(std::string, OIS::KeyListener*, OIS::MouseListener*) (AdvancedOgreFramework.cpp:99)
-==27151==    by 0x4235EC: DemoApp::startDemo() (DemoApp.cpp:33)
-==27151==    by 0x40DA12: main (main.cpp:26)
-==27151== 
-==27151== 
-==27151== HEAP SUMMARY:
-==27151==     in use at exit: 16,366,182 bytes in 876 blocks
-==27151==   total heap usage: 95,682 allocs, 94,806 frees, 42,115,676 bytes allocated
-==27151== 
-==27151== LEAK SUMMARY:
-==27151==    definitely lost: 1,346 bytes in 6 blocks
-==27151==    indirectly lost: 16,260,181 bytes in 121 blocks
-==27151==      possibly lost: 40 bytes in 1 blocks
-==27151==    still reachable: 104,615 bytes in 748 blocks
-==27151==         suppressed: 0 bytes in 0 blocks
-==27151== Rerun with --leak-check=full to see details of leaked memory
-==27151== 
-==27151== For counts of detected and suppressed errors, rerun with: -v
-==27151== Use --track-origins=yes to see where uninitialised values come from
-==27151== ERROR SUMMARY: 23 errors from 2 contexts (suppressed: 2 from 2)
+==1538== Memcheck, a memory error detector
+==1538== Copyright (C) 2002-2011, and GNU GPL'd, by Julian Seward et al.
+==1538== Using Valgrind-3.7.0 and LibVEX; rerun with -h for copyright info
+==1538== Command: ./OgreApp
+==1538== Parent PID: 31846
+==1538== 
+==1538== Conditional jump or move depends on uninitialised value(s)
+==1538==    at 0xA22F4E0: inflateReset2 (in /lib/x86_64-linux-gnu/libz.so.1.2.3.4)
+==1538==    by 0xA22F5D8: inflateInit2_ (in /lib/x86_64-linux-gnu/libz.so.1.2.3.4)
+==1538==    by 0xBD450D3: png_create_read_struct_2 (in /lib/x86_64-linux-gnu/libpng12.so.0.46.0)
+==1538==    by 0xBD45296: png_create_read_struct (in /lib/x86_64-linux-gnu/libpng12.so.0.46.0)
+==1538==    by 0x8CF0C52: ??? (in /usr/lib/libfreeimage-3.15.1.so)
+==1538==    by 0x8CD9B62: FreeImage_LoadFromHandle (in /usr/lib/libfreeimage-3.15.1.so)
+==1538==    by 0x8CD7CEF: FreeImage_LoadFromMemory (in /usr/lib/libfreeimage-3.15.1.so)
+==1538==    by 0x60B7869: Ogre::FreeImageCodec::decode(Ogre::SharedPtr<Ogre::DataStream>&) const (in /usr/lib/x86_64-linux-gnu/libOgreMain.so.1.7.4)
+==1538==    by 0x5ECFA43: Ogre::Image::load(Ogre::SharedPtr<Ogre::DataStream>&, std::string const&) (in /usr/lib/x86_64-linux-gnu/libOgreMain.so.1.7.4)
+==1538==    by 0x60BFC28: ??? (in /usr/lib/x86_64-linux-gnu/libOgreMain.so.1.7.4)
+==1538==    by 0x60C09D8: ??? (in /usr/lib/x86_64-linux-gnu/libOgreMain.so.1.7.4)
+==1538==    by 0x60C0F0F: Ogre::ConfigDialog::display() (in /usr/lib/x86_64-linux-gnu/libOgreMain.so.1.7.4)
+==1538== 
+==1538== Conditional jump or move depends on uninitialised value(s)
+==1538==    at 0xA22F4E0: inflateReset2 (in /lib/x86_64-linux-gnu/libz.so.1.2.3.4)
+==1538==    by 0xA22F5D8: inflateInit2_ (in /lib/x86_64-linux-gnu/libz.so.1.2.3.4)
+==1538==    by 0x8FB1E62: zzip_file_open (in /usr/lib/libzzip-0.so.13.0.56)
+==1538==    by 0x60BDDEF: Ogre::ZipArchive::open(std::string const&, bool) const (in /usr/lib/x86_64-linux-gnu/libOgreMain.so.1.7.4)
+==1538==    by 0x5FCE0C0: Ogre::ResourceGroupManager::parseResourceGroupScripts(Ogre::ResourceGroupManager::ResourceGroup*) (in /usr/lib/x86_64-linux-gnu/libOgreMain.so.1.7.4)
+==1538==    by 0x5FCE6EE: Ogre::ResourceGroupManager::initialiseAllResourceGroups() (in /usr/lib/x86_64-linux-gnu/libOgreMain.so.1.7.4)
+==1538==    by 0x40FFE2: OgreFramework::initOgre(std::string, OIS::KeyListener*, OIS::MouseListener*) (AdvancedOgreFramework.cpp:109)
+==1538==    by 0x4225CC: DemoApp::startDemo() (DemoApp.cpp:33)
+==1538==    by 0x40F292: main (main.cpp:26)
+==1538== 
+==1538== Invalid read of size 1
+==1538==    at 0x43DE63: Planet::mapTerrain() (Planet.cpp:754)
+==1538==    by 0x4513B3: SingleGameState::createScene() (SingleGameState.cpp:168)
+==1538==    by 0x45516A: SingleGameState::enter() (SingleGameState.cpp:99)
+==1538==    by 0x415A46: AppStateManager::changeAppState(AppState*) (AppStateManager.cpp:113)
+==1538==    by 0x4390EE: MenuState::buttonHit(OgreBites::Button*) (AppState.hpp:50)
+==1538==    by 0x437D2B: OgreBites::Button::_cursorReleased(Ogre::Vector2 const&) (SdkTrays.h:326)
+==1538==    by 0x438C78: MenuState::mouseReleased(OIS::MouseEvent const&, OIS::MouseButtonID) (SdkTrays.h:3033)
+==1538==    by 0x50C5A3F: OIS::LinuxMouse::_processXEvents() (in /usr/lib/libOIS-1.3.0.so)
+==1538==    by 0x50C5D91: OIS::LinuxMouse::capture() (in /usr/lib/libOIS-1.3.0.so)
+==1538==    by 0x41542B: AppStateManager::start(AppState*) (AppStateManager.cpp:81)
+==1538==    by 0x4229C3: DemoApp::startDemo() (DemoApp.cpp:48)
+==1538==    by 0x40F292: main (main.cpp:26)
+==1538==  Address 0x24727e53 is 1,003,027 bytes inside a block of size 1,572,864 free'd
+==1538==    at 0x4C2A09C: operator delete[](void*) (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==1538==    by 0x43608F: loadBMP(char const*) (imageloader.cpp:64)
+==1538==    by 0x43DAEF: Planet::mapTerrain() (Planet.cpp:716)
+==1538==    by 0x4513B3: SingleGameState::createScene() (SingleGameState.cpp:168)
+==1538==    by 0x45516A: SingleGameState::enter() (SingleGameState.cpp:99)
+==1538==    by 0x415A46: AppStateManager::changeAppState(AppState*) (AppStateManager.cpp:113)
+==1538==    by 0x4390EE: MenuState::buttonHit(OgreBites::Button*) (AppState.hpp:50)
+==1538==    by 0x437D2B: OgreBites::Button::_cursorReleased(Ogre::Vector2 const&) (SdkTrays.h:326)
+==1538==    by 0x438C78: MenuState::mouseReleased(OIS::MouseEvent const&, OIS::MouseButtonID) (SdkTrays.h:3033)
+==1538==    by 0x50C5A3F: OIS::LinuxMouse::_processXEvents() (in /usr/lib/libOIS-1.3.0.so)
+==1538==    by 0x50C5D91: OIS::LinuxMouse::capture() (in /usr/lib/libOIS-1.3.0.so)
+==1538==    by 0x41542B: AppStateManager::start(AppState*) (AppStateManager.cpp:81)
+==1538== 
+==1538== Invalid read of size 1
+==1538==    at 0x43E47F: Planet::mapFaction() (Planet.cpp:822)
+==1538==    by 0x4513BD: SingleGameState::createScene() (SingleGameState.cpp:169)
+==1538==    by 0x45516A: SingleGameState::enter() (SingleGameState.cpp:99)
+==1538==    by 0x415A46: AppStateManager::changeAppState(AppState*) (AppStateManager.cpp:113)
+==1538==    by 0x4390EE: MenuState::buttonHit(OgreBites::Button*) (AppState.hpp:50)
+==1538==    by 0x437D2B: OgreBites::Button::_cursorReleased(Ogre::Vector2 const&) (SdkTrays.h:326)
+==1538==    by 0x438C78: MenuState::mouseReleased(OIS::MouseEvent const&, OIS::MouseButtonID) (SdkTrays.h:3033)
+==1538==    by 0x50C5A3F: OIS::LinuxMouse::_processXEvents() (in /usr/lib/libOIS-1.3.0.so)
+==1538==    by 0x50C5D91: OIS::LinuxMouse::capture() (in /usr/lib/libOIS-1.3.0.so)
+==1538==    by 0x41542B: AppStateManager::start(AppState*) (AppStateManager.cpp:81)
+==1538==    by 0x4229C3: DemoApp::startDemo() (DemoApp.cpp:48)
+==1538==    by 0x40F292: main (main.cpp:26)
+==1538==  Address 0x24727e53 is 1,003,027 bytes inside a block of size 1,572,864 free'd
+==1538==    at 0x4C2A09C: operator delete[](void*) (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==1538==    by 0x43608F: loadBMP(char const*) (imageloader.cpp:64)
+==1538==    by 0x43E16F: Planet::mapFaction() (Planet.cpp:784)
+==1538==    by 0x4513BD: SingleGameState::createScene() (SingleGameState.cpp:169)
+==1538==    by 0x45516A: SingleGameState::enter() (SingleGameState.cpp:99)
+==1538==    by 0x415A46: AppStateManager::changeAppState(AppState*) (AppStateManager.cpp:113)
+==1538==    by 0x4390EE: MenuState::buttonHit(OgreBites::Button*) (AppState.hpp:50)
+==1538==    by 0x437D2B: OgreBites::Button::_cursorReleased(Ogre::Vector2 const&) (SdkTrays.h:326)
+==1538==    by 0x438C78: MenuState::mouseReleased(OIS::MouseEvent const&, OIS::MouseButtonID) (SdkTrays.h:3033)
+==1538==    by 0x50C5A3F: OIS::LinuxMouse::_processXEvents() (in /usr/lib/libOIS-1.3.0.so)
+==1538==    by 0x50C5D91: OIS::LinuxMouse::capture() (in /usr/lib/libOIS-1.3.0.so)
+==1538==    by 0x41542B: AppStateManager::start(AppState*) (AppStateManager.cpp:81)
+==1538== 
+==1538== Invalid read of size 1
+==1538==    at 0x43E8F3: Planet::mapPopDensity() (Planet.cpp:892)
+==1538==    by 0x4513C7: SingleGameState::createScene() (SingleGameState.cpp:170)
+==1538==    by 0x45516A: SingleGameState::enter() (SingleGameState.cpp:99)
+==1538==    by 0x415A46: AppStateManager::changeAppState(AppState*) (AppStateManager.cpp:113)
+==1538==    by 0x4390EE: MenuState::buttonHit(OgreBites::Button*) (AppState.hpp:50)
+==1538==    by 0x437D2B: OgreBites::Button::_cursorReleased(Ogre::Vector2 const&) (SdkTrays.h:326)
+==1538==    by 0x438C78: MenuState::mouseReleased(OIS::MouseEvent const&, OIS::MouseButtonID) (SdkTrays.h:3033)
+==1538==    by 0x50C5A3F: OIS::LinuxMouse::_processXEvents() (in /usr/lib/libOIS-1.3.0.so)
+==1538==    by 0x50C5D91: OIS::LinuxMouse::capture() (in /usr/lib/libOIS-1.3.0.so)
+==1538==    by 0x41542B: AppStateManager::start(AppState*) (AppStateManager.cpp:81)
+==1538==    by 0x4229C3: DemoApp::startDemo() (DemoApp.cpp:48)
+==1538==    by 0x40F292: main (main.cpp:26)
+==1538==  Address 0x24727e53 is 1,003,027 bytes inside a block of size 1,572,864 free'd
+==1538==    at 0x4C2A09C: operator delete[](void*) (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==1538==    by 0x43608F: loadBMP(char const*) (imageloader.cpp:64)
+==1538==    by 0x43E5CF: Planet::mapPopDensity() (Planet.cpp:854)
+==1538==    by 0x4513C7: SingleGameState::createScene() (SingleGameState.cpp:170)
+==1538==    by 0x45516A: SingleGameState::enter() (SingleGameState.cpp:99)
+==1538==    by 0x415A46: AppStateManager::changeAppState(AppState*) (AppStateManager.cpp:113)
+==1538==    by 0x4390EE: MenuState::buttonHit(OgreBites::Button*) (AppState.hpp:50)
+==1538==    by 0x437D2B: OgreBites::Button::_cursorReleased(Ogre::Vector2 const&) (SdkTrays.h:326)
+==1538==    by 0x438C78: MenuState::mouseReleased(OIS::MouseEvent const&, OIS::MouseButtonID) (SdkTrays.h:3033)
+==1538==    by 0x50C5A3F: OIS::LinuxMouse::_processXEvents() (in /usr/lib/libOIS-1.3.0.so)
+==1538==    by 0x50C5D91: OIS::LinuxMouse::capture() (in /usr/lib/libOIS-1.3.0.so)
+==1538==    by 0x41542B: AppStateManager::start(AppState*) (AppStateManager.cpp:81)
+==1538== 
+==1538== Conditional jump or move depends on uninitialised value(s)
+==1538==    at 0x44346A: Planet::updateBorderSegments(Ogre::SceneManager*) (btVector3.h:295)
+==1538==    by 0x451823: SingleGameState::createScene() (SingleGameState.cpp:194)
+==1538==    by 0x45516A: SingleGameState::enter() (SingleGameState.cpp:99)
+==1538==    by 0x415A46: AppStateManager::changeAppState(AppState*) (AppStateManager.cpp:113)
+==1538==    by 0x4390EE: MenuState::buttonHit(OgreBites::Button*) (AppState.hpp:50)
+==1538==    by 0x437D2B: OgreBites::Button::_cursorReleased(Ogre::Vector2 const&) (SdkTrays.h:326)
+==1538==    by 0x438C78: MenuState::mouseReleased(OIS::MouseEvent const&, OIS::MouseButtonID) (SdkTrays.h:3033)
+==1538==    by 0x50C5A3F: OIS::LinuxMouse::_processXEvents() (in /usr/lib/libOIS-1.3.0.so)
+==1538==    by 0x50C5D91: OIS::LinuxMouse::capture() (in /usr/lib/libOIS-1.3.0.so)
+==1538==    by 0x41542B: AppStateManager::start(AppState*) (AppStateManager.cpp:81)
+==1538==    by 0x4229C3: DemoApp::startDemo() (DemoApp.cpp:48)
+==1538==    by 0x40F292: main (main.cpp:26)
+==1538== 
+==1538== Conditional jump or move depends on uninitialised value(s)
+==1538==    at 0x44346C: Planet::updateBorderSegments(Ogre::SceneManager*) (btVector3.h:295)
+==1538==    by 0x451823: SingleGameState::createScene() (SingleGameState.cpp:194)
+==1538==    by 0x45516A: SingleGameState::enter() (SingleGameState.cpp:99)
+==1538==    by 0x415A46: AppStateManager::changeAppState(AppState*) (AppStateManager.cpp:113)
+==1538==    by 0x4390EE: MenuState::buttonHit(OgreBites::Button*) (AppState.hpp:50)
+==1538==    by 0x437D2B: OgreBites::Button::_cursorReleased(Ogre::Vector2 const&) (SdkTrays.h:326)
+==1538==    by 0x438C78: MenuState::mouseReleased(OIS::MouseEvent const&, OIS::MouseButtonID) (SdkTrays.h:3033)
+==1538==    by 0x50C5A3F: OIS::LinuxMouse::_processXEvents() (in /usr/lib/libOIS-1.3.0.so)
+==1538==    by 0x50C5D91: OIS::LinuxMouse::capture() (in /usr/lib/libOIS-1.3.0.so)
+==1538==    by 0x41542B: AppStateManager::start(AppState*) (AppStateManager.cpp:81)
+==1538==    by 0x4229C3: DemoApp::startDemo() (DemoApp.cpp:48)
+==1538==    by 0x40F292: main (main.cpp:26)
+==1538== 
+==1538== 
+==1538== HEAP SUMMARY:
+==1538==     in use at exit: 16,389,551 bytes in 1,383 blocks
+==1538==   total heap usage: 417,347 allocs, 415,964 frees, 215,456,029 bytes allocated
+==1538== 
+==1538== LEAK SUMMARY:
+==1538==    definitely lost: 1,389 bytes in 8 blocks
+==1538==    indirectly lost: 11,343,486 bytes in 87 blocks
+==1538==      possibly lost: 4,915,263 bytes in 2 blocks
+==1538==    still reachable: 129,413 bytes in 1,286 blocks
+==1538==         suppressed: 0 bytes in 0 blocks
+==1538== Rerun with --leak-check=full to see details of leaked memory
+==1538== 
+==1538== For counts of detected and suppressed errors, rerun with: -v
+==1538== Use --track-origins=yes to see where uninitialised values come from
+==1538== ERROR SUMMARY: 1554578 errors from 7 contexts (suppressed: 4 from 3)

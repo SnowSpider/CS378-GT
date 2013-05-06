@@ -11,6 +11,29 @@ string intToStr(int number){
    return ss.str();
 }
 
+void Arrow::createObject(Ogre::SceneManager* scnMgr, char* mesh, char* mat){
+    string s = "Arrow_";
+    id = unitId;
+    name = s.append(intToStr(unitId));
+    cout << "name = " << name << endl;
+    unitId += 1;
+    rootNode = scnMgr->getRootSceneNode()->createChildSceneNode(name);
+    myEntity = scnMgr->createEntity(name, mesh);
+    myEntity->setMaterialName(mat);
+    myEntity->setCastShadows(true);
+    rootNode->attachObject(myEntity);
+    rootNode->scale(1, 1, 1);
+}
+
+void Arrow::stretch(btVector3 s, btVector3 e){
+    start = s;
+    end = e;
+}
+
+void Arrow::setVisibility(bool flag){
+    myEntity->setVisible(flag);
+}
+
 void Unit::createObject(Ogre::SceneManager* scnMgr, char* mesh, char* mat){
     string s = "Unit_";
     id = unitId;
@@ -22,7 +45,7 @@ void Unit::createObject(Ogre::SceneManager* scnMgr, char* mesh, char* mat){
     myEntity->setMaterialName(mat);
     myEntity->setCastShadows(true);
     rootNode->attachObject(myEntity);
-    rootNode->scale(30, 30, 30);
+    rootNode->scale(0.5, 0.5, 0.5);
 }
 
 void Unit::createManualObject(Ogre::SceneManager* scnMgr){
@@ -99,8 +122,13 @@ void Unit::applyTexture(char* mat){
 
 }
 */
-void Unit::relocate(btVector3& destination){
-    rootNode->setPosition(Ogre::Vector3(destination.x(), destination.y(), destination.z()));
-    rootNode->setDirection(Ogre::Vector3(destination.x(), destination.y(), destination.z()), Node::TS_PARENT);
+void Unit::extendArrow(btVector3& dest){
+    myArrow.stretch(position, dest);
+}
+
+void Unit::relocate(btVector3& dest){
+    position = dest;
+    rootNode->setPosition(Ogre::Vector3(dest.x(), dest.y(), dest.z()));
+    rootNode->setDirection(Ogre::Vector3(dest.x(), dest.y(), dest.z()), Node::TS_PARENT);
 }
 

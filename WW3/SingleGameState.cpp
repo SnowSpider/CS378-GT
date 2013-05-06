@@ -13,7 +13,6 @@
 #include <btBulletCollisionCommon.h>
 
 #include <string.h>
-#include "Planet.h"
 
 //|||||||||||||||||||||||||||||||||||||||||||||||
  
@@ -568,7 +567,7 @@ bool SingleGameState::mouseReleased(const OIS::MouseEvent &evt, OIS::MouseButton
 
 void SingleGameState::deselect(){
     if(unitSelected != NULL){
-        PlanetCell& currentCell = earth.cells[unitSelected->currentCellId]; 
+        PlanetCell& currentCell = *(unitSelected->currentCell); 
         for (int i=0;i<currentCell.neighbors.size();i++){
             earth.changeMaterial(m_pSceneMgr, earth.cells[currentCell.neighbors[i]], earth.cells[currentCell.neighbors[i]].baseMaterial);
         }
@@ -619,31 +618,32 @@ void SingleGameState::onLeftPressed(const OIS::MouseEvent &evt)
             string idType = name.substr(0, 5);
             
             if(idType == "Unit_"){ // Select a unit.
-                
+                cout << "AAAA" << endl;
                 if(unitSelected != NULL){ //critical
-                    PlanetCell& start = earth.cells[unitSelected->currentCellId];
+                    PlanetCell& start = *(unitSelected->currentCell);
                     for (int i=0;i<start.neighbors.size();i++){
                         earth.changeMaterial(m_pSceneMgr, earth.cells[start.neighbors[i]], earth.cells[start.neighbors[i]].baseMaterial);
                     }
                 }
-                
+                cout << "BBBB" << endl;
                 if(unitBuilding){ //critical
-                    PlanetCell& start = earth.cells[unitSelected->currentCellId];
+                    PlanetCell& start = *(unitSelected->currentCell);
                     for (int i=0;i<start.neighbors.size();i++){
                         earth.changeMaterial(m_pSceneMgr, earth.cells[start.neighbors[i]], earth.cells[start.neighbors[i]].baseMaterial);
                     }
                     unitBuilding = 0; 
                 }
-                
+                cout << "CCCC" << endl;
                 
                 m_pCurrentObject = m_pSceneMgr->getEntity(name)->getParentSceneNode(); 
                 m_pCurrentObject->showBoundingBox(true); 
                 m_pCurrentEntity = m_pSceneMgr->getEntity(name); 
-                
+                cout << "DDDD" << endl;
                 string idNumber = name.substr(5, name.length()-1);
                 istringstream(idNumber) >> intId;
                 unitSelected = &(units[intId]);
-                PlanetCell& currentCell = earth.cells[unitSelected->currentCellId]; 
+                cout << "EEEE" << endl;
+                PlanetCell& currentCell = *(unitSelected->currentCell); 
                 
                 if(unitSelected->myType == Unit_COMMANDBASE)
                     BuildingImagesCB2(currentCell);
@@ -701,11 +701,11 @@ void SingleGameState::onLeftPressed(const OIS::MouseEvent &evt)
                 PlanetCell& currentCell = earth.cells[intId]; 
                 
                 if(unitBuilding){
-                    unitCreate(currentCell);
+                    createUnit(currentCell);
                     unitBuilding = 0;
                 }
                 else if(unitSelected!=NULL && currentCell.myUnit == Unit_EMPTY && unitSelected->myType >= 1 && unitSelected->myType <= 12){
-                    unitMove(unitSelected, currentCell);
+                    issueMoveOrder(unitSelected, currentCell);
                     unitSelected = NULL;
                 }
                 
@@ -841,7 +841,12 @@ void SingleGameState::update(double timeSinceLastFrame)
     getInput();
     moveCamera();
     
-    
+    for(int i=0;i<units.size(); i++){
+        if(units[i].timeLeft > 0) units[i].timeLeft --;
+        if(units[i].destination != NULL && units[i].timeLeft <= 0){
+            moveUnit(&(units[i]), *(units[i].destination)); //ugly.
+        }
+    }
     
     /*
     if(mWindow->isClosed())
@@ -960,7 +965,7 @@ bool SingleGameState::CommandBaseButton(const CEGUI::EventArgs &e)
     money -= Au_COMMANDBASE;
     plutonium -= Pt_COMMANDBASE;
     Unit newUnit(Owner_BLUE, Unit_COMMANDBASE);
-    newUnit.currentCellId = intId; //critical
+    newUnit.currentCell = &currentCell; //critical
     newUnit.createManualObject(m_pSceneMgr);
     newUnit.relocate(earth.vertices[intId]);
     units.push_back(newUnit);
@@ -979,7 +984,7 @@ bool SingleGameState::ArmyBaseButton(const CEGUI::EventArgs &e)
     money -= Au_ARMYBASE;
     plutonium -= Pt_ARMYBASE;
     Unit newUnit(Owner_BLUE, Unit_ARMYBASE);
-    newUnit.currentCellId = intId; //critical
+    newUnit.currentCell = &currentCell; //critical
     newUnit.createManualObject(m_pSceneMgr);
     newUnit.relocate(earth.vertices[intId]); 
     units.push_back(newUnit);
@@ -998,7 +1003,7 @@ bool SingleGameState::NavyBaseButton(const CEGUI::EventArgs &e)
     money -= Au_NAVYBASE;
     plutonium -= Pt_NAVYBASE;
     Unit newUnit(Owner_BLUE, Unit_NAVYBASE);
-    newUnit.currentCellId = intId; //critical
+    newUnit.currentCell = &currentCell; //critical
     newUnit.createManualObject(m_pSceneMgr);
     newUnit.relocate(earth.vertices[intId]);
     units.push_back(newUnit);
@@ -1017,7 +1022,7 @@ bool SingleGameState::AirForceBaseButton(const CEGUI::EventArgs &e)
     money -= Au_AIRFORCEBASE;
     plutonium -= Pt_AIRFORCEBASE;
     Unit newUnit(Owner_BLUE, Unit_AIRFORCEBASE);
-    newUnit.currentCellId = intId; //critical
+    newUnit.currentCell = &currentCell; //critical
     newUnit.createManualObject(m_pSceneMgr);
     newUnit.relocate(earth.vertices[intId]); 
     units.push_back(newUnit);
@@ -1036,7 +1041,7 @@ bool SingleGameState::NuclearPlantButton(const CEGUI::EventArgs &e)
     money -= Au_NUCLEARPLANT;
     plutonium -= Pt_NUCLEARPLANT;
     Unit newUnit(Owner_BLUE, Unit_NUCLEARPLANT);
-    newUnit.currentCellId = intId; //critical
+    newUnit.currentCell = &currentCell; //critical
     newUnit.createManualObject(m_pSceneMgr);
     newUnit.relocate(earth.vertices[intId]); 
     units.push_back(newUnit);
@@ -1055,7 +1060,7 @@ bool SingleGameState::ICBMSiloButton(const CEGUI::EventArgs &e)
     money -= Au_ICBMSILO;
     plutonium -= Pt_ICBMSILO;
     Unit newUnit(Owner_BLUE, Unit_ICBMSILO);
-    newUnit.currentCellId = intId; //critical
+    newUnit.currentCell = &currentCell; //critical
     newUnit.createManualObject(m_pSceneMgr);
     newUnit.relocate(earth.vertices[intId]);
     units.push_back(newUnit);
@@ -1069,7 +1074,7 @@ bool SingleGameState::InfantryButton(const CEGUI::EventArgs &e)
     string idNumber = name.substr(5, name.length()-1);
     istringstream(idNumber) >> intId;
     unitSelected = &(units[intId]);
-    PlanetCell& currentCell = earth.cells[unitSelected->currentCellId]; 
+    PlanetCell& currentCell = *(unitSelected->currentCell); 
     
     for (int i=0;i<currentCell.neighbors.size();i++){
         PlanetCell& temp = earth.cells[currentCell.neighbors[i]];
@@ -1096,7 +1101,7 @@ bool SingleGameState::TankButton(const CEGUI::EventArgs &e)
     string idNumber = name.substr(5, name.length()-1);
     istringstream(idNumber) >> intId;
     unitSelected = &(units[intId]);
-    PlanetCell& currentCell = earth.cells[unitSelected->currentCellId]; 
+    PlanetCell& currentCell = *(unitSelected->currentCell); 
     
     for (int i=0;i<currentCell.neighbors.size();i++){
         PlanetCell& temp = earth.cells[currentCell.neighbors[i]];
@@ -1123,7 +1128,7 @@ bool SingleGameState::ScudButton(const CEGUI::EventArgs &e)
     string idNumber = name.substr(5, name.length()-1);
     istringstream(idNumber) >> intId;
     unitSelected = &(units[intId]);
-    PlanetCell& currentCell = earth.cells[unitSelected->currentCellId]; 
+    PlanetCell& currentCell = *(unitSelected->currentCell); 
     
     for (int i=0;i<currentCell.neighbors.size();i++){
         PlanetCell& temp = earth.cells[currentCell.neighbors[i]];
@@ -1149,7 +1154,7 @@ bool SingleGameState::SubmarineButton(const CEGUI::EventArgs &e)
     string name = m_pCurrentEntity->getName();
     string idNumber = name.substr(5, name.length()-1);
     istringstream(idNumber) >> intId;
-    PlanetCell& currentCell = earth.cells[units[intId].currentCellId];
+    PlanetCell& currentCell = *(units[intId].currentCell);
     
     for (int i=0;i<currentCell.neighbors.size();i++){
         PlanetCell& temp = earth.cells[currentCell.neighbors[i]];
@@ -1175,7 +1180,7 @@ bool SingleGameState::DestroyerButton(const CEGUI::EventArgs &e)
     string name = m_pCurrentEntity->getName();
     string idNumber = name.substr(5, name.length()-1);
     istringstream(idNumber) >> intId;
-    PlanetCell& currentCell = earth.cells[units[intId].currentCellId];
+    PlanetCell& currentCell = *(units[intId].currentCell);
     
     for (int i=0;i<currentCell.neighbors.size();i++){
         PlanetCell& temp = earth.cells[currentCell.neighbors[i]];
@@ -1201,7 +1206,7 @@ bool SingleGameState::BomberButton(const CEGUI::EventArgs &e)
     string name = m_pCurrentEntity->getName();
     string idNumber = name.substr(5, name.length()-1);
     istringstream(idNumber) >> intId;
-    PlanetCell& currentCell = earth.cells[units[intId].currentCellId];
+    PlanetCell& currentCell = *(units[intId].currentCell);
     
     for (int i=0;i<currentCell.neighbors.size();i++){
         PlanetCell& temp = earth.cells[currentCell.neighbors[i]];
@@ -1227,7 +1232,7 @@ bool SingleGameState::FighterButton(const CEGUI::EventArgs &e)
     string name = m_pCurrentEntity->getName();
     string idNumber = name.substr(5, name.length()-1);
     istringstream(idNumber) >> intId;
-    PlanetCell& currentCell = earth.cells[units[intId].currentCellId];
+    PlanetCell& currentCell = *(units[intId].currentCell);
     
     for (int i=0;i<currentCell.neighbors.size();i++){
         PlanetCell& temp = earth.cells[currentCell.neighbors[i]];
@@ -1619,12 +1624,12 @@ void SingleGameState::BuildingImagesAF5(PlanetCell &cell)
     }
 }
 
-bool SingleGameState::unitCreate(PlanetCell &targetCell)
+bool SingleGameState::createUnit(PlanetCell &targetCell)
 {
     string name = m_pCurrentEntity->getName();
     string idNumber = name.substr(5, name.length()-1);
     istringstream(idNumber) >> intId;
-    PlanetCell& currentCell = earth.cells[units[intId].currentCellId];
+    PlanetCell& currentCell = *(units[intId].currentCell);
     
     for (int i=0;i<currentCell.neighbors.size();i++){
         if (targetCell.id == acceptNeighbors[i]){
@@ -1638,10 +1643,25 @@ bool SingleGameState::unitCreate(PlanetCell &targetCell)
             else if(unitBuilding == Unit_FIGHTER){
                 newUnit.createObject(m_pSceneMgr, "fighter.mesh", "SolidColour");
             }
+            else if(unitBuilding == Unit_TANK){
+                newUnit.createObject(m_pSceneMgr, "tank.mesh", "SolidColour");
+            }
+            else if(unitBuilding == Unit_INFANTRY){
+                newUnit.createObject(m_pSceneMgr, "soldier.mesh", "SolidColour");
+            }
+            else if(unitBuilding == Unit_DESTROYER){
+                newUnit.createObject(m_pSceneMgr, "destroyer.mesh", "SolidColour");
+            }
+            else if(unitBuilding == Unit_BOMBER){
+                newUnit.createObject(m_pSceneMgr, "bomber.mesh", "SolidColour");
+            }
+            else if(unitBuilding == Unit_SUBMARINE){
+                newUnit.createObject(m_pSceneMgr, "sub.mesh", "SolidColour");
+            }
             else{
                 newUnit.createManualObject(m_pSceneMgr);
             }
-            newUnit.currentCellId = targetCell.id; //critical
+            newUnit.currentCell = &targetCell; //critical
             newUnit.relocate(earth.vertices[targetCell.id]);
             units.push_back(newUnit);
             earth.own(m_pSceneMgr, currentCell);
@@ -1657,27 +1677,13 @@ bool SingleGameState::unitCreate(PlanetCell &targetCell)
     return false;
 }
 
-bool SingleGameState::unitMove(Unit* unit, PlanetCell& targetCell){
-    PlanetCell& start = earth.cells[unit->currentCellId];
+bool SingleGameState::issueMoveOrder(Unit* unit, PlanetCell& targetCell){
+    PlanetCell& start = *(unit->currentCell);
     for (int i=0;i<start.neighbors.size();i++){
         if (targetCell.id == acceptNeighbors[i]){
-            unit->relocate(earth.vertices[targetCell.id]);
-            unit->currentCellId = targetCell.id; //critical
-            start.myUnit = 0;
-            targetCell.myUnit = unit->myType;
-            deluminate(start);
-            /*
-            for (int j=0;j<start.neighbors.size();j++){
-                earth.changeMaterial(m_pSceneMgr, earth.cells[start.neighbors[j]], earth.cells[start.neighbors[j]].baseMaterial);
-            }
-            */
-            earth.changeMaterial(m_pSceneMgr, targetCell, "MyMaterials/earth_day");
-            illuminate(targetCell);
-            /*
-            for (int j=0;j<targetCell.neighbors.size();j++){
-                earth.changeMaterial(m_pSceneMgr, earth.cells[targetCell.neighbors[j]], "MyMaterials/earth_day");
-            }
-            */
+            unit->destination = &targetCell;
+            unit->timeLeft = unit->moveTime;
+            illuminate(start);
             deselect();
             return true;
         }
@@ -1685,9 +1691,20 @@ bool SingleGameState::unitMove(Unit* unit, PlanetCell& targetCell){
     return false;
 }
 
-// TODO
+void SingleGameState::moveUnit(Unit* unit, PlanetCell& targetCell){
+    PlanetCell& start = *(unit->currentCell);
+    unit->relocate(earth.vertices[targetCell.id]);
+    unit->currentCell = &targetCell; //critical
+    unit->destination = NULL;
+    start.myUnit = 0;
+    targetCell.myUnit = unit->myType;
+    deluminate(start);
+    illuminate(targetCell);
+}
 
 void SingleGameState::illuminate(PlanetCell& targetCell){
+    targetCell.baseMaterial = "MyMaterials/earth_day";
+    earth.changeMaterial(m_pSceneMgr, targetCell, "MyMaterials/earth_day");
     for (int i=0;i<targetCell.neighbors.size();i++){
         earth.cells[targetCell.neighbors[i]].baseMaterial = "MyMaterials/earth_day";
         earth.changeMaterial(m_pSceneMgr, earth.cells[targetCell.neighbors[i]], "MyMaterials/earth_day");
@@ -1695,18 +1712,22 @@ void SingleGameState::illuminate(PlanetCell& targetCell){
 }
 
 void SingleGameState::deluminate(PlanetCell& targetCell){
-    bool unseen = true;
+    bool unseen_neighbor = true;
+    bool unseen_self = true;
     for (int i=0;i<targetCell.neighbors.size();i++){
         PlanetCell& temp1 = earth.cells[targetCell.neighbors[i]];
+        if(temp1.owner == Owner_BLUE || temp1.myUnit != 0){
+            unseen_self = false;
+        }
         for (int j=0;j<temp1.neighbors.size();j++){
             PlanetCell& temp2 = earth.cells[temp1.neighbors[j]];
             if(temp2.id != targetCell.id){
-                if(temp2.owner == Owner_BLUE || temp2.myUnit != 0)
-                unseen = false;
-                //break;
+                if(temp2.owner == Owner_BLUE || temp2.myUnit != 0){
+                    unseen_neighbor = false;
+                }
             }
         }
-        if(unseen){
+        if(unseen_neighbor){
             temp1.baseMaterial = "MyMaterials/earth_day_bw";
             earth.changeMaterial(m_pSceneMgr, temp1, "MyMaterials/earth_day_bw");
         }
@@ -1714,7 +1735,15 @@ void SingleGameState::deluminate(PlanetCell& targetCell){
             temp1.baseMaterial = "MyMaterials/earth_day";
             earth.changeMaterial(m_pSceneMgr, temp1, "MyMaterials/earth_day");
         }
-        unseen = true;
+        unseen_neighbor = true;
+    }
+    if(unseen_self){
+        targetCell.baseMaterial = "MyMaterials/earth_day_bw";
+        earth.changeMaterial(m_pSceneMgr, targetCell, "MyMaterials/earth_day_bw");
+    }
+    else{
+        targetCell.baseMaterial = "MyMaterials/earth_day";
+        earth.changeMaterial(m_pSceneMgr, targetCell, "MyMaterials/earth_day");
     }
 }
 
