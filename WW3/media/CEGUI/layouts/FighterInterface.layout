@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<GUILayout>
+<Window Type="TaharezLook/ImageButton" Name="FighterInterface">
+	<Property Name="UnifiedPosition" Value="{{0,0},{0,0}}" />
+	<Property Name="UnifiedSize" Value="{{0,300},{0,169}}" />
+	<Property Name="NormalImage"     Value="set:FighterInterface image:btnNormal" />
+	<Property Name="HoverImage"      Value="set:FighterInterface image:btnHover"  />
+	<Property Name="PushedImage"     Value="set:FighterInterface image:btnPushed" />
+	<Property Name="DisabledImage"   Value="set:FighterInterface image:btnDisabl" />
+	<Window Type="TaharezLook/StaticText" Name="FighterInterfaceText">
+		<Property Name="UnifiedPosition"   Value="{{0,0},{.5,0}}" />
+		<Property Name="UnifiedSize"       Value="{{1,0},{.6,0}}" />
+		<Property Name="FrameEnabled"      Value="False" />
+		<Property Name="BackgroundEnabled" Value="False" />
+		<Property Name="HorzFormatting"    Value="WordWrapCentred" />
+		<Property Name="VertFormatting"    Value="Middle" />
+		<Property Name="Disabled"          Value="True" />
+		<Property Name="Text">Move Time:300s</Property>
+	</Window>
+</Window>
+</GUILayout>
