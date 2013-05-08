@@ -61,6 +61,7 @@ SingleGameState::SingleGameState()
     unitTimer = 0;
     currentCell = NULL;
     lastCell = NULL;
+    timerup = false;
     std::time(&currentTime);
 }
  
@@ -250,11 +251,15 @@ void SingleGameState::createScene()
  
     sheet->addChildWindow(counter);
 
-    CEGUI::ProgressBar *progressBar = static_cast<CEGUI::ProgressBar*>(wmgr.createWindow("TaharezLook/ProgressBar", "ProgressBar1"));
-    sheet->addChildWindow(progressBar);
-    progressBar->setSize(CEGUI::UVector2(CEGUI::UDim(0.5f, 0), CEGUI::UDim(0.04f, 0)));
-    progressBar->setHorizontalAlignment(CEGUI::HA_CENTRE);
-    progressBar->setProgress(progressBar->getProgress() + 1.0f);
+    counter = wmgr.createWindow("TaharezLook/StaticText", "CountDown");
+    counter->setText("Time until build:\n          0");
+    counter->setSize(CEGUI::UVector2(CEGUI::UDim(0.15, 0), CEGUI::UDim(0.15, 0)));
+    counter->setHorizontalAlignment(CEGUI::HA_LEFT);
+    counter->setVerticalAlignment(CEGUI::VA_BOTTOM);
+    counter->setVisible( false );
+ 
+    sheet->addChildWindow(counter);
+
     CEGUI::Window *resultWindow = wmgr.createWindow("TaharezLook/StaticText", "ProgressText1");
     sheet->addChildWindow(resultWindow);
     resultWindow->setHorizontalAlignment(CEGUI::HA_CENTRE);
@@ -267,12 +272,6 @@ void SingleGameState::createScene()
     resultWindow->setProperty("BackgroundEnabled", "false");
     resultWindow->setProperty("HorzFormatting", "WordWrapCentred");
 
-    progressBar = static_cast<CEGUI::ProgressBar*>(wmgr.createWindow("TaharezLook/ProgressBar", "ProgressBar2"));
-    sheet->addChildWindow(progressBar);
-    progressBar->setSize(CEGUI::UVector2(CEGUI::UDim(0.5f, 0), CEGUI::UDim(0.04f, 0)));
-    progressBar->setHorizontalAlignment(CEGUI::HA_CENTRE);
-    progressBar->setYPosition(CEGUI::UDim(0.05f, 0));
-    progressBar->setProgress(progressBar->getProgress() + 1.0f);
     resultWindow = wmgr.createWindow("TaharezLook/StaticText", "ProgressText2");
     sheet->addChildWindow(resultWindow);
     resultWindow->setHorizontalAlignment(CEGUI::HA_CENTRE);
@@ -1120,6 +1119,7 @@ void SingleGameState::update(double timeSinceLastFrame)
     getInput();
     moveCamera();
     
+    processTimer();
     processEvents();
     
     
@@ -1234,8 +1234,7 @@ bool SingleGameState::CommandBaseButton(const CEGUI::EventArgs &e)
     currentCell->myUnit_pending = Unit_COMMANDBASE;
     currentCell->timer = BuildTime_COMMANDBASE;
     currentCell->building = true;
-    money -= Au_COMMANDBASE;
-    plutonium -= Pt_COMMANDBASE;
+    processResources(-Au_COMMANDBASE,-Pt_COMMANDBASE);
     
     Unit newUnit(myOwner, Unit_COMMANDBASE);
     newUnit.createManualObject(m_pSceneMgr);
@@ -1243,7 +1242,6 @@ bool SingleGameState::CommandBaseButton(const CEGUI::EventArgs &e)
     newUnit.translate(0,150,0);
     units.push_back(newUnit);
     currentCell->myUnitId = newUnit.id;
-    BuildButtons();
 
     std::time(&currentTime);
     currentCell->timeNeeded = currentTime+currentCell->timer;
@@ -1258,16 +1256,14 @@ bool SingleGameState::ArmyBaseButton(const CEGUI::EventArgs &e)
     currentCell->myUnit_pending = Unit_ARMYBASE;
     currentCell->timer = BuildTime_ARMYBASE;
     currentCell->building = true;
-    money -= Au_ARMYBASE;
-    plutonium -= Pt_ARMYBASE;
-    
+    processResources(-Au_ARMYBASE,-Pt_ARMYBASE);
+
     Unit newUnit(myOwner, Unit_ARMYBASE);
     newUnit.createManualObject(m_pSceneMgr);
     newUnit.relocate(earth.vertices[currentCell->id]); 
     newUnit.translate(0,150,0);
     units.push_back(newUnit);
     currentCell->myUnitId = newUnit.id;
-    BuildButtons();
 
     std::time(&currentTime);
     currentCell->timeNeeded = currentTime+currentCell->timer;
@@ -1282,8 +1278,7 @@ bool SingleGameState::NavyBaseButton(const CEGUI::EventArgs &e)
     currentCell->myUnit_pending = Unit_NAVYBASE;
     currentCell->timer = BuildTime_NAVYBASE;
     currentCell->building = true;
-    money -= Au_NAVYBASE;
-    plutonium -= Pt_NAVYBASE;
+    processResources(-Au_NAVYBASE,-Pt_NAVYBASE);
     
     Unit newUnit(myOwner, Unit_NAVYBASE);
     newUnit.createManualObject(m_pSceneMgr);
@@ -1291,7 +1286,6 @@ bool SingleGameState::NavyBaseButton(const CEGUI::EventArgs &e)
     newUnit.translate(0,150,0);
     units.push_back(newUnit);
     currentCell->myUnitId = newUnit.id;
-    BuildButtons();
 
     std::time(&currentTime);
     currentCell->timeNeeded = currentTime+currentCell->timer;
@@ -1306,8 +1300,7 @@ bool SingleGameState::AirForceBaseButton(const CEGUI::EventArgs &e)
     currentCell->myUnit_pending = Unit_AIRFORCEBASE;
     currentCell->timer = BuildTime_AIRFORCEBASE;
     currentCell->building = true;
-    money -= Au_AIRFORCEBASE;
-    plutonium -= Pt_AIRFORCEBASE;
+    processResources(-Au_AIRFORCEBASE,-Pt_AIRFORCEBASE);
     
     Unit newUnit(myOwner, Unit_AIRFORCEBASE);
     newUnit.createManualObject(m_pSceneMgr);
@@ -1315,7 +1308,6 @@ bool SingleGameState::AirForceBaseButton(const CEGUI::EventArgs &e)
     newUnit.translate(0,150,0);
     units.push_back(newUnit);
     currentCell->myUnitId = newUnit.id;
-    BuildButtons();
 
     std::time(&currentTime);
     currentCell->timeNeeded = currentTime+currentCell->timer;
@@ -1330,8 +1322,7 @@ bool SingleGameState::NuclearPlantButton(const CEGUI::EventArgs &e)
     currentCell->myUnit_pending = Unit_NUCLEARPLANT;
     currentCell->timer = BuildTime_NUCLEARPLANT;
     currentCell->building = true;
-    money -= Au_NUCLEARPLANT;
-    plutonium -= Pt_NUCLEARPLANT;
+    processResources(-Au_NUCLEARPLANT,-Pt_NUCLEARPLANT);
     
     Unit newUnit(myOwner, Unit_NUCLEARPLANT);
     newUnit.createManualObject(m_pSceneMgr);
@@ -1339,7 +1330,6 @@ bool SingleGameState::NuclearPlantButton(const CEGUI::EventArgs &e)
     newUnit.translate(0,150,0);
     units.push_back(newUnit);
     currentCell->myUnitId = newUnit.id;
-    BuildButtons();
 
     std::time(&currentTime);
     currentCell->timeNeeded = currentTime+currentCell->timer;
@@ -1354,8 +1344,7 @@ bool SingleGameState::ICBMSiloButton(const CEGUI::EventArgs &e)
     currentCell->myUnit_pending = Unit_ICBMSILO;
     currentCell->timer = BuildTime_ICBMSILO;
     currentCell->building = true;
-    money -= Au_ICBMSILO;
-    plutonium -= Pt_ICBMSILO;
+    processResources(-Au_ICBMSILO,-Pt_ICBMSILO);
     
     Unit newUnit(myOwner, Unit_ICBMSILO);
     newUnit.createManualObject(m_pSceneMgr);
@@ -1363,7 +1352,6 @@ bool SingleGameState::ICBMSiloButton(const CEGUI::EventArgs &e)
     newUnit.translate(0,150,0);
     units.push_back(newUnit);
     currentCell->myUnitId = newUnit.id;
-    BuildButtons();
 
     std::time(&currentTime);
     currentCell->timeNeeded = currentTime+currentCell->timer;
@@ -2019,8 +2007,7 @@ bool SingleGameState::issueProduceOrder(PlanetCell& origin, PlanetCell& goal){
             else if(unitBuilding == Unit_BOMBER) origin.timer = BuildTime_BOMBER;
             else if(unitBuilding == Unit_FIGHTER) origin.timer = BuildTime_FIGHTER;
             else if(unitBuilding == Unit_SPYPLANE) origin.timer = BuildTime_SPYPLANE;
-            money -= unitMoney;
-            plutonium -= unitPlutonium;
+            processResources(-unitMoney,-unitPlutonium);
             btVector3 a = earth.vertices[origin.id];
             btVector3 g = earth.vertices[goal.id];
             btVector3 b = g - a;
@@ -2036,7 +2023,6 @@ bool SingleGameState::issueProduceOrder(PlanetCell& origin, PlanetCell& goal){
             origin.timeNeeded = currentTime+origin.timer;
             Times temp(currentTime+origin.timer , origin.id);
             eventQueue.push(temp);
-            BuildButtons();
             return true;
         }
     }
@@ -2291,6 +2277,7 @@ void SingleGameState::processEvents(void){
                     tempCell.unitbuilding = false;
                     createUnit(earth.cells[tempCell.goalId]);
                 }
+                tempCell.timeNeeded = 0;
                 tempCell.growsCompleted = 0;
                 eventQueue.pop();
                 cout << "Hurray!!!!" << endl;
@@ -2415,3 +2402,56 @@ void SingleGameState::DeButton(void)
         w->setVisible( false );
     }
 }
+
+void SingleGameState::processResources(int inputmoney, int inputplut)
+{
+    money += inputmoney;
+    plutonium += inputplut;
+    CEGUI::Window* counter = CEGUI::WindowManager::getSingleton().getWindow("Counter");
+    std::string tempmoney;
+    std::string tempplut;
+    std::stringstream out;
+    out << money;
+    tempmoney = out.str();
+    out.str( std::string() );
+    out.clear();
+    out << plutonium;
+    tempplut = out.str();
+    out.str( std::string() );
+    out.clear();
+    counter->setText("        Resources\nMoney: $"+tempmoney+"\nPlutonium: "+tempplut+"kg");
+    BuildButtons();
+}
+
+void SingleGameState::processTimer(void)
+{
+    std::time(&currentTime);
+    if(currentCell!=NULL && currentCell->timeNeeded > 0)
+    {
+        CEGUI::Window* counter = CEGUI::WindowManager::getSingleton().getWindow("CountDown");
+        time_t count = currentCell->timeNeeded - currentTime;
+        std::string temptime;
+        std::stringstream out;
+        out << count;
+        temptime = out.str();
+        out.str( std::string() );
+        out.clear();
+        if(currentCell->moving)
+            counter->setText("Time until move:\n            "+temptime+"s");
+        else
+            counter->setText("Time until build:\n            "+temptime+"s");
+        if(!timerup)
+        {
+            timerup = true;
+            counter->setVisible( true );
+        }
+        
+    }
+    else if(timerup)
+    {
+        CEGUI::Window* counter = CEGUI::WindowManager::getSingleton().getWindow("CountDown");
+        counter->setVisible( false );
+        timerup = false;
+    }
+}
+

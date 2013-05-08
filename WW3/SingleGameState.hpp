@@ -114,6 +114,8 @@ public:
     void nuke(PlanetCell& targetCell);
 
     void processEvents();
+    void processResources(int, int);
+    void processTimer();
 
     
 private:
@@ -176,6 +178,7 @@ private:
     
     PlanetCell* currentCell;
     PlanetCell* lastCell;
+    bool timerup;
 
     Planet earth;
     ofstream myfile;

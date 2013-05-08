@@ -92,6 +92,7 @@ public:
     void BuildingImagesN4(PlanetCell &cell);
     void BuildingImagesAF5(PlanetCell &cell);
     void BuildingImagesNP6(PlanetCell &cell);
+    void BuildingImagesICBMS7(PlanetCell &cell);
     void UnitImagesI1(PlanetCell &cell);
     void UnitImagesT2(PlanetCell &cell);
     void UnitImagesS3(PlanetCell &cell);
@@ -113,6 +114,8 @@ public:
     void nuke(PlanetCell& targetCell);
 
     void processEvents();
+    void processResources(int, int);
+    void processTimer();
 
     
 private:
