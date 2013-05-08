@@ -42,15 +42,18 @@ public:
         return !(*this == other);
     }
 
-    bool operator==(NULL){
-        if(time==0 && cellID==0) return true;
-        else return false;
+    bool operator()( Times j1,Times j2)
+    {
+        if(j2.time < j1.time)
+            return true;
+
+            return false;
     }
 
-    bool operator!=(NULL){
-        return !(*this == NULL);
-    }
-
+};
+class CompareTimes
+{
+public:
     bool operator()( Times j1,Times j2)
     {
         if(j2.time > j1.time)
@@ -58,7 +61,6 @@ public:
 
             return false;
     }
-
 };
 //|||||||||||||||||||||||||||||||||||||||||||||||
  

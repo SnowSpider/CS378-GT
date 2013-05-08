@@ -48,6 +48,11 @@ SingleGameState::SingleGameState()
     lost = false;
     buildingImages = 1;
     myOwner = Owner_BLUE;
+    myEnemy = Owner_RED;
+    commandBaseMax = 5;
+    commandBaseTotal = 0;
+    myCommandBase = 0;
+    enemyCommandBase = 5;
     money = 100000000;
     plutonium = 100000000;
     population = 0;
@@ -62,6 +67,7 @@ SingleGameState::SingleGameState()
     currentCell = NULL;
     lastCell = NULL;
     timerup = false;
+    tutorial = 0;
     std::time(&currentTime);
 }
  
@@ -257,33 +263,103 @@ void SingleGameState::createScene()
     counter->setHorizontalAlignment(CEGUI::HA_LEFT);
     counter->setVerticalAlignment(CEGUI::VA_BOTTOM);
     counter->setVisible( false );
+    counter->setProperty("HorzFormatting", "WordWrapCentred");
  
     sheet->addChildWindow(counter);
 
+    std::string commandMy;
+    std::string commandEnemy;
+    std::string commandTotal;
+    std::string commandMax;
+    out << commandBaseTotal;
+    commandTotal = out.str();
+    out.str( std::string() );
+    out.clear();
+    out << myCommandBase;
+    commandMy = out.str();
+    out.str( std::string() );
+    out.clear();
+    out << enemyCommandBase;
+    commandEnemy = out.str();
+    out.str( std::string() );
+    out.clear();   
+    out << commandBaseMax;
+    commandMax = out.str();
+    out.str( std::string() );
+    out.clear(); 
+
     CEGUI::Window *resultWindow = wmgr.createWindow("TaharezLook/StaticText", "ProgressText1");
-    sheet->addChildWindow(resultWindow);
     resultWindow->setHorizontalAlignment(CEGUI::HA_CENTRE);
     resultWindow->setSize(CEGUI::UVector2(CEGUI::UDim(0.5f, 0), CEGUI::UDim(0.04f, 0)));
     if(myOwner == Owner_BLUE)
-        resultWindow->setText("[colour='FF0000FF']Player Command Bases Remaining: 10/10");
+        resultWindow->setText("[colour='FF0000FF']Player Command Bases Remaining: "+commandMy+"/"+commandTotal+"");
     else
-        resultWindow->setText("[colour='FFFF0000']Player Command Bases Remaining: 10/10");
+        resultWindow->setText("[colour='FFFF0000']Player Command Bases Remaining: "+commandMy+"/"+commandTotal+"");
     resultWindow->setProperty("FrameEnabled", "false");
     resultWindow->setProperty("BackgroundEnabled", "false");
     resultWindow->setProperty("HorzFormatting", "WordWrapCentred");
+    sheet->addChildWindow(resultWindow);
 
     resultWindow = wmgr.createWindow("TaharezLook/StaticText", "ProgressText2");
-    sheet->addChildWindow(resultWindow);
     resultWindow->setHorizontalAlignment(CEGUI::HA_CENTRE);
     resultWindow->setYPosition(CEGUI::UDim(0.05f, 0));
     resultWindow->setSize(CEGUI::UVector2(CEGUI::UDim(0.5f, 0), CEGUI::UDim(0.04f, 0)));
     if(myOwner == Owner_BLUE)
-        resultWindow->setText("[colour='FFFF0000']Enemy Command Bases Remaining: 10/10");
+        resultWindow->setText("[colour='FFFF0000']Enemy Command Bases Remaining: "+commandEnemy+"/"+commandMax+"");
     else
-        resultWindow->setText("[colour='FF0000FF']Enemy Command Bases Remaining: 10/10");
+        resultWindow->setText("[colour='FF0000FF']Enemy Command Bases Remaining: "+commandEnemy+"/"+commandMax+"");
     resultWindow->setProperty("FrameEnabled", "false");
     resultWindow->setProperty("BackgroundEnabled", "false");
     resultWindow->setProperty("HorzFormatting", "WordWrapCentred");
+    sheet->addChildWindow(resultWindow);
+
+    resultWindow = wmgr.createWindow("TaharezLook/Button", "FriendlyReminder");
+    resultWindow->setHorizontalAlignment(CEGUI::HA_LEFT);
+    resultWindow->setVerticalAlignment(CEGUI::VA_CENTRE);
+    resultWindow->setSize(CEGUI::UVector2(CEGUI::UDim(0.5f, 0), CEGUI::UDim(0.4f, 0)));
+    resultWindow->subscribeEvent(CEGUI::PushButton::EventClicked,CEGUI::Event::Subscriber(&SingleGameState::FriendlyReminderButton,this));
+    sheet->addChildWindow(resultWindow);
+
+    resultWindow = wmgr.createWindow("TaharezLook/StaticText", "FriendlyReminderText1");
+    resultWindow->setHorizontalAlignment(CEGUI::HA_LEFT);
+    resultWindow->setVerticalAlignment(CEGUI::VA_CENTRE);
+    resultWindow->setXPosition(CEGUI::UDim(0.05f, 0));
+    resultWindow->setSize(CEGUI::UVector2(CEGUI::UDim(0.4f, 0), CEGUI::UDim(0.4f, 0)));
+    resultWindow->setText("Welcome! To interact with the world, use ASWD to move the camera around, QE to zoom in/out, and the left and right clicks to select/deselect, respectively, a cell. Click to Continue.");
+    resultWindow->setProperty("FrameEnabled", "false");
+    resultWindow->setProperty("BackgroundEnabled", "false");
+    resultWindow->setProperty("HorzFormatting", "WordWrapCentred");
+    resultWindow->disable();
+
+    sheet->addChildWindow(resultWindow);
+
+    resultWindow = wmgr.createWindow("TaharezLook/StaticText", "FriendlyReminderText2");
+    resultWindow->setHorizontalAlignment(CEGUI::HA_LEFT);
+    resultWindow->setVerticalAlignment(CEGUI::VA_CENTRE);
+    resultWindow->setXPosition(CEGUI::UDim(0.05f, 0));
+    resultWindow->setSize(CEGUI::UVector2(CEGUI::UDim(0.4f, 0), CEGUI::UDim(0.4f, 0)));
+    resultWindow->setText("In order to purge the world of Evil, the opposing views must be completely destroyed. Your representing color is seen at the top of the screen. Tiles on the screen are represented as Land (green outline), Water (blue outline), and WaterLand (yellow outline). The thicker outlines on the map mark your's and your opponent's territory. Click to Continue.");
+    resultWindow->setProperty("FrameEnabled", "false");
+    resultWindow->setProperty("BackgroundEnabled", "false");
+    resultWindow->setProperty("HorzFormatting", "WordWrapCentred");
+    resultWindow->disable();
+    resultWindow->setVisible( false );
+
+    sheet->addChildWindow(resultWindow);
+
+    resultWindow = wmgr.createWindow("TaharezLook/StaticText", "FriendlyReminderText3");
+    resultWindow->setHorizontalAlignment(CEGUI::HA_LEFT);
+    resultWindow->setVerticalAlignment(CEGUI::VA_CENTRE);
+    resultWindow->setXPosition(CEGUI::UDim(0.05f, 0));
+    resultWindow->setSize(CEGUI::UVector2(CEGUI::UDim(0.4f, 0), CEGUI::UDim(0.4f, 0)));
+    resultWindow->setText("Begin your reign of Justice by clicking any non-water tile within your boundries. From there, the CommandBase button (upper right cornor below Sound) will light up, allowing you to click and build. Begin by building "+commandMax+" CommandBases that will act as your foundation. Click this message to remove.");
+    resultWindow->setProperty("FrameEnabled", "false");
+    resultWindow->setProperty("BackgroundEnabled", "false");
+    resultWindow->setProperty("HorzFormatting", "WordWrapCentred");
+    resultWindow->disable();
+    resultWindow->setVisible( false );
+
+    sheet->addChildWindow(resultWindow);
 
     CEGUI::Window *w;
     if(myOwner == Owner_BLUE)
@@ -1037,12 +1113,12 @@ void SingleGameState::moveCamera()
     float newdistance = sqrt(x2 + y2 + z2);
     float shift = newdistance - distance;
     m_pCamera->lookAt(0,0,0);
-    if(OgreFramework::getSingletonPtr()->m_pKeyboard->isKeyDown(OIS::KC_F)){
+    if(OgreFramework::getSingletonPtr()->m_pKeyboard->isKeyDown(OIS::KC_Q)){
 	    if(distance >= 11000){
 	    	m_pCamera->moveRelative(m_TranslateVector/10);
 	    }
     }
-    else if(OgreFramework::getSingletonPtr()->m_pKeyboard->isKeyDown(OIS::KC_G)){
+    else if(OgreFramework::getSingletonPtr()->m_pKeyboard->isKeyDown(OIS::KC_E)){
 	    if(distance <= 20000){
 	    	m_pCamera->moveRelative(m_TranslateVector/10);
 	    }
@@ -1079,13 +1155,13 @@ void SingleGameState::getInput()
 			m_TranslateVector.y = -m_MoveScale;
 	}
 
-	if(OgreFramework::getSingletonPtr()->m_pKeyboard->isKeyDown(OIS::KC_G)){
+	if(OgreFramework::getSingletonPtr()->m_pKeyboard->isKeyDown(OIS::KC_E)){
 	    if(distance < 20000){
 		m_TranslateVector.z = m_MoveScale;
 	    }
 	}
 	 
-	if(OgreFramework::getSingletonPtr()->m_pKeyboard->isKeyDown(OIS::KC_F)){
+	if(OgreFramework::getSingletonPtr()->m_pKeyboard->isKeyDown(OIS::KC_Q)){
 
             if(distance > 11000){
                 m_TranslateVector.z = -m_MoveScale;
@@ -1237,6 +1313,7 @@ bool SingleGameState::CommandBaseButton(const CEGUI::EventArgs &e)
     processResources(-Au_COMMANDBASE,-Pt_COMMANDBASE);
     
     Unit newUnit(myOwner, Unit_COMMANDBASE);
+    commandBaseChange(true, false);
     newUnit.createManualObject(m_pSceneMgr);
     newUnit.relocate(earth.vertices[currentCell->id]);
     newUnit.translate(0,150,0);
@@ -1518,11 +1595,40 @@ bool SingleGameState::FighterButton(const CEGUI::EventArgs &e)
 
 bool SingleGameState::CaptureButton(const CEGUI::EventArgs &e)
 {
+
     return true;
 }
 
 bool SingleGameState::LaunchButton(const CEGUI::EventArgs &e)
 {
+    return true;
+}
+
+bool SingleGameState::FriendlyReminderButton(const CEGUI::EventArgs &e)
+{
+    if(tutorial == 0){
+        CEGUI::Window *resultWindow = CEGUI::WindowManager::getSingleton().getWindow("FriendlyReminderText1");
+        resultWindow->setVisible( false );
+        resultWindow = CEGUI::WindowManager::getSingleton().getWindow("FriendlyReminderText2");
+        resultWindow->setVisible( true );
+        resultWindow->activate();
+        tutorial++;
+    }
+    else if(tutorial == 1){
+        CEGUI::Window *resultWindow = CEGUI::WindowManager::getSingleton().getWindow("FriendlyReminderText2");
+        resultWindow->setVisible( false );
+        resultWindow = CEGUI::WindowManager::getSingleton().getWindow("FriendlyReminderText3");
+        resultWindow->setVisible( true );
+        resultWindow->activate();
+        tutorial++;
+    }
+    else if(tutorial == 2){
+        CEGUI::Window *resultWindow = CEGUI::WindowManager::getSingleton().getWindow("FriendlyReminder");
+        resultWindow->setVisible( false );
+        resultWindow = CEGUI::WindowManager::getSingleton().getWindow("FriendlyReminderText3");
+        resultWindow->setVisible( false );
+        tutorial++;
+    }
     return true;
 }
 
@@ -1660,6 +1766,24 @@ void SingleGameState::BuildingImages1(PlanetCell &cell)
             w->disable();    
         }
     }
+    if(commandBaseTotal < commandBaseMax)
+    {
+        w = CEGUI::WindowManager::getSingleton().getWindow("ArmyBase");
+        w->disable();
+        w = CEGUI::WindowManager::getSingleton().getWindow("NavyBase");
+        w->disable();
+        w = CEGUI::WindowManager::getSingleton().getWindow("AirForceBase");
+        w->disable();
+        w = CEGUI::WindowManager::getSingleton().getWindow("NuclearPlant");
+        w->disable();
+        w = CEGUI::WindowManager::getSingleton().getWindow("ICBMSilo");
+        w->disable();
+    }
+    else
+    {
+        w = CEGUI::WindowManager::getSingleton().getWindow("CommandBase");
+        w->disable();
+    }
 }
 void SingleGameState::BuildingImagesCB2(PlanetCell &cell)
 {
@@ -1678,6 +1802,11 @@ void SingleGameState::BuildingImagesCB2(PlanetCell &cell)
         w->enable();
     }
     if(money < Au_INFANTRY || plutonium < Pt_INFANTRY)
+    {
+        w = CEGUI::WindowManager::getSingleton().getWindow("Infantry");
+        w->disable();
+    }
+    if(commandBaseTotal < commandBaseMax)
     {
         w = CEGUI::WindowManager::getSingleton().getWindow("Infantry");
         w->disable();
@@ -2072,6 +2201,7 @@ bool SingleGameState::createUnit(PlanetCell& goal){
         units.push_back(newUnit);
         goal.myUnitId = newUnit.id;
         illuminate(goal);
+        attack(goal);
         BuildButtons();
     }
 }
@@ -2132,9 +2262,11 @@ bool SingleGameState::moveUnit(Unit& unit, PlanetCell& origin, PlanetCell& goal)
         goal.myUnitId = unit.id;
         deluminate(origin);
         illuminate(goal);
+        attack(goal);
         BuildButtons();
         return true;
     }
+    /*
     else if(goal.occupier != Owner_NEUTRAL && goal.occupier != myOwner){ // bumping into an enemy unit
         if(unit.myType == goal.myUnit){ // Likes kill likes.
             nuke(goal);
@@ -2147,6 +2279,7 @@ bool SingleGameState::moveUnit(Unit& unit, PlanetCell& origin, PlanetCell& goal)
             goal.myUnitId = unit.id;
             deluminate(origin);
             illuminate(goal);
+            attack(goal);
             BuildButtons();
             return true;
         }
@@ -2162,10 +2295,12 @@ bool SingleGameState::moveUnit(Unit& unit, PlanetCell& origin, PlanetCell& goal)
             goal.myUnitId = unit.id;
             deluminate(origin);
             illuminate(goal);
+            attack(goal);
             BuildButtons();
             return true;
         }
     }
+    */
 
     return false;
 }
@@ -2234,9 +2369,21 @@ void SingleGameState::fireMissile(PlanetCell& origin, PlanetCell& goal){
 }
 
 void SingleGameState::retireUnit(PlanetCell& targetCell){
-    // No refund!
+    // No refund! No shit!
+    if(targetCell.myUnit == Unit_COMMANDBASE)
+        commandBaseChange(false, false);
     units[targetCell.myUnitId].destroy(m_pSceneMgr);
     deluminate(targetCell);
+    targetCell.myUnit = 0;
+    targetCell.myUnitId = -1;
+    targetCell.occupier = Owner_NEUTRAL;
+    BuildButtons();
+}
+
+void SingleGameState::killEnemyUnit(PlanetCell& targetCell){
+    if(targetCell.myUnit == Unit_COMMANDBASE)
+        commandBaseChange(false, true);
+    units[targetCell.myUnitId].destroy(m_pSceneMgr);
     targetCell.myUnit = 0;
     targetCell.myUnitId = -1;
     targetCell.occupier = Owner_NEUTRAL;
@@ -2263,11 +2410,17 @@ void SingleGameState::processEvents(void){
         {
             cout << "Oh Shit I'm In" << endl;
             Times top = eventQueue.top();
+            cout << "Wasn't Top!" << endl;
             if(top.time <= currentTime){
+                cout << "Wasn't if" << endl;
                 PlanetCell& tempCell = earth.cells[top.cellID];
-                if(tempCell.moving)
+                cout << "tempCell good" << endl;
+                if(tempCell.moving){
                     moveUnit(units[tempCell.myUnitId], tempCell, earth.cells[tempCell.goalId]); 
+                    cout << "NotMove" << endl;
+                }
                 else if(tempCell.myUnit_pending){
+                    cout << "inHere?" << endl;
                     if(tempCell.myUnit_pending >= 13 && tempCell.myUnit_pending <= 19 && tempCell.myUnitId != -1){
                         tempCell.myUnit = tempCell.myUnit_pending;
                         tempCell.myUnit_pending = 0;
@@ -2277,6 +2430,7 @@ void SingleGameState::processEvents(void){
                     tempCell.unitbuilding = false;
                     createUnit(earth.cells[tempCell.goalId]);
                 }
+                cout << "Freedom!" << endl;
                 tempCell.timeNeeded = 0;
                 tempCell.growsCompleted = 0;
                 eventQueue.pop();
@@ -2284,9 +2438,9 @@ void SingleGameState::processEvents(void){
                 BuildButtons();
                 stay = 1;
             }
-
             else{
-                std::priority_queue<Times, std::vector<Times>, Times> tempEventQueue;
+                cout << "It's in else!" << endl;
+                std::priority_queue<Times, std::vector<Times>, CompareTimes> tempEventQueue;
                 int eventSize = eventQueue.size();
                 for(int i=0; i<eventSize; i++){
                     Times tempTime = eventQueue.top();
@@ -2437,9 +2591,9 @@ void SingleGameState::processTimer(void)
         out.str( std::string() );
         out.clear();
         if(currentCell->moving)
-            counter->setText("Time until move:\n            "+temptime+"s");
+            counter->setText("Time until move:\n"+temptime+"s");
         else
-            counter->setText("Time until build:\n            "+temptime+"s");
+            counter->setText("Time until build:\n"+temptime+"s");
         if(!timerup)
         {
             timerup = true;
@@ -2455,3 +2609,132 @@ void SingleGameState::processTimer(void)
     }
 }
 
+void SingleGameState::capture(void)
+{
+    earth.cells[currentCell->id].owner = myOwner;
+    earth.own(m_pSceneMgr, earth.cells[currentCell->id]);
+    earth.updateBorderSegments(m_pSceneMgr);
+}
+
+
+void SingleGameState::attack(PlanetCell& targetCell)
+{
+    for (int i=0;i<targetCell.neighbors.size();i++){
+        PlanetCell& temp = earth.cells[targetCell.neighbors[i]];
+        if(temp.occupier == myEnemy && temp.myUnit > 0){
+            combat(targetCell,temp);
+            if(targetCell.occupier == Owner_NEUTRAL)
+                break;
+        }
+    }
+}
+
+void SingleGameState::combat(PlanetCell& yourCell,PlanetCell& enemyCell)
+{
+    int yourUnit = yourCell.myUnit;
+    int enemyUnit = enemyCell.myUnit;
+    if(yourUnit == enemyUnit && yourUnit != Unit_BOMBER){
+        //Do Vector Battle TODO
+    }
+    else if(yourUnit == Unit_INFANTRY){
+        retireUnit(yourCell);
+    }
+    else if(enemyUnit == Unit_INFANTRY){
+        killEnemyUnit(enemyCell);
+    }
+    else if(yourUnit == Unit_TANK){
+        if(enemyUnit == Unit_SCUD || enemyUnit == Unit_DESTROYER)
+            killEnemyUnit(enemyCell);
+        else if(enemyUnit == Unit_BOMBER || enemyUnit == Unit_SUBMARINE)
+            retireUnit(yourCell);
+    }
+    else if(yourUnit == Unit_SCUD){
+        if((enemyUnit >= 13 && enemyUnit <= 18) || enemyUnit == Unit_DESTROYER|| enemyUnit == Unit_FIGHTER)
+            killEnemyUnit(enemyCell);
+        else if(enemyUnit == Unit_TANK || enemyUnit == Unit_BOMBER)
+            retireUnit(yourCell);
+    }
+    else if(yourUnit == Unit_SUBMARINE){
+        if(enemyUnit >= 13 && enemyUnit <= 18 || enemyUnit == Unit_TANK || enemyUnit == Unit_BOMBER)
+            killEnemyUnit(enemyCell);
+        else if(enemyUnit == Unit_DESTROYER || enemyUnit == Unit_FIGHTER)
+            retireUnit(yourCell);
+    }
+    else if(yourUnit == Unit_DESTROYER){
+        if(enemyUnit == Unit_FIGHTER || enemyUnit == Unit_SUBMARINE)
+            killEnemyUnit(enemyCell);
+        else if(enemyUnit == Unit_SCUD || enemyUnit == Unit_DESTROYER)
+            retireUnit(yourCell);
+    }
+    else if(yourUnit == Unit_BOMBER){
+        if((enemyUnit >= 13 && enemyUnit <= 18) || enemyUnit == Unit_TANK || enemyUnit == Unit_SCUD)
+            killEnemyUnit(enemyCell);
+        else if(enemyUnit == Unit_FIGHTER || enemyUnit == Unit_SUBMARINE)
+            retireUnit(yourCell);
+    }
+    else if(yourUnit == Unit_FIGHTER){
+        if(enemyUnit == Unit_BOMBER || enemyUnit == Unit_SUBMARINE)
+            killEnemyUnit(enemyCell);
+        else if(enemyUnit == Unit_DESTROYER || enemyUnit == Unit_SCUD)
+            retireUnit(yourCell);
+    }
+    else if(yourUnit >= 13 && yourUnit <= 18){
+        if(enemyUnit == Unit_SCUD || enemyUnit == Unit_BOMBER || enemyUnit == Unit_SUBMARINE)
+            retireUnit(yourCell);
+    }
+}
+
+void SingleGameState::commandBaseChange(bool built, bool enemy)
+{
+    if(built)
+    {
+        commandBaseTotal++;
+        myCommandBase++;
+    }
+    else if(enemy)
+    {
+        enemyCommandBase--;
+    }
+    else{
+        myCommandBase--;
+    }
+    std::string commandMy;
+    std::string commandEnemy;
+    std::string commandTotal;
+    std::string commandMax;
+    std::stringstream out;
+    out << commandBaseTotal;
+    commandTotal = out.str();
+    out.str( std::string() );
+    out.clear();
+    out << myCommandBase;
+    commandMy = out.str();
+    out.str( std::string() );
+    out.clear();
+    out << enemyCommandBase;
+    commandEnemy = out.str();
+    out.str( std::string() );
+    out.clear();   
+    out << commandBaseMax;
+    commandMax = out.str();
+    out.str( std::string() );
+    out.clear(); 
+    CEGUI::Window *resultWindow = CEGUI::WindowManager::getSingleton().getWindow("ProgressText1");
+    if(myOwner == Owner_BLUE)
+        resultWindow->setText("[colour='FF0000FF']Player Command Bases Remaining: "+commandMy+"/"+commandTotal+"");
+    else
+        resultWindow->setText("[colour='FFFF0000']Player Command Bases Remaining: "+commandMy+"/"+commandTotal+"");
+
+    resultWindow = CEGUI::WindowManager::getSingleton().getWindow("ProgressText2");
+
+    if(myOwner == Owner_BLUE)
+        resultWindow->setText("[colour='FFFF0000']Enemy Command Bases Remaining: "+commandEnemy+"/"+commandMax+"");
+    else
+        resultWindow->setText("[colour='FF0000FF']Enemy Command Bases Remaining: "+commandEnemy+"/"+commandMax+"");
+    if(commandBaseTotal == commandBaseMax && enemyCommandBase == 0){
+        //YouWin
+    }
+    if(commandBaseTotal == commandBaseMax && myCommandBase == 0){
+        //YouLose
+    }
+}

@@ -83,6 +83,7 @@ public:
     bool FighterButton(const CEGUI::EventArgs &e);
     bool CaptureButton(const CEGUI::EventArgs &e);
     bool LaunchButton(const CEGUI::EventArgs &e);
+    bool FriendlyReminderButton(const CEGUI::EventArgs &e);
     
     void DeButton();
     void BuildingImages0();
@@ -111,11 +112,16 @@ public:
     
     void fireMissile(PlanetCell& origin, PlanetCell& goal);
     void retireUnit(PlanetCell& targetCell);
+    void killEnemyUnit(PlanetCell& targetCell);
     void nuke(PlanetCell& targetCell);
 
     void processEvents();
     void processResources(int, int);
     void processTimer();
+    void capture();
+    void attack(PlanetCell& targetCell);
+    void combat(PlanetCell& yourCell,PlanetCell& enemyCell);
+    void commandBaseChange(bool, bool);
 
     
 private:
@@ -163,6 +169,11 @@ private:
     bool lost;
     int buildingImages;
     int myOwner;
+    int myEnemy;
+    int commandBaseMax;
+    int commandBaseTotal;
+    int myCommandBase;
+    int enemyCommandBase;
     int money;
     int plutonium;
     int population;
@@ -173,8 +184,9 @@ private:
     int unitMoney;
     int unitPlutonium;
     int unitTimer;
+    int tutorial;
     time_t  currentTime;
-    std::priority_queue<Times, std::vector<Times>, Times> eventQueue;
+    std::priority_queue<Times, std::vector<Times>, CompareTimes> eventQueue;
     
     PlanetCell* currentCell;
     PlanetCell* lastCell;

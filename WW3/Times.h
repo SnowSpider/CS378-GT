@@ -44,12 +44,23 @@ public:
 
     bool operator()( Times j1,Times j2)
     {
-        if(j2.time > j1.time)
+        if(j2.time < j1.time)
             return true;
 
             return false;
     }
 
+};
+class CompareTimes
+{
+public:
+    bool operator()( Times j1,Times j2)
+    {
+        if(j2.time < j1.time)
+            return true;
+
+            return false;
+    }
 };
 //|||||||||||||||||||||||||||||||||||||||||||||||
  
