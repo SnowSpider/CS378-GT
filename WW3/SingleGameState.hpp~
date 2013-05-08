@@ -95,7 +95,10 @@ public:
     void illuminate(PlanetCell& targetCell);
     void deluminate(PlanetCell& targetCell);
     
-    void fireMissile();
+    void fireMissile(PlanetCell& origin, PlanetCell& goal);
+    void retireUnit(PlanetCell& targetCell);
+    void nuke(PlanetCell& targetCell);
+
     void processEvents();
 
     
@@ -155,7 +158,7 @@ private:
     int unitPlutonium;
     int unitTimer;
     time_t  currentTime;
-    std::priority_queue<Times, std::vector<Times>, CompareTimes> eventQueue;
+    std::priority_queue<Times, std::vector<Times>, Times> eventQueue;
     
     PlanetCell* currentCell;
     PlanetCell* lastCell;

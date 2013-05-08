@@ -1,3 +1,80 @@
+material MyMaterials/arrow_blue.png
+{
+   technique
+   {
+      pass
+      {
+         scene blend alpha_blend
+         texture_unit
+         {
+            texture arrow_blue.png 2d
+            scale 1 1
+         }
+      }
+   }
+}
+
+material MyMaterials/arrow_red.png
+{
+   technique
+   {
+      pass
+      {
+         scene blend alpha_blend
+         texture_unit
+         {
+            texture arrow_red.png 2d
+            scale 1 1
+         }
+      }
+   }
+}
+
+material MyMaterials/infantry
+{
+   technique
+   {
+      pass
+      {
+         texture_unit
+         {
+            texture symbol_infantry.png 2d
+            scale 1 1
+         }
+      }
+   }
+}
+
+material MyMaterials/tank
+{
+   technique
+   {
+      pass
+      {
+         texture_unit
+         {
+            texture symbol_tank.png 2d
+            scale 1 1
+         }
+      }
+   }
+}
+
+material MyMaterials/scud
+{
+   technique
+   {
+      pass
+      {
+         texture_unit
+         {
+            texture symbol_scud.png 2d
+            scale 1 1
+         }
+      }
+   }
+}
+
 material MyMaterials/crate
 {
    technique

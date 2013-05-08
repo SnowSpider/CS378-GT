@@ -138,6 +138,34 @@ enum moveTime{
     MoveTime_SPYPLANE = 5,
 };
 
+class Missile {
+    public:
+    Ogre::SceneNode* rootNode;
+    Ogre::Entity* myEntity;
+    size_t id;
+    string name;
+    int owner;
+    btVector3 start;
+    btVector3 end;
+    
+    std::vector<float> altitudes;
+    std::vector<btVector3> positions;
+    std::vector<btVector3> vectors;
+    
+    Missile(){
+        owner = Owner_NEUTRAL;
+    }
+    
+    Missile(size_t myOwner, btVector3 s, btVector3 e){
+        owner = myOwner;
+        start = s;
+        end = e;
+    }
+    void createObject(Ogre::SceneManager* scnMgr);
+    void relocate(btVector3& dest);
+    void destroy(Ogre::SceneManager* scnMgr);
+};
+
 class Arrow {
     public:
     Ogre::SceneNode* rootNode;
@@ -157,7 +185,7 @@ class Arrow {
         start = s;
         end = e;
     }
-    void createObject(Ogre::SceneManager* scnMgr, char* mesh, char* mat);
+    void createObject(Ogre::SceneManager* scnMgr);
     void stretch(btVector3 s, btVector3 e);
     void setVisibility(bool flag);
 };
@@ -215,6 +243,7 @@ class Unit {
     void translate(float x, float y, float z);
     void setDirection(btVector3& d);
     void grow();
+    void destroy(Ogre::SceneManager* scnMgr);
 };
 
 #endif

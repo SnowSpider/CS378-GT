@@ -450,6 +450,16 @@ bool SingleGameState::keyPressed(const OIS::KeyEvent &keyEventRef)
         pushAppState(findByName("PauseState"));
         return true;
     }
+    if(keyEventRef.key == OIS::KC_R) //retire the unit on the current cell
+    {
+        if(currentCell->myUnit != Unit_EMPTY && currentCell->occupier == myOwner){
+            currentCell->myUnit = 0;
+            currentCell->myUnitId = -1;
+            currentCell->occupier == Owner_NEUTRAL;
+            units[currentCell->myUnitId].destroy(m_pSceneMgr);
+        }
+        return true;
+    }
     if(keyEventRef.key == OIS::KC_X)
     {
         SingleGameState::soundSwitch();
@@ -627,6 +637,8 @@ void SingleGameState::onLeftPressed(const OIS::MouseEvent &evt)
                 istringstream(idNumber) >> intId; 
                 currentCell = &(earth.cells[intId]); 
                 
+                cout << "Cell id = " << intId << endl; 
+                
                 if(unitBuilding){
                     if(lastCell != NULL && currentCell->myUnit == Unit_EMPTY && currentCell->building == false){
                         issueProduceOrder(*lastCell, *currentCell);
@@ -636,7 +648,7 @@ void SingleGameState::onLeftPressed(const OIS::MouseEvent &evt)
                     }             
                 }
                 else if(unitMoving){
-                    if(lastCell != NULL && currentCell->myUnit == Unit_EMPTY && currentCell->building == false){
+                    if(lastCell != NULL && (currentCell->myUnit == Unit_EMPTY || currentCell->occupier != myOwner) && currentCell->building == false){
                         issueMoveOrder(units[lastCell->myUnitId], *lastCell, *currentCell);
                     }
                     else{
@@ -939,7 +951,7 @@ bool SingleGameState::CommandBaseButton(const CEGUI::EventArgs &e)
     money -= Au_COMMANDBASE;
     plutonium -= Pt_COMMANDBASE;
     
-    Unit newUnit(Owner_BLUE, Unit_COMMANDBASE);
+    Unit newUnit(myOwner, Unit_COMMANDBASE);
     newUnit.createManualObject(m_pSceneMgr);
     newUnit.relocate(earth.vertices[currentCell->id]);
     newUnit.translate(0,150,0);
@@ -948,6 +960,7 @@ bool SingleGameState::CommandBaseButton(const CEGUI::EventArgs &e)
     BuildingImages1(*currentCell); 
 
     std::time(&currentTime);
+    currentCell->timeNeeded = currentTime+currentCell->timer;
     Times temp(currentTime+currentCell->timer , currentCell->id);
     eventQueue.push(temp);
 
@@ -962,7 +975,7 @@ bool SingleGameState::ArmyBaseButton(const CEGUI::EventArgs &e)
     money -= Au_ARMYBASE;
     plutonium -= Pt_ARMYBASE;
     
-    Unit newUnit(Owner_BLUE, Unit_ARMYBASE);
+    Unit newUnit(myOwner, Unit_ARMYBASE);
     newUnit.createManualObject(m_pSceneMgr);
     newUnit.relocate(earth.vertices[currentCell->id]); 
     newUnit.translate(0,150,0);
@@ -971,6 +984,7 @@ bool SingleGameState::ArmyBaseButton(const CEGUI::EventArgs &e)
     BuildingImages1(*currentCell);
 
     std::time(&currentTime);
+    currentCell->timeNeeded = currentTime+currentCell->timer;
     Times temp(currentTime+currentCell->timer , currentCell->id);
     eventQueue.push(temp);
 
@@ -985,7 +999,7 @@ bool SingleGameState::NavyBaseButton(const CEGUI::EventArgs &e)
     money -= Au_NAVYBASE;
     plutonium -= Pt_NAVYBASE;
     
-    Unit newUnit(Owner_BLUE, Unit_NAVYBASE);
+    Unit newUnit(myOwner, Unit_NAVYBASE);
     newUnit.createManualObject(m_pSceneMgr);
     newUnit.relocate(earth.vertices[currentCell->id]);
     newUnit.translate(0,150,0);
@@ -994,6 +1008,7 @@ bool SingleGameState::NavyBaseButton(const CEGUI::EventArgs &e)
     BuildingImages1(*currentCell);
 
     std::time(&currentTime);
+    currentCell->timeNeeded = currentTime+currentCell->timer;
     Times temp(currentTime+currentCell->timer , currentCell->id);
     eventQueue.push(temp);
 
@@ -1008,7 +1023,7 @@ bool SingleGameState::AirForceBaseButton(const CEGUI::EventArgs &e)
     money -= Au_AIRFORCEBASE;
     plutonium -= Pt_AIRFORCEBASE;
     
-    Unit newUnit(Owner_BLUE, Unit_AIRFORCEBASE);
+    Unit newUnit(myOwner, Unit_AIRFORCEBASE);
     newUnit.createManualObject(m_pSceneMgr);
     newUnit.relocate(earth.vertices[currentCell->id]); 
     newUnit.translate(0,150,0);
@@ -1017,6 +1032,7 @@ bool SingleGameState::AirForceBaseButton(const CEGUI::EventArgs &e)
     BuildingImages1(*currentCell);
 
     std::time(&currentTime);
+    currentCell->timeNeeded = currentTime+currentCell->timer;
     Times temp(currentTime+currentCell->timer , currentCell->id);
     eventQueue.push(temp);
 
@@ -1031,7 +1047,7 @@ bool SingleGameState::NuclearPlantButton(const CEGUI::EventArgs &e)
     money -= Au_NUCLEARPLANT;
     plutonium -= Pt_NUCLEARPLANT;
     
-    Unit newUnit(Owner_BLUE, Unit_NUCLEARPLANT);
+    Unit newUnit(myOwner, Unit_NUCLEARPLANT);
     newUnit.createManualObject(m_pSceneMgr);
     newUnit.relocate(earth.vertices[currentCell->id]); 
     newUnit.translate(0,150,0);
@@ -1040,6 +1056,7 @@ bool SingleGameState::NuclearPlantButton(const CEGUI::EventArgs &e)
     BuildingImages1(*currentCell);
 
     std::time(&currentTime);
+    currentCell->timeNeeded = currentTime+currentCell->timer;
     Times temp(currentTime+currentCell->timer , currentCell->id);
     eventQueue.push(temp);
 
@@ -1054,7 +1071,7 @@ bool SingleGameState::ICBMSiloButton(const CEGUI::EventArgs &e)
     money -= Au_ICBMSILO;
     plutonium -= Pt_ICBMSILO;
     
-    Unit newUnit(Owner_BLUE, Unit_ICBMSILO);
+    Unit newUnit(myOwner, Unit_ICBMSILO);
     newUnit.createManualObject(m_pSceneMgr);
     newUnit.relocate(earth.vertices[currentCell->id]);
     newUnit.translate(0,150,0);
@@ -1063,6 +1080,7 @@ bool SingleGameState::ICBMSiloButton(const CEGUI::EventArgs &e)
     BuildingImages1(*currentCell);
 
     std::time(&currentTime);
+    currentCell->timeNeeded = currentTime+currentCell->timer;
     Times temp(currentTime+currentCell->timer , currentCell->id);
     eventQueue.push(temp);
 
@@ -1597,6 +1615,12 @@ void SingleGameState::BuildingImagesAF5(PlanetCell &cell)
 bool SingleGameState::issueProduceOrder(PlanetCell& origin, PlanetCell& goal){
     for(int i=0;i<lastCell->neighbors.size();i++){
         if(goal.id == acceptNeighbors[i]){
+            /*
+            Arrow& tempArrow = units[origin.myUnitId].myArrow;
+            tempArrow = Arrow(myOwner, earth.vertices[origin.id], earth.vertices[goal.id]);
+            tempArrow.createObject(m_pSceneMgr);
+            tempArrow.setVisibility(true);
+            */
             goal.myUnit_pending = unitBuilding;
             if(unitBuilding == Unit_INFANTRY) goal.timer = BuildTime_INFANTRY;
             else if(unitBuilding == Unit_TANK) goal.timer = BuildTime_TANK;
@@ -1622,6 +1646,7 @@ bool SingleGameState::issueProduceOrder(PlanetCell& origin, PlanetCell& goal){
             illuminate(origin);
 
             std::time(&currentTime);
+            goal.timeNeeded = currentTime+goal.timer;
             Times temp(currentTime+goal.timer , goal.id);
             eventQueue.push(temp);
 
@@ -1629,24 +1654,29 @@ bool SingleGameState::issueProduceOrder(PlanetCell& origin, PlanetCell& goal){
         }
     }
     unitBuilding = 0;
+    illuminate(origin);
     return true;
 }
 
 bool SingleGameState::createUnit(PlanetCell& goal){
     goal.myUnit = goal.myUnit_pending;
+    goal.occupier = myOwner;
     goal.myUnit_pending = 0;
-    Unit newUnit(Owner_BLUE, goal.myUnit);
+    Unit newUnit(myOwner, goal.myUnit);
     if(goal.myUnit == Unit_SCUD){
-        newUnit.createObject(m_pSceneMgr, "missile.mesh", "MyMaterials/Blue");
+        newUnit.createSymbolObject(m_pSceneMgr);
+        //newUnit.createObject(m_pSceneMgr, "missile.mesh", "MyMaterials/Blue");
     }
     else if(goal.myUnit == Unit_FIGHTER){
         newUnit.createObject(m_pSceneMgr, "fighter.mesh", "MyMaterials/Blue");
     }
     else if(goal.myUnit == Unit_TANK){
-        newUnit.createObject(m_pSceneMgr, "tank.mesh", "MyMaterials/Blue");
+        newUnit.createSymbolObject(m_pSceneMgr);
+        //newUnit.createObject(m_pSceneMgr, "tank.mesh", "MyMaterials/Blue");
     }
     else if(goal.myUnit == Unit_INFANTRY){
-        newUnit.createObject(m_pSceneMgr, "soldier.mesh", "MyMaterials/Blue");
+        newUnit.createSymbolObject(m_pSceneMgr);
+        //newUnit.createObject(m_pSceneMgr, "soldier.mesh", "MyMaterials/Blue");
     }
     else if(goal.myUnit == Unit_DESTROYER){
         newUnit.createObject(m_pSceneMgr, "destroyer.mesh", "MyMaterials/Blue");
@@ -1661,7 +1691,7 @@ bool SingleGameState::createUnit(PlanetCell& goal){
         newUnit.createManualObject(m_pSceneMgr);
     }
     newUnit.relocate(earth.vertices[goal.id]);
-    newUnit.setDirection(goal.myUnitDirection);
+    //newUnit.setDirection(goal.myUnitDirection);
     units.push_back(newUnit);
     goal.myUnitId = newUnit.id;
     illuminate(goal);
@@ -1682,12 +1712,20 @@ bool SingleGameState::issueMoveOrder(Unit& unit, PlanetCell& origin, PlanetCell&
             else if(origin.myUnit == Unit_BOMBER) origin.timer = MoveTime_BOMBER;
             else if(origin.myUnit == Unit_FIGHTER) origin.timer = MoveTime_FIGHTER;
             else if(origin.myUnit == Unit_SPYPLANE) origin.timer = MoveTime_SPYPLANE;
+            btVector3 a = earth.vertices[origin.id];
+            btVector3 g = earth.vertices[goal.id];
+            btVector3 b = g - a;
+            btVector3 c = a.cross(b);
+            btVector3 d = c.cross(a);
+            goal.myUnitDirection = d;
+            
             origin.moving = true;
             origin.goalId = goal.id;
             illuminate(origin);
             unitMoving = 0;
 
             std::time(&currentTime);
+            origin.timeNeeded = currentTime+origin.timer;
             Times temp(currentTime+origin.timer , origin.id);
             eventQueue.push(temp);
 
@@ -1706,14 +1744,47 @@ bool SingleGameState::moveUnit(Unit& unit, PlanetCell& origin, PlanetCell& goal)
     origin.goalId = -1;
     if(goal.myUnit == Unit_EMPTY){
         unit.relocate(earth.vertices[goal.id]);
+        //unit.setDirection(goal.myUnitDirection);
         origin.myUnit = 0;
+        origin.occupier = Owner_NEUTRAL;
         origin.myUnitId = -1;
         goal.myUnit = unit.myType;
+        origin.occupier = myOwner;
         goal.myUnitId = unit.id;
         deluminate(origin);
         illuminate(goal);
         return true;
     }
+    else if(goal.occupier != Owner_NEUTRAL && goal.occupier != myOwner){ // bumping into an enemy unit
+        if(unit.myType == goal.myUnit){ // Likes kill likes.
+            nuke(goal);
+            unit.relocate(earth.vertices[goal.id]);
+            origin.myUnit = 0;
+            origin.occupier = Owner_NEUTRAL;
+            origin.myUnitId = -1;
+            goal.myUnit = unit.myType;
+            origin.occupier = myOwner;
+            goal.myUnitId = unit.id;
+            deluminate(origin);
+            illuminate(goal);
+            return true;
+        }
+        //else return false;
+        else{
+            nuke(goal);
+            unit.relocate(earth.vertices[goal.id]);
+            origin.myUnit = 0;
+            origin.occupier = Owner_NEUTRAL;
+            origin.myUnitId = -1;
+            goal.myUnit = unit.myType;
+            origin.occupier = myOwner;
+            goal.myUnitId = unit.id;
+            deluminate(origin);
+            illuminate(goal);
+            return true;
+        }
+    }
+
     return false;
 }
 
@@ -1731,13 +1802,13 @@ void SingleGameState::deluminate(PlanetCell& goal){
     bool unseen_self = true;
     for(int i=0;i<goal.neighbors.size();i++){
         PlanetCell& temp1 = earth.cells[goal.neighbors[i]];
-        if(temp1.owner == Owner_BLUE || temp1.myUnit != 0){
+        if(temp1.owner == myOwner || temp1.myUnit != 0){
             unseen_self = false;
         }
         for(int j=0;j<temp1.neighbors.size();j++){
             PlanetCell& temp2 = earth.cells[temp1.neighbors[j]];
             if(temp2.id != goal.id){
-                if(temp2.owner == Owner_BLUE || temp2.myUnit != 0){
+                if(temp2.owner == myOwner || temp2.myUnit != 0){
                     unseen_neighbor = false;
                 }
             }
@@ -1762,9 +1833,24 @@ void SingleGameState::deluminate(PlanetCell& goal){
     }
 }
 
-void SingleGameState::fireMissile(){
-    
+float y(float x, float v, float theta){
+    float k = v * cos(theta);
+    return x * tan(theta) - ( (9.8*x*x)/(2*k*k) );
 }
+
+void SingleGameState::fireMissile(PlanetCell& origin, PlanetCell& goal){
+    Missile newMissile(myOwner, earth.vertices[origin.id], earth.vertices[goal.id]);
+    newMissile.createObject(m_pSceneMgr);
+    newMissile.relocate(earth.vertices[origin.id]);
+    float theta = newMissile.start.angle(newMissile.end);
+    float distance = theta * 6371;
+    float v = 10;
+    float angle_of_reach = 0.5 * asin(9.8 * distance / v);
+    float time = distance / (v*cos(theta));
+    
+    missiles.push_back(newMissile);
+}
+
 
 void SingleGameState::processEvents(){
     
@@ -1800,7 +1886,8 @@ void SingleGameState::processEvents(){
                 PlanetCell& tempCell = earth.cells[tempTime.cellID];
                 if(tempCell.myUnit_pending >= 13 && tempCell.myUnit_pending <= 19 && tempCell.myUnitId != -1){
                     cout << "Well I got to here..." << endl;
-                    if(tempCell.timer-(tempTime.time-currentTime) >= tempCell.growsCompleted && tempCell.growsCompleted < tempCell.timer){
+                    if((tempCell.timer-(tempTime.time-currentTime) >= tempCell.growsCompleted) &&
+                    (tempCell.growsCompleted < tempCell.timer) ){
                         units[tempCell.myUnitId].grow();
                         tempCell.growsCompleted++;
                         cout << "I Build Something!" << endl;

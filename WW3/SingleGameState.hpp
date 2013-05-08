@@ -95,7 +95,10 @@ public:
     void illuminate(PlanetCell& targetCell);
     void deluminate(PlanetCell& targetCell);
     
-    void fireMissile();
+    void fireMissile(PlanetCell& origin, PlanetCell& goal);
+    void retireUnit(PlanetCell& targetCell);
+    void nuke(PlanetCell& targetCell);
+
     void processEvents();
 
     
@@ -176,6 +179,7 @@ private:
     int intId;
     
     std::vector<Unit> units;
+    std::vector<Missile> missiles;
 };
 //|||||||||||||||||||||||||||||||||||||||||||||||
  
