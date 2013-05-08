@@ -36,7 +36,7 @@ enum unitCost_gold{
     Au_FIGHTER = 1200,
     Au_SPYPLANE = 3000,
     
-    Au_COMMANDBASE = 10000,
+    Au_COMMANDBASE = 0,
     Au_ARMYBASE = 15000,
     Au_NAVYBASE = 20000,
     Au_AIRFORCEBASE = 25000,

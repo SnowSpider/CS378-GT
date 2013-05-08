@@ -184,6 +184,7 @@ private:
     int unitMoney;
     int unitPlutonium;
     int unitTimer;
+    int tutorial;
     time_t  currentTime;
     std::priority_queue<Times, std::vector<Times>, CompareTimes> eventQueue;
     

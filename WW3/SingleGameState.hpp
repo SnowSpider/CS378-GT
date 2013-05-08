@@ -118,7 +118,7 @@ public:
     void processEvents();
     void processResources(int, int);
     void processTimer();
-    void capture();
+    void capture(PlanetCell& targetCell);
     void attack(PlanetCell& targetCell);
     void combat(PlanetCell& yourCell,PlanetCell& enemyCell);
     void commandBaseChange(bool, bool);

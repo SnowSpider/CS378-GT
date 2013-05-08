@@ -1595,7 +1595,16 @@ bool SingleGameState::FighterButton(const CEGUI::EventArgs &e)
 
 bool SingleGameState::CaptureButton(const CEGUI::EventArgs &e)
 {
+    currentCell->timer = BuildTime_CAPTURE;
+    currentCell->capturing = true;
+    currentCell->moving = false;
+    processResources(-Au_CAPTURE,-Pt_CAPTURE);
 
+    std::time(&currentTime);
+    currentCell->timeNeeded = currentTime+currentCell->timer;
+    Times temp(currentTime+currentCell->timer , currentCell->id);
+    eventQueue.push(temp);
+    onButton = true;
     return true;
 }
 
@@ -2229,6 +2238,7 @@ bool SingleGameState::issueMoveOrder(Unit& unit, PlanetCell& origin, PlanetCell&
             goal.myUnitDirection = d;
             
             origin.moving = true;
+            origin.capturing = false;
             origin.goalId = goal.id;
             illuminate(origin);
             unitMoving = 0;
@@ -2419,6 +2429,9 @@ void SingleGameState::processEvents(void){
                     moveUnit(units[tempCell.myUnitId], tempCell, earth.cells[tempCell.goalId]); 
                     cout << "NotMove" << endl;
                 }
+                else if(tempCell.capturing){
+                    capture(tempCell);
+                }
                 else if(tempCell.myUnit_pending){
                     cout << "inHere?" << endl;
                     if(tempCell.myUnit_pending >= 13 && tempCell.myUnit_pending <= 19 && tempCell.myUnitId != -1){
@@ -2592,6 +2605,8 @@ void SingleGameState::processTimer(void)
         out.clear();
         if(currentCell->moving)
             counter->setText("Time until move:\n"+temptime+"s");
+        else if(currentCell->capturing)
+            counter->setText("Time until capture:\n"+temptime+"s");
         else
             counter->setText("Time until build:\n"+temptime+"s");
         if(!timerup)
@@ -2609,10 +2624,11 @@ void SingleGameState::processTimer(void)
     }
 }
 
-void SingleGameState::capture(void)
+void SingleGameState::capture(PlanetCell& targetCell)
 {
-    earth.cells[currentCell->id].owner = myOwner;
-    earth.own(m_pSceneMgr, earth.cells[currentCell->id]);
+    targetCell.capturing = false;
+    targetCell.owner = myOwner;
+    earth.own(m_pSceneMgr, targetCell);
     earth.updateBorderSegments(m_pSceneMgr);
 }
 

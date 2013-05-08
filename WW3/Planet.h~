@@ -250,7 +250,7 @@ class PlanetCell{
     bool building;
     bool unitbuilding;
     int timer;
-    int timeNeeded;
+    time_t timeNeeded;
     int growsCompleted;
     
     btVector3 myUnitDirection;

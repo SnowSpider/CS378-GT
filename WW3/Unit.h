@@ -43,7 +43,7 @@ enum unitCost_gold{
     Au_NUCLEARPLANT = 150000,
     Au_ICBMSILO = 50000,
     Au_LAUNCH = 100000,
-    Au_CAPTURE = 100,
+    Au_CAPTURE = 0,
     Au_SAMSITE = 1000
 };
 
@@ -123,7 +123,7 @@ enum buildTime{
     BuildTime_NUCLEARPLANT = 5,
     BuildTime_ICBMSILO = 5,
     BuildTime_LAUNCH = 5,
-    BuildTime_CAPTURE = 5,
+    BuildTime_CAPTURE = 10,
     BuildTime_SAMSITE = 5
 };
 

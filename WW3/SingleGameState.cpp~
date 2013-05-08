@@ -338,7 +338,7 @@ void SingleGameState::createScene()
     resultWindow->setVerticalAlignment(CEGUI::VA_CENTRE);
     resultWindow->setXPosition(CEGUI::UDim(0.05f, 0));
     resultWindow->setSize(CEGUI::UVector2(CEGUI::UDim(0.4f, 0), CEGUI::UDim(0.4f, 0)));
-    resultWindow->setText("In order to purge the world of Evil, the opposing views must be completely destroyed. Your representing color is seen at the top of the screen. Tiles on the screen on represented as Land (green outline), Water (blue outline), and WaterLand (yellow outline). The thicker outlines on the map mark your's and your opponent's territory. Click to Continue.");
+    resultWindow->setText("In order to purge the world of Evil, the opposing views must be completely destroyed. Your representing color is seen at the top of the screen. Tiles on the screen are represented as Land (green outline), Water (blue outline), and WaterLand (yellow outline). The thicker outlines on the map mark your's and your opponent's territory. Click to Continue.");
     resultWindow->setProperty("FrameEnabled", "false");
     resultWindow->setProperty("BackgroundEnabled", "false");
     resultWindow->setProperty("HorzFormatting", "WordWrapCentred");
@@ -1595,7 +1595,15 @@ bool SingleGameState::FighterButton(const CEGUI::EventArgs &e)
 
 bool SingleGameState::CaptureButton(const CEGUI::EventArgs &e)
 {
+    currentCell->timer = BuildTime_CAPTURE;
+    currentCell->capturing = true;
+    processResources(-Au_CAPTURE,-Pt_CAPTURE);
 
+    std::time(&currentTime);
+    currentCell->timeNeeded = currentTime+currentCell->timer;
+    Times temp(currentTime+currentCell->timer , currentCell->id);
+    eventQueue.push(temp);
+    onButton = true;
     return true;
 }
 
@@ -2419,6 +2427,9 @@ void SingleGameState::processEvents(void){
                     moveUnit(units[tempCell.myUnitId], tempCell, earth.cells[tempCell.goalId]); 
                     cout << "NotMove" << endl;
                 }
+                else if(tempCell.capturing){
+                    capture(tempCell);
+                }
                 else if(tempCell.myUnit_pending){
                     cout << "inHere?" << endl;
                     if(tempCell.myUnit_pending >= 13 && tempCell.myUnit_pending <= 19 && tempCell.myUnitId != -1){
@@ -2592,6 +2603,8 @@ void SingleGameState::processTimer(void)
         out.clear();
         if(currentCell->moving)
             counter->setText("Time until move:\n"+temptime+"s");
+        else if(currentCell->capturing)
+            counter->setText("Time until capture:\n"+temptime+"s");
         else
             counter->setText("Time until build:\n"+temptime+"s");
         if(!timerup)
@@ -2609,10 +2622,11 @@ void SingleGameState::processTimer(void)
     }
 }
 
-void SingleGameState::capture(void)
+void SingleGameState::capture(PlanetCell& targetCell)
 {
-    earth.cells[currentCell->id].owner = myOwner;
-    earth.own(m_pSceneMgr, earth.cells[currentCell->id]);
+    targetCell.capturing = false;
+    targetCell.owner = myOwner;
+    earth.own(m_pSceneMgr, targetCell);
     earth.updateBorderSegments(m_pSceneMgr);
 }
 
