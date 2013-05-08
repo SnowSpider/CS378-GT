@@ -248,6 +248,7 @@ class PlanetCell{
     
     bool moving;
     bool building;
+    bool unitbuilding;
     int timer;
     int timeNeeded;
     int growsCompleted;
@@ -269,6 +270,7 @@ class PlanetCell{
         selected = false;
         moving = false;
         building = false;
+        unitbuilding = false;
         myUnit = 0;
         myUnit_pending = 0;
         myUnitId = -1;
@@ -293,6 +295,7 @@ class PlanetCell{
         selected = false;
         moving = false;
         building = false;
+        unitbuilding = false;
         myUnit = 0;
         myUnit_pending = 0;
         myUnitId = -1;
@@ -319,6 +322,7 @@ class PlanetCell{
         selected = false;
         moving = false;
         building = false;
+        unitbuilding = false;
         myUnit = 0;
         myUnit_pending = 0;
         myUnitId = -1;
@@ -345,6 +349,7 @@ class PlanetCell{
         selected = false;
         moving = false;
         building = false;
+        unitbuilding = false;
         myUnit = 0;
         myUnit_pending = 0;
         myUnitId = -1;
@@ -371,6 +376,7 @@ class PlanetCell{
         selected = false;
         moving = false;
         building = false;
+        unitbuilding = false;
         myUnit = 0;
         myUnit_pending = 0;
         myUnitId = -1;

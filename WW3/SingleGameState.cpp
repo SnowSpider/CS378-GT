@@ -1622,18 +1622,18 @@ bool SingleGameState::issueProduceOrder(PlanetCell& origin, PlanetCell& goal){
             tempArrow.setVisibility(true);
             */
             goal.myUnit_pending = unitBuilding;
-            if(unitBuilding == Unit_INFANTRY) goal.timer = BuildTime_INFANTRY;
-            else if(unitBuilding == Unit_TANK) goal.timer = BuildTime_TANK;
-            else if(unitBuilding == Unit_ARTILLERY) goal.timer = BuildTime_ARTILLERY;
-            else if(unitBuilding == Unit_SCUD) goal.timer = BuildTime_SCUD;
-            else if(unitBuilding == Unit_ENGINEER) goal.timer = BuildTime_ENGINEER;
-            else if(unitBuilding == Unit_SUBMARINE) goal.timer = BuildTime_SUBMARINE;
-            else if(unitBuilding == Unit_DESTROYER) goal.timer = BuildTime_DESTROYER;
-            else if(unitBuilding == Unit_CARRIER) goal.timer = BuildTime_CARRIER;
-            else if(unitBuilding == Unit_CRUISER) goal.timer = BuildTime_CRUISER;
-            else if(unitBuilding == Unit_BOMBER) goal.timer = BuildTime_BOMBER;
-            else if(unitBuilding == Unit_FIGHTER) goal.timer = BuildTime_FIGHTER;
-            else if(unitBuilding == Unit_SPYPLANE) goal.timer = BuildTime_SPYPLANE;
+            if(unitBuilding == Unit_INFANTRY) origin.timer = BuildTime_INFANTRY;
+            else if(unitBuilding == Unit_TANK) origin.timer = BuildTime_TANK;
+            else if(unitBuilding == Unit_ARTILLERY) origin.timer = BuildTime_ARTILLERY;
+            else if(unitBuilding == Unit_SCUD) origin.timer = BuildTime_SCUD;
+            else if(unitBuilding == Unit_ENGINEER) origin.timer = BuildTime_ENGINEER;
+            else if(unitBuilding == Unit_SUBMARINE) origin.timer = BuildTime_SUBMARINE;
+            else if(unitBuilding == Unit_DESTROYER) origin.timer = BuildTime_DESTROYER;
+            else if(unitBuilding == Unit_CARRIER) origin.timer = BuildTime_CARRIER;
+            else if(unitBuilding == Unit_CRUISER) origin.timer = BuildTime_CRUISER;
+            else if(unitBuilding == Unit_BOMBER) origin.timer = BuildTime_BOMBER;
+            else if(unitBuilding == Unit_FIGHTER) origin.timer = BuildTime_FIGHTER;
+            else if(unitBuilding == Unit_SPYPLANE) origin.timer = BuildTime_SPYPLANE;
             money -= unitMoney;
             plutonium -= unitPlutonium;
             btVector3 a = earth.vertices[origin.id];
@@ -1643,58 +1643,65 @@ bool SingleGameState::issueProduceOrder(PlanetCell& origin, PlanetCell& goal){
             btVector3 d = c.cross(a);
             goal.myUnitDirection = d;
             unitBuilding = 0;
+            origin.goalId = goal.id;
             illuminate(origin);
+            origin.unitbuilding = true;
 
             std::time(&currentTime);
-            goal.timeNeeded = currentTime+goal.timer;
-            Times temp(currentTime+goal.timer , goal.id);
+            origin.timeNeeded = currentTime+origin.timer;
+            Times temp(currentTime+origin.timer , origin.id);
             eventQueue.push(temp);
 
             return true;
         }
     }
+    origin.unitbuilding = false;
+    origin.goalId = -1;
     unitBuilding = 0;
     illuminate(origin);
     return true;
 }
 
 bool SingleGameState::createUnit(PlanetCell& goal){
-    goal.myUnit = goal.myUnit_pending;
-    goal.occupier = myOwner;
-    goal.myUnit_pending = 0;
-    Unit newUnit(myOwner, goal.myUnit);
-    if(goal.myUnit == Unit_SCUD){
-        newUnit.createSymbolObject(m_pSceneMgr);
-        //newUnit.createObject(m_pSceneMgr, "missile.mesh", "MyMaterials/Blue");
+    if(goal.myUnit == 0)
+    {
+        goal.myUnit = goal.myUnit_pending;
+        goal.occupier = myOwner;
+        goal.myUnit_pending = 0;
+        Unit newUnit(myOwner, goal.myUnit);
+        if(goal.myUnit == Unit_SCUD){
+            newUnit.createSymbolObject(m_pSceneMgr);
+            //newUnit.createObject(m_pSceneMgr, "missile.mesh", "MyMaterials/Blue");
+        }
+        else if(goal.myUnit == Unit_FIGHTER){
+            newUnit.createObject(m_pSceneMgr, "fighter.mesh", "MyMaterials/Blue");
+        }
+        else if(goal.myUnit == Unit_TANK){
+            newUnit.createSymbolObject(m_pSceneMgr);
+            //newUnit.createObject(m_pSceneMgr, "tank.mesh", "MyMaterials/Blue");
+        }
+        else if(goal.myUnit == Unit_INFANTRY){
+            newUnit.createSymbolObject(m_pSceneMgr);
+            //newUnit.createObject(m_pSceneMgr, "soldier.mesh", "MyMaterials/Blue");
+        }
+        else if(goal.myUnit == Unit_DESTROYER){
+            newUnit.createObject(m_pSceneMgr, "destroyer.mesh", "MyMaterials/Blue");
+        }
+        else if(goal.myUnit == Unit_BOMBER){
+            newUnit.createObject(m_pSceneMgr, "bomber.mesh", "MyMaterials/Blue");
+        }
+        else if(goal.myUnit == Unit_SUBMARINE){
+            newUnit.createObject(m_pSceneMgr, "sub.mesh", "MyMaterials/Blue");
+        }
+        else{
+            newUnit.createManualObject(m_pSceneMgr);
+        }
+        newUnit.relocate(earth.vertices[goal.id]);
+        //newUnit.setDirection(goal.myUnitDirection);
+        units.push_back(newUnit);
+        goal.myUnitId = newUnit.id;
+        illuminate(goal);
     }
-    else if(goal.myUnit == Unit_FIGHTER){
-        newUnit.createObject(m_pSceneMgr, "fighter.mesh", "MyMaterials/Blue");
-    }
-    else if(goal.myUnit == Unit_TANK){
-        newUnit.createSymbolObject(m_pSceneMgr);
-        //newUnit.createObject(m_pSceneMgr, "tank.mesh", "MyMaterials/Blue");
-    }
-    else if(goal.myUnit == Unit_INFANTRY){
-        newUnit.createSymbolObject(m_pSceneMgr);
-        //newUnit.createObject(m_pSceneMgr, "soldier.mesh", "MyMaterials/Blue");
-    }
-    else if(goal.myUnit == Unit_DESTROYER){
-        newUnit.createObject(m_pSceneMgr, "destroyer.mesh", "MyMaterials/Blue");
-    }
-    else if(goal.myUnit == Unit_BOMBER){
-        newUnit.createObject(m_pSceneMgr, "bomber.mesh", "MyMaterials/Blue");
-    }
-    else if(goal.myUnit == Unit_SUBMARINE){
-        newUnit.createObject(m_pSceneMgr, "sub.mesh", "MyMaterials/Blue");
-    }
-    else{
-        newUnit.createManualObject(m_pSceneMgr);
-    }
-    newUnit.relocate(earth.vertices[goal.id]);
-    //newUnit.setDirection(goal.myUnitDirection);
-    units.push_back(newUnit);
-    goal.myUnitId = newUnit.id;
-    illuminate(goal);
 }
 
 bool SingleGameState::issueMoveOrder(Unit& unit, PlanetCell& origin, PlanetCell& goal){
@@ -1884,12 +1891,21 @@ void SingleGameState::processEvents(){
                     tempCell.myUnit = tempCell.myUnit_pending;
                     tempCell.myUnit_pending = 0;
                 }
-                else{
-                    createUnit(tempCell); 
-                }
+            }
+            else if(tempCell.unitbuilding){
+                tempCell.unitbuilding = false;
+                createUnit(earth.cells[tempCell.goalId]);
             }
             tempCell.growsCompleted = 0;
             eventQueue.pop();
+            if(currentCell->myUnit == Unit_COMMANDBASE)
+                BuildingImagesCB2(*currentCell);
+            else if(currentCell->myUnit == Unit_ARMYBASE)
+                BuildingImagesA3(*currentCell);
+            else if(currentCell->myUnit == Unit_NAVYBASE)
+                BuildingImagesN4(*currentCell);
+            else if(currentCell->myUnit == Unit_AIRFORCEBASE)
+                BuildingImagesAF5(*currentCell);
             processEvents();
             cout << "Hurray!!!!" << endl;
         }
