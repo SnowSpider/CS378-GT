@@ -229,8 +229,22 @@ void SingleGameState::createScene()
     CEGUI::Window *sheet = wmgr.createWindow("DefaultWindow", "CEGUIDemo/Sheet");
  
     CEGUI::Window *counter = wmgr.createWindow("TaharezLook/StaticText", "Counter");
-    counter->setText("    Resources\nMoney: $0\nPlutonium: 0kg\nUranium: 0kg");
-    counter->setSize(CEGUI::UVector2(CEGUI::UDim(0.15, 0), CEGUI::UDim(0.15, 0)));
+    std::string tempmoney;
+    std::string tempplut;
+    std::string tempmove;
+    std::string tempbuild;
+    std::stringstream out;
+    out << money;
+    tempmoney = out.str();
+    out.str( std::string() );
+    out.clear();
+    out << plutonium;
+    tempplut = out.str();
+    out.str( std::string() );
+    out.clear();
+    counter->setText("        Resources\nMoney: $"+tempmoney+"\nPlutonium: "+tempplut+"kg");
+    counter->setSize(CEGUI::UVector2(CEGUI::UDim(0.25, 0), CEGUI::UDim(0.10, 0)));
+    counter->setHorizontalAlignment(CEGUI::HA_LEFT);
     counter->setProperty("FrameEnabled", "false");
     counter->setProperty("BackgroundEnabled", "false");
  
@@ -291,6 +305,17 @@ void SingleGameState::createScene()
 
     sheet->addChildWindow(w);
 
+    w = CEGUI::WindowManager::getSingleton().getWindow("CommandBaseText");
+    out << Au_COMMANDBASE;
+    tempmoney = out.str();
+    out.str( std::string() );
+    out.clear();
+    out << BuildTime_COMMANDBASE;
+    tempbuild = out.str();
+    out.str( std::string() );
+    out.clear();
+    w->setText("Cost:$"+tempmoney+"\nBuild Time:"+tempbuild+"s");
+
     CEGUI::ImagesetManager::getSingleton().create( "ArmyBase.imageset" );
     w = wmgr.loadWindowLayout("ArmyBase.layout");
     w->setHorizontalAlignment(CEGUI::HA_RIGHT);
@@ -300,6 +325,17 @@ void SingleGameState::createScene()
     w->disable();
 
     sheet->addChildWindow(w);
+
+    w = CEGUI::WindowManager::getSingleton().getWindow("ArmyBaseText");
+    out << Au_ARMYBASE;
+    tempmoney = out.str();
+    out.str( std::string() );
+    out.clear();
+    out << BuildTime_ARMYBASE;
+    tempbuild = out.str();
+    out.str( std::string() );
+    out.clear();
+    w->setText("Cost:$"+tempmoney+"\nBuild Time:"+tempbuild+"s");
 
     CEGUI::ImagesetManager::getSingleton().create( "NavyBase.imageset" );
     w = wmgr.loadWindowLayout("NavyBase.layout");
@@ -311,6 +347,17 @@ void SingleGameState::createScene()
 
     sheet->addChildWindow(w);
 
+    w = CEGUI::WindowManager::getSingleton().getWindow("NavyBaseText");
+    out << Au_NAVYBASE;
+    tempmoney = out.str();
+    out.str( std::string() );
+    out.clear();
+    out << BuildTime_NAVYBASE;
+    tempbuild = out.str();
+    out.str( std::string() );
+    out.clear();
+    w->setText("Cost:$"+tempmoney+"\nBuild Time:"+tempbuild+"s");
+
     CEGUI::ImagesetManager::getSingleton().create( "AirForceBase.imageset" );
     w = wmgr.loadWindowLayout("AirForceBase.layout");
     w->setHorizontalAlignment(CEGUI::HA_RIGHT);
@@ -320,6 +367,17 @@ void SingleGameState::createScene()
     w->disable();
 
     sheet->addChildWindow(w);
+
+    w = CEGUI::WindowManager::getSingleton().getWindow("AirForceBaseText");
+    out << Au_AIRFORCEBASE;
+    tempmoney = out.str();
+    out.str( std::string() );
+    out.clear();
+    out << BuildTime_AIRFORCEBASE;
+    tempbuild = out.str();
+    out.str( std::string() );
+    out.clear();
+    w->setText("Cost:$"+tempmoney+"\nBuild Time:"+tempbuild+"s");
     
     CEGUI::ImagesetManager::getSingleton().create( "NuclearPlant.imageset" );
     w = wmgr.loadWindowLayout("NuclearPlant.layout");
@@ -331,6 +389,17 @@ void SingleGameState::createScene()
 
     sheet->addChildWindow(w);
 
+    w = CEGUI::WindowManager::getSingleton().getWindow("NuclearPlantText");
+    out << Au_NUCLEARPLANT;
+    tempmoney = out.str();
+    out.str( std::string() );
+    out.clear();
+    out << BuildTime_NUCLEARPLANT;
+    tempbuild = out.str();
+    out.str( std::string() );
+    out.clear();
+    w->setText("Cost:$"+tempmoney+"\nBuild Time:"+tempbuild+"s");
+
     CEGUI::ImagesetManager::getSingleton().create( "ICBMSilo.imageset" );
     w = wmgr.loadWindowLayout("ICBMSilo.layout");
     w->setHorizontalAlignment(CEGUI::HA_RIGHT);
@@ -340,6 +409,17 @@ void SingleGameState::createScene()
     w->disable();
 
     sheet->addChildWindow(w);
+
+    w = CEGUI::WindowManager::getSingleton().getWindow("ICBMSiloText");
+    out << Au_ICBMSILO;
+    tempmoney = out.str();
+    out.str( std::string() );
+    out.clear();
+    out << BuildTime_ICBMSILO;
+    tempbuild = out.str();
+    out.str( std::string() );
+    out.clear();
+    w->setText("Cost:$"+tempmoney+"\nBuild Time:"+tempbuild+"s");
     
     CEGUI::ImagesetManager::getSingleton().create( "Infantry.imageset" );
     w = wmgr.loadWindowLayout("Infantry.layout");
@@ -350,6 +430,17 @@ void SingleGameState::createScene()
     w->disable();
 
     sheet->addChildWindow(w);
+
+    w = CEGUI::WindowManager::getSingleton().getWindow("InfantryText");
+    out << Au_INFANTRY;
+    tempmoney = out.str();
+    out.str( std::string() );
+    out.clear();
+    out << BuildTime_INFANTRY;
+    tempbuild = out.str();
+    out.str( std::string() );
+    out.clear();
+    w->setText("Cost:$"+tempmoney+"\nBuild Time:"+tempbuild+"s");
     
     CEGUI::ImagesetManager::getSingleton().create( "Submarine.imageset" );
     w = wmgr.loadWindowLayout("Submarine.layout");
@@ -360,6 +451,17 @@ void SingleGameState::createScene()
     w->disable();
 
     sheet->addChildWindow(w);    
+
+    w = CEGUI::WindowManager::getSingleton().getWindow("SubmarineText");
+    out << Au_SUBMARINE;
+    tempmoney = out.str();
+    out.str( std::string() );
+    out.clear();
+    out << BuildTime_SUBMARINE;
+    tempbuild = out.str();
+    out.str( std::string() );
+    out.clear();
+    w->setText("Cost:$"+tempmoney+"\nBuild Time:"+tempbuild+"s");
     
     CEGUI::ImagesetManager::getSingleton().create( "Destroyer.imageset" );
     w = wmgr.loadWindowLayout("Destroyer.layout");
@@ -370,6 +472,17 @@ void SingleGameState::createScene()
     w->disable();
 
     sheet->addChildWindow(w);
+
+    w = CEGUI::WindowManager::getSingleton().getWindow("DestroyerText");
+    out << Au_DESTROYER;
+    tempmoney = out.str();
+    out.str( std::string() );
+    out.clear();
+    out << BuildTime_DESTROYER;
+    tempbuild = out.str();
+    out.str( std::string() );
+    out.clear();
+    w->setText("Cost:$"+tempmoney+"\nBuild Time:"+tempbuild+"s");
     
     CEGUI::ImagesetManager::getSingleton().create( "Tank.imageset" );
     w = wmgr.loadWindowLayout("Tank.layout");
@@ -380,6 +493,17 @@ void SingleGameState::createScene()
     w->disable();
 
     sheet->addChildWindow(w);
+
+    w = CEGUI::WindowManager::getSingleton().getWindow("TankText");
+    out << Au_TANK;
+    tempmoney = out.str();
+    out.str( std::string() );
+    out.clear();
+    out << BuildTime_TANK;
+    tempbuild = out.str();
+    out.str( std::string() );
+    out.clear();
+    w->setText("Cost:$"+tempmoney+"\nBuild Time:"+tempbuild+"s");
     
     CEGUI::ImagesetManager::getSingleton().create( "Scud.imageset" );
     w = wmgr.loadWindowLayout("Scud.layout");
@@ -391,6 +515,17 @@ void SingleGameState::createScene()
 
     sheet->addChildWindow(w);
 
+    w = CEGUI::WindowManager::getSingleton().getWindow("ScudText");
+    out << Au_SCUD;
+    tempmoney = out.str();
+    out.str( std::string() );
+    out.clear();
+    out << BuildTime_SCUD;
+    tempbuild = out.str();
+    out.str( std::string() );
+    out.clear();
+    w->setText("Cost:$"+tempmoney+"\nBuild Time:"+tempbuild+"s");
+
     CEGUI::ImagesetManager::getSingleton().create( "Bomber.imageset" );
     w = wmgr.loadWindowLayout("Bomber.layout");
     w->setHorizontalAlignment(CEGUI::HA_RIGHT);
@@ -400,6 +535,17 @@ void SingleGameState::createScene()
     w->disable();
 
     sheet->addChildWindow(w);
+
+    w = CEGUI::WindowManager::getSingleton().getWindow("BomberText");
+    out << Au_BOMBER;
+    tempmoney = out.str();
+    out.str( std::string() );
+    out.clear();
+    out << BuildTime_BOMBER;
+    tempbuild = out.str();
+    out.str( std::string() );
+    out.clear();
+    w->setText("Cost:$"+tempmoney+"\nBuild Time:"+tempbuild+"s");
     
     CEGUI::ImagesetManager::getSingleton().create( "Fighter.imageset" );
     w = wmgr.loadWindowLayout("Fighter.layout");
@@ -410,6 +556,17 @@ void SingleGameState::createScene()
     w->disable();
 
     sheet->addChildWindow(w);
+
+    w = CEGUI::WindowManager::getSingleton().getWindow("FighterText");
+    out << Au_FIGHTER;
+    tempmoney = out.str();
+    out.str( std::string() );
+    out.clear();
+    out << BuildTime_FIGHTER;
+    tempbuild = out.str();
+    out.str( std::string() );
+    out.clear();
+    w->setText("Cost:$"+tempmoney+"\nBuild Time:"+tempbuild+"s");
 
     if(myOwner == Owner_BLUE)
     {
@@ -447,6 +604,13 @@ void SingleGameState::createScene()
 
     sheet->addChildWindow(w);
 
+    w = CEGUI::WindowManager::getSingleton().getWindow("BomberInterfaceText");
+    out << MoveTime_BOMBER;
+    tempmove = out.str();
+    out.str( std::string() );
+    out.clear();
+    w->setText("Move Time:"+tempmove+"s");
+
     CEGUI::ImagesetManager::getSingleton().create( "DestroyerInterface.imageset" );
     w = wmgr.loadWindowLayout("DestroyerInterface.layout");
     w->setHorizontalAlignment(CEGUI::HA_RIGHT);
@@ -455,6 +619,13 @@ void SingleGameState::createScene()
     w->disable();
 
     sheet->addChildWindow(w);
+
+    w = CEGUI::WindowManager::getSingleton().getWindow("DestroyerInterfaceText");
+    out << MoveTime_DESTROYER;
+    tempmove = out.str();
+    out.str( std::string() );
+    out.clear();
+    w->setText("Move Time:"+tempmove+"s");
 
     CEGUI::ImagesetManager::getSingleton().create( "FighterInterface.imageset" );
     w = wmgr.loadWindowLayout("FighterInterface.layout");
@@ -474,6 +645,13 @@ void SingleGameState::createScene()
 
     sheet->addChildWindow(w);
 
+    w = CEGUI::WindowManager::getSingleton().getWindow("InfantryInterfaceText");
+    out << MoveTime_INFANTRY;
+    tempmove = out.str();
+    out.str( std::string() );
+    out.clear();
+    w->setText("Move Time:"+tempmove+"s");
+
     CEGUI::ImagesetManager::getSingleton().create( "ScudInterface.imageset" );
     w = wmgr.loadWindowLayout("ScudInterface.layout");
     w->setHorizontalAlignment(CEGUI::HA_RIGHT);
@@ -482,6 +660,13 @@ void SingleGameState::createScene()
     w->disable();
 
     sheet->addChildWindow(w);
+
+    w = CEGUI::WindowManager::getSingleton().getWindow("ScudInterfaceText");
+    out << MoveTime_SCUD;
+    tempmove = out.str();
+    out.str( std::string() );
+    out.clear();
+    w->setText("Move Time:"+tempmove+"s");
 
     CEGUI::ImagesetManager::getSingleton().create( "SubmarineInterface.imageset" );
     w = wmgr.loadWindowLayout("SubmarineInterface.layout");
@@ -492,6 +677,13 @@ void SingleGameState::createScene()
 
     sheet->addChildWindow(w);
 
+    w = CEGUI::WindowManager::getSingleton().getWindow("SubmarineInterfaceText");
+    out << MoveTime_SUBMARINE;
+    tempmove = out.str();
+    out.str( std::string() );
+    out.clear();
+    w->setText("Move Time:"+tempmove+"s");
+
     CEGUI::ImagesetManager::getSingleton().create( "TankInterface.imageset" );
     w = wmgr.loadWindowLayout("TankInterface.layout");
     w->setHorizontalAlignment(CEGUI::HA_RIGHT);
@@ -500,6 +692,13 @@ void SingleGameState::createScene()
     w->disable();
 
     sheet->addChildWindow(w);
+
+    w = CEGUI::WindowManager::getSingleton().getWindow("TankInterfaceText");
+    out << MoveTime_TANK;
+    tempmove = out.str();
+    out.str( std::string() );
+    out.clear();
+    w->setText("Move Time:"+tempmove+"s");
 
     CEGUI::ImagesetManager::getSingleton().create( "Launch.imageset" );
     w = wmgr.loadWindowLayout("Launch.layout");

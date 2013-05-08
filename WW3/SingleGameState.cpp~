@@ -229,8 +229,22 @@ void SingleGameState::createScene()
     CEGUI::Window *sheet = wmgr.createWindow("DefaultWindow", "CEGUIDemo/Sheet");
  
     CEGUI::Window *counter = wmgr.createWindow("TaharezLook/StaticText", "Counter");
-    counter->setText("    Resources\nMoney: $0\nPlutonium: 0kg\nUranium: 0kg");
-    counter->setSize(CEGUI::UVector2(CEGUI::UDim(0.15, 0), CEGUI::UDim(0.15, 0)));
+    std::string tempmoney;
+    std::string tempplut;
+    std::string tempmove;
+    std::string tempbuild;
+    std::stringstream out;
+    out << money;
+    tempmoney = out.str();
+    out.str( std::string() );
+    out.clear();
+    out << plutonium;
+    tempplut = out.str();
+    out.str( std::string() );
+    out.clear();
+    counter->setText("        Resources\nMoney: $"+tempmoney+"\nPlutonium: "+tempplut+"kg");
+    counter->setSize(CEGUI::UVector2(CEGUI::UDim(0.25, 0), CEGUI::UDim(0.10, 0)));
+    counter->setHorizontalAlignment(CEGUI::HA_LEFT);
     counter->setProperty("FrameEnabled", "false");
     counter->setProperty("BackgroundEnabled", "false");
  
@@ -291,6 +305,17 @@ void SingleGameState::createScene()
 
     sheet->addChildWindow(w);
 
+    w = CEGUI::WindowManager::getSingleton().getWindow("CommandBaseText");
+    out << Au_COMMANDBASE;
+    tempmoney = out.str();
+    out.str( std::string() );
+    out.clear();
+    out << BuildTime_COMMANDBASE;
+    tempbuild = out.str();
+    out.str( std::string() );
+    out.clear();
+    w->setText("Cost:$"+tempmoney+"\nBuild Time:"+tempbuild+"s");
+
     CEGUI::ImagesetManager::getSingleton().create( "ArmyBase.imageset" );
     w = wmgr.loadWindowLayout("ArmyBase.layout");
     w->setHorizontalAlignment(CEGUI::HA_RIGHT);
@@ -326,7 +351,7 @@ void SingleGameState::createScene()
     w->setHorizontalAlignment(CEGUI::HA_RIGHT);
     w->setYPosition(CEGUI::UDim(0.65f, 0));
     w->setVisible( true );
-    w->subscribeEvent(CEGUI::PushButton::EventClicked,CEGUI::Event::Subscriber(&SingleGameState::ICBMSiloButton,this));
+    w->subscribeEvent(CEGUI::PushButton::EventClicked,CEGUI::Event::Subscriber(&SingleGameState::NuclearPlantButton,this));
     w->disable();
 
     sheet->addChildWindow(w);
@@ -432,7 +457,7 @@ void SingleGameState::createScene()
     CEGUI::ImagesetManager::getSingleton().create( "NuclearPlantInterface.imageset" );
     w = wmgr.loadWindowLayout("NuclearPlantInterface.layout");
     w->setHorizontalAlignment(CEGUI::HA_RIGHT);
-    w->setYPosition(CEGUI::UDim(0.20f, 0));
+    w->setYPosition(CEGUI::UDim(0.05f, 0));
     w->setVisible( false );
     w->disable();
 
