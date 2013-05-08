@@ -69,6 +69,16 @@ SingleGameState::SingleGameState()
     timerup = false;
     tutorial = 0;
     std::time(&currentTime);
+    musicBackground;
+	musicBuildComplete;
+	musicMoveComplete;
+	musicCaptureComplete;
+	musicEnemyUnitKilled;
+    musicUnitKilled;
+    musicEnemyCommandKilled;
+    musicCommandKilled;
+    musicVictory;
+    musicDefeat;
 }
  
 //|||||||||||||||||||||||||||||||||||||||||||||||
@@ -164,7 +174,7 @@ void SingleGameState::createScene()
     // Create SoundManager
     sound.open();
     sound.turnOn();
-    
+    sound.PlaySound(musicBackground);
     GameObject tempObject;
     
     // Create game objects
@@ -1597,6 +1607,7 @@ bool SingleGameState::CaptureButton(const CEGUI::EventArgs &e)
 {
     currentCell->timer = BuildTime_CAPTURE;
     currentCell->capturing = true;
+    currentCell->moving = false;
     processResources(-Au_CAPTURE,-Pt_CAPTURE);
 
     std::time(&currentTime);
@@ -2173,6 +2184,7 @@ bool SingleGameState::issueProduceOrder(PlanetCell& origin, PlanetCell& goal){
 bool SingleGameState::createUnit(PlanetCell& goal){
     if(goal.myUnit == 0)
     {
+        sound.PlaySound(musicBuildComplete);
         goal.myUnit = goal.myUnit_pending;
         goal.occupier = myOwner;
         goal.myUnit_pending = 0;
@@ -2237,6 +2249,7 @@ bool SingleGameState::issueMoveOrder(Unit& unit, PlanetCell& origin, PlanetCell&
             goal.myUnitDirection = d;
             
             origin.moving = true;
+            origin.capturing = false;
             origin.goalId = goal.id;
             illuminate(origin);
             unitMoving = 0;
@@ -2260,6 +2273,7 @@ bool SingleGameState::moveUnit(Unit& unit, PlanetCell& origin, PlanetCell& goal)
     origin.moving = false;
     origin.goalId = -1;
     if(goal.myUnit == Unit_EMPTY){
+	    sound.PlaySound(musicMoveComplete);
         unit.relocate(earth.vertices[goal.id]);
         //unit.setDirection(goal.myUnitDirection);
         origin.myUnit = 0;
@@ -2378,8 +2392,12 @@ void SingleGameState::fireMissile(PlanetCell& origin, PlanetCell& goal){
 
 void SingleGameState::retireUnit(PlanetCell& targetCell){
     // No refund! No shit!
-    if(targetCell.myUnit == Unit_COMMANDBASE)
+    if(targetCell.myUnit == Unit_COMMANDBASE){
+        sound.PlaySound(musicCommandKilled);
         commandBaseChange(false, false);
+    }
+    else
+        sound.PlaySound(musicUnitKilled);
     units[targetCell.myUnitId].destroy(m_pSceneMgr);
     deluminate(targetCell);
     targetCell.myUnit = 0;
@@ -2389,8 +2407,12 @@ void SingleGameState::retireUnit(PlanetCell& targetCell){
 }
 
 void SingleGameState::killEnemyUnit(PlanetCell& targetCell){
-    if(targetCell.myUnit == Unit_COMMANDBASE)
+    if(targetCell.myUnit == Unit_COMMANDBASE){
+        sound.PlaySound(musicEnemyCommandKilled);
         commandBaseChange(false, true);
+    }
+    else
+        sound.PlaySound(musicEnemyUnitKilled);
     units[targetCell.myUnitId].destroy(m_pSceneMgr);
     targetCell.myUnit = 0;
     targetCell.myUnitId = -1;
@@ -2624,6 +2646,7 @@ void SingleGameState::processTimer(void)
 
 void SingleGameState::capture(PlanetCell& targetCell)
 {
+    sound.PlaySound(musicCaptureComplete);
     targetCell.capturing = false;
     targetCell.owner = myOwner;
     earth.own(m_pSceneMgr, targetCell);
@@ -2746,9 +2769,11 @@ void SingleGameState::commandBaseChange(bool built, bool enemy)
     else
         resultWindow->setText("[colour='FF0000FF']Enemy Command Bases Remaining: "+commandEnemy+"/"+commandMax+"");
     if(commandBaseTotal == commandBaseMax && enemyCommandBase == 0){
+        sound.PlaySound(musicVictory);
         //YouWin
     }
     if(commandBaseTotal == commandBaseMax && myCommandBase == 0){
+        sound.PlaySound(musicDefeat);
         //YouLose
     }
 }

@@ -60,6 +60,8 @@ ICBM Silo: The missile thrower. They can hit anywhere on the Earth.
 
 Battle simulations are calculated by the following. In the case that there is a mutual attack then the angles of their forward vector and the distance vector is calculated. The one who has a smaller angle, gets the other in the rear, wins. In the case of a tie, both will die. Also a building will destroy a building in the construction phase if in range.
 This was made in Gedit so it might not map correctly. Anything with an arrow pointing to it can be killed by the pointer.
+
+need to add a sql pdf...
  _
 | v                               _
 [Tank]<-----[Bomber]             | v
@@ -71,6 +73,6 @@ This was made in Gedit so it might not map correctly. Anything with an arrow poi
     |      [Building]<----------[Submarine]      |
     |         |_^                  |_^           |
     |____________________________________________| 
-
+all things kill infantrys
 
 

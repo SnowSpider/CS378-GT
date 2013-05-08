@@ -187,6 +187,16 @@ private:
     int tutorial;
     time_t  currentTime;
     std::priority_queue<Times, std::vector<Times>, CompareTimes> eventQueue;
+    char* musicBackground;
+	char* musicBuildComplete;
+	char* musicMoveComplete;
+	char* musicCaptureComplete;
+	char* musicEnemyUnitKilled;
+    char* musicUnitKilled;
+    char* musicEnemyCommandKilled;
+    char* musicCommandKilled;
+    char* musicVictory;
+    char* musicDefeat;
     
     PlanetCell* currentCell;
     PlanetCell* lastCell;

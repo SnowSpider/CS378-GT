@@ -118,7 +118,7 @@ public:
     void processEvents();
     void processResources(int, int);
     void processTimer();
-    void capture();
+    void capture(PlanetCell& targetCell);
     void attack(PlanetCell& targetCell);
     void combat(PlanetCell& yourCell,PlanetCell& enemyCell);
     void commandBaseChange(bool, bool);
@@ -187,6 +187,16 @@ private:
     int tutorial;
     time_t  currentTime;
     std::priority_queue<Times, std::vector<Times>, CompareTimes> eventQueue;
+    std::string musicBackground;
+	std::string musicBuildComplete;
+	std::string musicMoveComplete;
+	std::string musicCaptureComplete;
+	std::string musicEnemyUnitKilled;
+    std::string musicUnitKilled;
+    std::string musicEnemyCommandKilled;
+    std::string musicCommandKilled;
+    std::string musicVictory;
+    std::string musicDefeat;
     
     PlanetCell* currentCell;
     PlanetCell* lastCell;
