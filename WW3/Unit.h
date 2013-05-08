@@ -175,21 +175,46 @@ class Unit {
     int hitPoints; 
     int damage; // Attack value
     int moveTime; // The number of seconds this unit takes to move to a neighboring cell
-    int timeLeft;
+    int buildTime; // The number of seconds this unit takes to move to a neighboring cell
+    float buildInterval;
     Arrow myArrow;
     
     Unit(size_t myOwner, size_t label){
         owner = myOwner;
         myType = label;
-        moveTime = 60;
-        timeLeft = 0;
+        if(myType == Unit_INFANTRY){ moveTime = MoveTime_INFANTRY; buildTime = BuildTime_INFANTRY; }
+        else if(myType == Unit_TANK){ moveTime = MoveTime_TANK; buildTime = BuildTime_TANK; }
+        else if(myType == Unit_ARTILLERY){ moveTime = MoveTime_ARTILLERY; buildTime = BuildTime_ARTILLERY; }
+        else if(myType == Unit_SCUD){ moveTime = MoveTime_SCUD; buildTime = BuildTime_SCUD; }
+        else if(myType == Unit_ENGINEER){ moveTime = MoveTime_ENGINEER; buildTime = BuildTime_ENGINEER; }
+        else if(myType == Unit_SUBMARINE){ moveTime = MoveTime_SUBMARINE; buildTime = BuildTime_SUBMARINE; }
+        else if(myType == Unit_DESTROYER){ moveTime = MoveTime_DESTROYER; buildTime = BuildTime_DESTROYER; }
+        else if(myType == Unit_CARRIER){ moveTime = MoveTime_CARRIER; buildTime = BuildTime_CARRIER; }
+        else if(myType == Unit_CRUISER){ moveTime = MoveTime_CRUISER; buildTime = BuildTime_CRUISER; }
+        else if(myType == Unit_BOMBER){ moveTime = MoveTime_BOMBER; buildTime = BuildTime_BOMBER; }
+        else if(myType == Unit_FIGHTER){ moveTime = MoveTime_FIGHTER; buildTime = BuildTime_FIGHTER; }
+        else if(myType == Unit_SPYPLANE){ moveTime = MoveTime_SPYPLANE; buildTime = BuildTime_SPYPLANE; }
+        else if(myType == Unit_COMMANDBASE){ buildTime = BuildTime_COMMANDBASE; }
+        else if(myType == Unit_ARMYBASE){ buildTime = BuildTime_ARMYBASE; }
+        else if(myType == Unit_NAVYBASE){ buildTime = BuildTime_NAVYBASE; }
+        else if(myType == Unit_AIRFORCEBASE){ buildTime = BuildTime_AIRFORCEBASE; }
+        else if(myType == Unit_NUCLEARPLANT){ buildTime = BuildTime_NUCLEARPLANT; }
+        else if(myType == Unit_ICBMSILO){ buildTime = BuildTime_ICBMSILO; }
+        else if(myType == Unit_SAMSITE){ buildTime = BuildTime_SAMSITE; }
+        else{ moveTime = 0; buildTime = 0; }
+        if(buildTime == 0) buildInterval = 0; //critical : to prevent divide-by-zero
+        else buildInterval = 300.0 / buildTime;
     }
     
     void createObject(Ogre::SceneManager* scnMgr, char* mesh, char* mat);
+    void createSymbolObject(Ogre::SceneManager* scnMgr);
     void createManualObject(Ogre::SceneManager* scnMgr);
     //void applyTexture(char* mat);
     void extendArrow(btVector3& dest);
     void relocate(btVector3& dest);
+    void translate(float x, float y, float z);
+    void setDirection(btVector3& d);
+    void grow();
 };
 
 #endif

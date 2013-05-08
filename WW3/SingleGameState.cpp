@@ -58,6 +58,7 @@ SingleGameState::SingleGameState()
     unitMoving = 0;
     unitMoney = 0;
     unitPlutonium = 0; 
+    unitTimer = 0;
     currentCell = NULL;
     lastCell = NULL;
 }
@@ -198,8 +199,6 @@ void SingleGameState::createScene()
     mRayScnQuery = m_pSceneMgr->createRayQuery(Ogre::Ray());
     
     cameraNode = m_pSceneMgr->getRootSceneNode();
-    
-    
     
     // Create a Light and set its position
     Ogre::Light* light = m_pSceneMgr->createLight("MainLight");
@@ -626,7 +625,8 @@ void SingleGameState::onLeftPressed(const OIS::MouseEvent &evt)
                 currentCell = &(earth.cells[intId]); 
                 
                 if(unitBuilding){
-                    createUnit(*currentCell);
+                    issueProduceOrder(*lastCell, *currentCell);
+                    //createUnit(*currentCell);
                 }
                 else if(unitMoving && currentCell->myUnit == Unit_EMPTY){
                     string name = m_pCurrentEntity->getName();
@@ -816,9 +816,23 @@ void SingleGameState::update(double timeSinceLastFrame)
     
     
     for(int i=0;i<earth.cells.size(); i++){ //TODO: this will cause HUGE lag
-        if(earth.cells[i].timer > 0) earth.cells[i].timer --;
-        if(earth.cells[i].moving && earth.cells[i].timer <= 0){
-            moveUnit(units[earth.cells[i].myUnitId], earth.cells[i], earth.cells[earth.cells[i].goalId]); 
+        if(earth.cells[i].timer > 0){
+            earth.cells[i].timer --;
+            if(earth.cells[i].myUnit_pending >= 13 && earth.cells[i].myUnit_pending <= 19){
+                units[earth.cells[i].myUnitId].grow();
+            }
+        }
+        else{
+            if(earth.cells[i].moving) moveUnit(units[earth.cells[i].myUnitId], earth.cells[i], earth.cells[earth.cells[i].goalId]); 
+            else if(earth.cells[i].myUnit_pending){
+                if(earth.cells[i].myUnit_pending >= 13 && earth.cells[i].myUnit_pending <= 19){
+                    earth.cells[i].myUnit = earth.cells[i].myUnit_pending;
+                    earth.cells[i].myUnit_pending = 0;
+                }
+                else{
+                    createUnit(earth.cells[i]); 
+                }
+            }
         }
     }
     
@@ -931,78 +945,108 @@ bool SingleGameState::soundSwitch(void)
 
 bool SingleGameState::CommandBaseButton(const CEGUI::EventArgs &e)
 {
-    currentCell->myUnit = Unit_COMMANDBASE;
+    currentCell->myUnit_pending = Unit_COMMANDBASE;
+    currentCell->timer = BuildTime_COMMANDBASE;
+    currentCell->building = true;
     money -= Au_COMMANDBASE;
     plutonium -= Pt_COMMANDBASE;
+    
     Unit newUnit(Owner_BLUE, Unit_COMMANDBASE);
     newUnit.createManualObject(m_pSceneMgr);
     newUnit.relocate(earth.vertices[currentCell->id]);
+    newUnit.translate(0,150,0);
     units.push_back(newUnit);
+    currentCell->myUnitId = newUnit.id;
     BuildingImages1(*currentCell); 
     onButton = true;
     return true;
 }
 bool SingleGameState::ArmyBaseButton(const CEGUI::EventArgs &e)
 {
-    currentCell->myUnit = Unit_ARMYBASE;
+    currentCell->myUnit_pending = Unit_ARMYBASE;
+    currentCell->timer = BuildTime_ARMYBASE;
+    currentCell->building = true;
     money -= Au_ARMYBASE;
     plutonium -= Pt_ARMYBASE;
+    
     Unit newUnit(Owner_BLUE, Unit_ARMYBASE);
     newUnit.createManualObject(m_pSceneMgr);
     newUnit.relocate(earth.vertices[currentCell->id]); 
+    newUnit.translate(0,150,0);
     units.push_back(newUnit);
+    currentCell->myUnitId = newUnit.id;
     BuildingImages1(*currentCell);
     onButton = true;
     return true;
 }
 bool SingleGameState::NavyBaseButton(const CEGUI::EventArgs &e)
 {
-    currentCell->myUnit = Unit_NAVYBASE;
+    currentCell->myUnit_pending = Unit_NAVYBASE;
+    currentCell->timer = BuildTime_NAVYBASE;
+    currentCell->building = true;
     money -= Au_NAVYBASE;
     plutonium -= Pt_NAVYBASE;
+    
     Unit newUnit(Owner_BLUE, Unit_NAVYBASE);
     newUnit.createManualObject(m_pSceneMgr);
     newUnit.relocate(earth.vertices[currentCell->id]);
+    newUnit.translate(0,150,0);
     units.push_back(newUnit);
+    currentCell->myUnitId = newUnit.id;
     BuildingImages1(*currentCell);
     onButton = true;
     return true;
 }
 bool SingleGameState::AirForceBaseButton(const CEGUI::EventArgs &e)
 {
-    currentCell->myUnit = Unit_AIRFORCEBASE;
+    currentCell->myUnit_pending = Unit_AIRFORCEBASE;
+    currentCell->timer = BuildTime_AIRFORCEBASE;
+    currentCell->building = true;
     money -= Au_AIRFORCEBASE;
     plutonium -= Pt_AIRFORCEBASE;
+    
     Unit newUnit(Owner_BLUE, Unit_AIRFORCEBASE);
     newUnit.createManualObject(m_pSceneMgr);
     newUnit.relocate(earth.vertices[currentCell->id]); 
+    newUnit.translate(0,150,0);
     units.push_back(newUnit);
+    currentCell->myUnitId = newUnit.id;
     BuildingImages1(*currentCell);
     onButton = true;
     return true;
 }
 bool SingleGameState::NuclearPlantButton(const CEGUI::EventArgs &e)
 {
-    currentCell->myUnit = Unit_NUCLEARPLANT;
+    currentCell->myUnit_pending = Unit_NUCLEARPLANT;
+    currentCell->timer = BuildTime_NUCLEARPLANT;
+    currentCell->building = true;
     money -= Au_NUCLEARPLANT;
     plutonium -= Pt_NUCLEARPLANT;
+    
     Unit newUnit(Owner_BLUE, Unit_NUCLEARPLANT);
     newUnit.createManualObject(m_pSceneMgr);
     newUnit.relocate(earth.vertices[currentCell->id]); 
+    newUnit.translate(0,150,0);
     units.push_back(newUnit);
+    currentCell->myUnitId = newUnit.id;
     BuildingImages1(*currentCell);
     onButton = true;
     return true;
 }
 bool SingleGameState::ICBMSiloButton(const CEGUI::EventArgs &e)
 {
-    currentCell->myUnit = Unit_ICBMSILO;
+    currentCell->myUnit_pending = Unit_ICBMSILO;
+    currentCell->timer = BuildTime_ICBMSILO;
+    currentCell->building = true;
     money -= Au_ICBMSILO;
     plutonium -= Pt_ICBMSILO;
+    
     Unit newUnit(Owner_BLUE, Unit_ICBMSILO);
     newUnit.createManualObject(m_pSceneMgr);
     newUnit.relocate(earth.vertices[currentCell->id]);
+    newUnit.translate(0,150,0);
     units.push_back(newUnit);
+    currentCell->myUnitId = newUnit.id;
     BuildingImages1(*currentCell);
     onButton = true;
     return true;
@@ -1025,6 +1069,7 @@ bool SingleGameState::InfantryButton(const CEGUI::EventArgs &e)
     unitBuilding = Unit_INFANTRY;
     unitMoney = Au_INFANTRY;
     unitPlutonium = Pt_INFANTRY;
+    unitTimer = BuildTime_INFANTRY;
     onButton = true;
     return true;
 }
@@ -1046,6 +1091,7 @@ bool SingleGameState::TankButton(const CEGUI::EventArgs &e)
     unitBuilding = Unit_TANK;
     unitMoney = Au_TANK;
     unitPlutonium = Pt_TANK;
+    unitTimer = BuildTime_INFANTRY;
     onButton = true;
     return true;
 }
@@ -1067,6 +1113,7 @@ bool SingleGameState::ScudButton(const CEGUI::EventArgs &e)
     unitBuilding = Unit_SCUD;
     unitMoney = Au_SCUD;
     unitPlutonium = Pt_SCUD;
+    unitTimer = BuildTime_INFANTRY;
     onButton = true;
     return true;
 }
@@ -1088,6 +1135,7 @@ bool SingleGameState::SubmarineButton(const CEGUI::EventArgs &e)
     unitBuilding = Unit_SUBMARINE;
     unitMoney = Au_SUBMARINE;
     unitPlutonium = Pt_SUBMARINE;
+    unitTimer = BuildTime_INFANTRY;
     onButton = true;
     return true;
 }
@@ -1109,6 +1157,7 @@ bool SingleGameState::DestroyerButton(const CEGUI::EventArgs &e)
     unitBuilding = Unit_DESTROYER;
     unitMoney = Au_DESTROYER;
     unitPlutonium = Pt_DESTROYER;
+    unitTimer = BuildTime_INFANTRY;
     onButton = true;
     return true;
 }
@@ -1130,6 +1179,7 @@ bool SingleGameState::BomberButton(const CEGUI::EventArgs &e)
     unitBuilding = Unit_BOMBER;
     unitMoney = Au_BOMBER;
     unitPlutonium = Pt_BOMBER;
+    unitTimer = BuildTime_INFANTRY;
     onButton = true;
     return true;
 }
@@ -1151,6 +1201,7 @@ bool SingleGameState::FighterButton(const CEGUI::EventArgs &e)
     unitBuilding = Unit_FIGHTER;
     unitMoney = Au_FIGHTER;
     unitPlutonium = Pt_FIGHTER;
+    unitTimer = BuildTime_INFANTRY;
     onButton = true;
     return true;
 }
@@ -1222,7 +1273,7 @@ void SingleGameState::BuildingImages1(PlanetCell &cell)
         w->enable();
     }
 
-    if(cell.owner != myOwner || cell.terrain == Terrain_WATER || cell.myUnit != 0)
+    if(cell.owner != myOwner || cell.terrain == Terrain_WATER || cell.myUnit != 0 || cell.building)
     {
         w = CEGUI::WindowManager::getSingleton().getWindow("CommandBase");
         w->disable();
@@ -1525,57 +1576,89 @@ void SingleGameState::BuildingImagesAF5(PlanetCell &cell)
     }
 }
 
-bool SingleGameState::createUnit(PlanetCell &goal)
-{
+bool SingleGameState::issueProduceOrder(PlanetCell& origin, PlanetCell& goal){
     for(int i=0;i<lastCell->neighbors.size();i++){
         if(goal.id == acceptNeighbors[i]){
-            goal.myUnit = unitBuilding;
+            goal.myUnit_pending = unitBuilding;
+            if(unitBuilding == Unit_INFANTRY) goal.timer = BuildTime_INFANTRY;
+            else if(unitBuilding == Unit_TANK) goal.timer = BuildTime_TANK;
+            else if(unitBuilding == Unit_ARTILLERY) goal.timer = BuildTime_ARTILLERY;
+            else if(unitBuilding == Unit_SCUD) goal.timer = BuildTime_SCUD;
+            else if(unitBuilding == Unit_ENGINEER) goal.timer = BuildTime_ENGINEER;
+            else if(unitBuilding == Unit_SUBMARINE) goal.timer = BuildTime_SUBMARINE;
+            else if(unitBuilding == Unit_DESTROYER) goal.timer = BuildTime_DESTROYER;
+            else if(unitBuilding == Unit_CARRIER) goal.timer = BuildTime_CARRIER;
+            else if(unitBuilding == Unit_CRUISER) goal.timer = BuildTime_CRUISER;
+            else if(unitBuilding == Unit_BOMBER) goal.timer = BuildTime_BOMBER;
+            else if(unitBuilding == Unit_FIGHTER) goal.timer = BuildTime_FIGHTER;
+            else if(unitBuilding == Unit_SPYPLANE) goal.timer = BuildTime_SPYPLANE;
             money -= unitMoney;
             plutonium -= unitPlutonium;
-            Unit newUnit(Owner_BLUE, unitBuilding);
-            if(unitBuilding == Unit_SCUD){
-                newUnit.createObject(m_pSceneMgr, "missile.mesh", "MyMaterials/Blue");
-            }
-            else if(unitBuilding == Unit_FIGHTER){
-                newUnit.createObject(m_pSceneMgr, "fighter.mesh", "MyMaterials/Blue");
-            }
-            else if(unitBuilding == Unit_TANK){
-                newUnit.createObject(m_pSceneMgr, "tank.mesh", "MyMaterials/Blue");
-            }
-            else if(unitBuilding == Unit_INFANTRY){
-                newUnit.createObject(m_pSceneMgr, "soldier.mesh", "MyMaterials/Blue");
-            }
-            else if(unitBuilding == Unit_DESTROYER){
-                newUnit.createObject(m_pSceneMgr, "destroyer.mesh", "MyMaterials/Blue");
-            }
-            else if(unitBuilding == Unit_BOMBER){
-                newUnit.createObject(m_pSceneMgr, "bomber.mesh", "MyMaterials/Blue");
-            }
-            else if(unitBuilding == Unit_SUBMARINE){
-                newUnit.createObject(m_pSceneMgr, "sub.mesh", "MyMaterials/Blue");
-            }
-            else{
-                newUnit.createManualObject(m_pSceneMgr);
-            }
-            newUnit.relocate(earth.vertices[goal.id]);
-            units.push_back(newUnit);
-            goal.myUnitId = newUnit.id;
-            earth.own(m_pSceneMgr, *lastCell);
+            btVector3 a = earth.vertices[origin.id];
+            btVector3 g = earth.vertices[goal.id];
+            btVector3 b = g - a;
+            btVector3 c = a.cross(b);
+            btVector3 d = c.cross(a);
+            goal.myUnitDirection = d;
             unitBuilding = 0;
-            illuminate(goal);
             return true;
         }
     }
-    earth.own(m_pSceneMgr, *lastCell);
     unitBuilding = 0;
-    return false;
+    return true;
+}
+
+bool SingleGameState::createUnit(PlanetCell& goal){
+    goal.myUnit = goal.myUnit_pending;
+    goal.myUnit_pending = 0;
+    Unit newUnit(Owner_BLUE, goal.myUnit);
+    if(goal.myUnit == Unit_SCUD){
+        newUnit.createObject(m_pSceneMgr, "missile.mesh", "MyMaterials/Blue");
+    }
+    else if(goal.myUnit == Unit_FIGHTER){
+        newUnit.createObject(m_pSceneMgr, "fighter.mesh", "MyMaterials/Blue");
+    }
+    else if(goal.myUnit == Unit_TANK){
+        newUnit.createObject(m_pSceneMgr, "tank.mesh", "MyMaterials/Blue");
+    }
+    else if(goal.myUnit == Unit_INFANTRY){
+        newUnit.createObject(m_pSceneMgr, "soldier.mesh", "MyMaterials/Blue");
+    }
+    else if(goal.myUnit == Unit_DESTROYER){
+        newUnit.createObject(m_pSceneMgr, "destroyer.mesh", "MyMaterials/Blue");
+    }
+    else if(goal.myUnit == Unit_BOMBER){
+        newUnit.createObject(m_pSceneMgr, "bomber.mesh", "MyMaterials/Blue");
+    }
+    else if(goal.myUnit == Unit_SUBMARINE){
+        newUnit.createObject(m_pSceneMgr, "sub.mesh", "MyMaterials/Blue");
+    }
+    else{
+        newUnit.createManualObject(m_pSceneMgr);
+    }
+    newUnit.relocate(earth.vertices[goal.id]);
+    newUnit.setDirection(goal.myUnitDirection);
+    units.push_back(newUnit);
+    goal.myUnitId = newUnit.id;
+    earth.own(m_pSceneMgr, *lastCell);
+    illuminate(goal);
 }
 
 bool SingleGameState::issueMoveOrder(Unit& unit, PlanetCell& origin, PlanetCell& goal){
     for(int i=0;i<origin.neighbors.size();i++){
         if(goal.id == acceptNeighbors[i]){
-            unit.timeLeft = unit.moveTime;
-            origin.timer = 60;
+            if(origin.myUnit == Unit_INFANTRY) origin.timer = MoveTime_INFANTRY;
+            else if(origin.myUnit == Unit_TANK) origin.timer = MoveTime_TANK;
+            else if(origin.myUnit == Unit_ARTILLERY) origin.timer = MoveTime_ARTILLERY;
+            else if(origin.myUnit == Unit_SCUD) origin.timer = MoveTime_SCUD;
+            else if(origin.myUnit == Unit_ENGINEER) origin.timer = MoveTime_ENGINEER;
+            else if(origin.myUnit == Unit_SUBMARINE) origin.timer = MoveTime_SUBMARINE;
+            else if(origin.myUnit == Unit_DESTROYER) origin.timer = MoveTime_DESTROYER;
+            else if(origin.myUnit == Unit_CARRIER) origin.timer = MoveTime_CARRIER;
+            else if(origin.myUnit == Unit_CRUISER) origin.timer = MoveTime_CRUISER;
+            else if(origin.myUnit == Unit_BOMBER) origin.timer = MoveTime_BOMBER;
+            else if(origin.myUnit == Unit_FIGHTER) origin.timer = MoveTime_FIGHTER;
+            else if(origin.myUnit == Unit_SPYPLANE) origin.timer = MoveTime_SPYPLANE;
             origin.moving = true;
             origin.goalId = goal.id;
             illuminate(origin);
@@ -1651,3 +1734,6 @@ void SingleGameState::deluminate(PlanetCell& goal){
     }
 }
 
+void SingleGameState::fireMissile(){
+    
+}

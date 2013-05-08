@@ -1,3 +1,63 @@
+material MyMaterials/infantry
+{
+   technique
+   {
+      pass
+      {
+         texture_unit
+         {
+            texture symbol_infantry.png 2d
+            scale 1 1
+         }
+      }
+   }
+}
+
+material MyMaterials/tank
+{
+   technique
+   {
+      pass
+      {
+         texture_unit
+         {
+            texture symbol_tank.png 2d
+            scale 1 1
+         }
+      }
+   }
+}
+
+material MyMaterials/scud
+{
+   technique
+   {
+      pass
+      {
+         texture_unit
+         {
+            texture symbol_scud.png 2d
+            scale 1 1
+         }
+      }
+   }
+}
+
+material MyMaterials/crate
+{
+   technique
+   {
+      pass
+      {
+         texture_unit
+         {
+            texture crate.png 2d
+            scale 1 1
+         }
+      }
+   }
+}
+
 material MyMaterials/Red
 {
     technique

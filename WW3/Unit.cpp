@@ -48,6 +48,77 @@ void Unit::createObject(Ogre::SceneManager* scnMgr, char* mesh, char* mat){
     rootNode->scale(0.5, 0.5, 0.5);
 }
 
+void Unit::createSymbolObject(Ogre::SceneManager* scnMgr){
+    string s = "Unit_";
+    id = unitId;
+    name = s.append(intToStr(unitId));
+    cout << "name = " << name << endl;
+    unitId += 1;
+    
+    ManualObject* manual = scnMgr->createManualObject(name);
+    manual->setDynamic(true);
+    
+    string mat;
+    if(myType == Unit_INFANTRY) mat = "MyMaterials/infantry";
+    else if(myType == Unit_TANK) mat = "MyMaterials/tank";
+    else if(myType == Unit_SCUD) mat = "MyMaterials/scud";
+    else mat = "MyMaterials/Blue";
+    
+    // top
+    manual->begin(mat, RenderOperation::OT_TRIANGLE_FAN);
+    manual->position(1, 1, -1); manual->normal(0,1,0); manual->textureCoord(1,1);
+    manual->position(-1, 1, -1); manual->normal(0,1,0); manual->textureCoord(0,1);
+    manual->position(-1, 1, 1); manual->normal(0,1,0); manual->textureCoord(0,0);
+    manual->position(1, 1, 1); manual->normal(0,1,0); manual->textureCoord(1,0);
+    manual->end();
+    
+    // bottom
+    manual->begin("MyMaterials/Blue", RenderOperation::OT_TRIANGLE_FAN);
+    manual->position(1, -1, 1); manual->normal(0,-1,0); manual->textureCoord(1,1);
+    manual->position(-1, -1, 1); manual->normal(0,-1,0); manual->textureCoord(0,1);
+    manual->position(-1, -1, -1); manual->normal(0,-1,0); manual->textureCoord(0,0);
+    manual->position(1, -1, -1); manual->normal(0,-1,0); manual->textureCoord(1,0);
+    manual->end();
+    
+    // front
+    manual->begin("MyMaterials/Blue", RenderOperation::OT_TRIANGLE_FAN);
+    manual->position(1, 1, 1); manual->normal(0,0,1); manual->textureCoord(1,1);
+    manual->position(-1, 1, 1); manual->normal(0,0,1); manual->textureCoord(0,1);
+    manual->position(-1, -1, 1); manual->normal(0,0,1); manual->textureCoord(0,0);
+    manual->position(1, -1, 1); manual->normal(0,0,1); manual->textureCoord(1,0);
+    manual->end();
+    
+    // back
+    manual->begin("MyMaterials/Blue", RenderOperation::OT_TRIANGLE_FAN);
+    manual->position(1, 1, -1); manual->normal(0,0,-1); manual->textureCoord(1,1);
+    manual->position(1, -1, -1); manual->normal(0,0,-1); manual->textureCoord(0,1);
+    manual->position(-1, -1, -1); manual->normal(0,0,-1); manual->textureCoord(0,0);
+    manual->position(-1, 1, -1); manual->normal(0,0,-1); manual->textureCoord(1,0);
+    manual->end();
+    
+    // left
+    manual->begin("MyMaterials/Blue", RenderOperation::OT_TRIANGLE_FAN);
+    manual->position(-1, 1, 1); manual->normal(-1,0,0); manual->textureCoord(1,1);
+    manual->position(-1, 1, -1); manual->normal(-1,0,0); manual->textureCoord(0,1);
+    manual->position(-1, -1, -1); manual->normal(-1,0,0); manual->textureCoord(0,0);
+    manual->position(-1, -1, 1); manual->normal(-1,0,0); manual->textureCoord(1,0);
+    manual->end();
+    
+    // right
+    manual->begin("MyMaterials/Blue", RenderOperation::OT_TRIANGLE_FAN);
+    manual->position(1, 1, -1); manual->normal(1,0,0); manual->textureCoord(1,1);
+    manual->position(1, 1, 1); manual->normal(1,0,0); manual->textureCoord(0,1);
+    manual->position(1, -1, 1); manual->normal(1,0,0); manual->textureCoord(0,0);
+    manual->position(1, -1, -1); manual->normal(1,0,0); manual->textureCoord(1,0);
+    manual->end();
+    
+    rootNode = scnMgr->getRootSceneNode()->createChildSceneNode(name);
+    Ogre::MeshPtr newMesh = manual->convertToMesh(name);
+    myEntity = scnMgr->createEntity(name, name);
+    rootNode->attachObject(myEntity);
+    rootNode->scale(150, 100, 20);
+}
+
 void Unit::createManualObject(Ogre::SceneManager* scnMgr){
     string s = "Unit_";
     id = unitId;
@@ -57,60 +128,55 @@ void Unit::createManualObject(Ogre::SceneManager* scnMgr){
     
     ManualObject* manual = scnMgr->createManualObject(name);
     manual->setDynamic(true);
-    manual->begin("MyMaterials/Blue", RenderOperation::OT_TRIANGLE_LIST);
-    if (owner == Owner_RED) manual->colour(1,0,0);
-    else if (owner == Owner_NEUTRAL) manual->colour(1,1,0);
-    else if (owner == Owner_BLUE) manual->colour(0,0,1); 
     
     // top
-    manual->normal(0,1,0);
-    manual->position(1, 1, -1);
-    manual->position(-1, 1, -1);
-    manual->position(-1, 1, 1);
-    manual->position(1, 1, 1);
-    manual->quad(0,1,2,3);
+    manual->begin("MyMaterials/crate", RenderOperation::OT_TRIANGLE_FAN);
+    manual->position(1, 1, -1); manual->normal(0,1,0); manual->textureCoord(1,1);
+    manual->position(-1, 1, -1); manual->normal(0,1,0); manual->textureCoord(0,1);
+    manual->position(-1, 1, 1); manual->normal(0,1,0); manual->textureCoord(0,0);
+    manual->position(1, 1, 1); manual->normal(0,1,0); manual->textureCoord(1,0);
+    manual->end();
     
     // bottom
-    manual->normal(0,-1,0);
-    manual->position(1, -1, 1);
-    manual->position(-1, -1, 1);
-    manual->position(-1, -1, -1);
-    manual->position(1, -1, -1);
-    manual->quad(4,5,6,7);
+    manual->begin("MyMaterials/crate", RenderOperation::OT_TRIANGLE_FAN);
+    manual->position(1, -1, 1); manual->normal(0,-1,0); manual->textureCoord(1,1);
+    manual->position(-1, -1, 1); manual->normal(0,-1,0); manual->textureCoord(0,1);
+    manual->position(-1, -1, -1); manual->normal(0,-1,0); manual->textureCoord(0,0);
+    manual->position(1, -1, -1); manual->normal(0,-1,0); manual->textureCoord(1,0);
+    manual->end();
     
     // front
-    manual->normal(0,0,1);
-    manual->position(1, 1, 1);
-    manual->position(-1, 1, 1);
-    manual->position(-1, -1, 1);
-    manual->position(1, -1, 1);
-    manual->quad(8,9,10,11);
+    manual->begin("MyMaterials/crate", RenderOperation::OT_TRIANGLE_FAN);
+    manual->position(1, 1, 1); manual->normal(0,0,1); manual->textureCoord(1,1);
+    manual->position(-1, 1, 1); manual->normal(0,0,1); manual->textureCoord(0,1);
+    manual->position(-1, -1, 1); manual->normal(0,0,1); manual->textureCoord(0,0);
+    manual->position(1, -1, 1); manual->normal(0,0,1); manual->textureCoord(1,0);
+    manual->end();
     
     // back
-    manual->normal(0,0,-1);
-    manual->position(1, 1, -1);
-    manual->position(1, -1, -1);
-    manual->position(-1, -1, -1);
-    manual->position(-1, 1, -1);
-    manual->quad(12,13,14,15);
+    manual->begin("MyMaterials/crate", RenderOperation::OT_TRIANGLE_FAN);
+    manual->position(1, 1, -1); manual->normal(0,0,-1); manual->textureCoord(1,1);
+    manual->position(1, -1, -1); manual->normal(0,0,-1); manual->textureCoord(0,1);
+    manual->position(-1, -1, -1); manual->normal(0,0,-1); manual->textureCoord(0,0);
+    manual->position(-1, 1, -1); manual->normal(0,0,-1); manual->textureCoord(1,0);
+    manual->end();
     
     // left
-    manual->normal(-1,0,0);
-    manual->position(-1, 1, 1);
-    manual->position(-1, 1, -1);
-    manual->position(-1, -1, -1);
-    manual->position(-1, -1, 1);
-    manual->quad(16,17,18,19);
+    manual->begin("MyMaterials/crate", RenderOperation::OT_TRIANGLE_FAN);
+    manual->position(-1, 1, 1); manual->normal(-1,0,0); manual->textureCoord(1,1);
+    manual->position(-1, 1, -1); manual->normal(-1,0,0); manual->textureCoord(0,1);
+    manual->position(-1, -1, -1); manual->normal(-1,0,0); manual->textureCoord(0,0);
+    manual->position(-1, -1, 1); manual->normal(-1,0,0); manual->textureCoord(1,0);
+    manual->end();
     
     // right
-    manual->normal(1,0,0);
-    manual->position(1, 1, -1);
-    manual->position(1, 1, 1);
-    manual->position(1, -1, 1);
-    manual->position(1, -1, -1);
-    manual->quad(20,21,22,23);
-    
+    manual->begin("MyMaterials/crate", RenderOperation::OT_TRIANGLE_FAN);
+    manual->position(1, 1, -1); manual->normal(1,0,0); manual->textureCoord(1,1);
+    manual->position(1, 1, 1); manual->normal(1,0,0); manual->textureCoord(0,1);
+    manual->position(1, -1, 1); manual->normal(1,0,0); manual->textureCoord(0,0);
+    manual->position(1, -1, -1); manual->normal(1,0,0); manual->textureCoord(1,0);
     manual->end();
+    
     rootNode = scnMgr->getRootSceneNode()->createChildSceneNode(name);
     Ogre::MeshPtr newMesh = manual->convertToMesh(name);
     myEntity = scnMgr->createEntity(name, name);
@@ -130,5 +196,19 @@ void Unit::relocate(btVector3& dest){
     position = dest;
     rootNode->setPosition(Ogre::Vector3(dest.x(), dest.y(), dest.z()));
     rootNode->setDirection(Ogre::Vector3(dest.x(), dest.y(), dest.z()), Node::TS_PARENT);
+    rootNode->setDirection(Ogre::Vector3(0,1,0), Node::TS_LOCAL);
+}
+
+void Unit::translate(float x, float y, float z){
+    position += btVector3(x,y,z);
+    rootNode->translate(x,y,z, Node::TS_LOCAL);
+}
+
+void Unit::setDirection(btVector3& d){
+    rootNode->setDirection(Ogre::Vector3(d.x(), d.y(), d.z()), Node::TS_PARENT);
+}
+
+void Unit::grow(){
+    rootNode->translate(0, -buildInterval, 0, Node::TS_LOCAL);
 }
 

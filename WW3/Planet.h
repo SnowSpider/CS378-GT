@@ -225,6 +225,7 @@ class PlanetCell{
     size_t id; 
     size_t centerId;
     size_t owner; //id of the player who owns the territory
+    size_t occupier; //id of the player who occupies the territory
     vector<size_t> neighbors; //same as the center vertex neighbors
     vector<size_t> paramVerts; //parameter vertices
     vector<size_t> borderSegments; 
@@ -241,10 +242,12 @@ class PlanetCell{
     bool selected;
     
     int myUnit;
+    int myUnit_pending;
     int myUnitId;
     int goalId;
     
     bool moving;
+    bool building;
     int timer;
     
     btVector3 myUnitDirection;
@@ -253,6 +256,7 @@ class PlanetCell{
     PlanetCell(){
         id = -1;
         owner = Owner_NEUTRAL;
+        occupier = Owner_NEUTRAL;
         altitude = 0;
         longitude = 0;
         latitude = 0;
@@ -262,7 +266,9 @@ class PlanetCell{
         visible = false;
         selected = false;
         moving = false;
+        building = false;
         myUnit = 0;
+        myUnit_pending = 0;
         myUnitId = -1;
         goalId = -1;
         baseMaterial = "MyMaterials/earth_day_bw";
@@ -272,6 +278,7 @@ class PlanetCell{
         //id = v.id; //not a good idea
         centerId = v.id;
         owner = Owner_NEUTRAL;
+        occupier = Owner_NEUTRAL;
         neighbors = v.neighbors;
         altitude = v.altitude;
         longitude = v.longitude;
@@ -282,7 +289,9 @@ class PlanetCell{
         visible = false;
         selected = false;
         moving = false;
+        building = false;
         myUnit = 0;
+        myUnit_pending = 0;
         myUnitId = -1;
         goalId = -1;
         baseMaterial = "MyMaterials/earth_day_bw";
@@ -292,6 +301,7 @@ class PlanetCell{
         id = c.id; //critical
         centerId = c.centerId;
         owner = c.owner;
+        occupier = Owner_NEUTRAL;
         neighbors = c.neighbors;
         paramVerts = c.paramVerts;
         altitude = c.altitude;
@@ -304,7 +314,9 @@ class PlanetCell{
         visible = false;
         selected = false;
         moving = false;
+        building = false;
         myUnit = 0;
+        myUnit_pending = 0;
         myUnitId = -1;
         goalId = -1;
         baseMaterial = "MyMaterials/earth_day_bw";
@@ -314,6 +326,7 @@ class PlanetCell{
         id = c.id; //critical
         centerId = c.centerId;
         owner = c.owner;
+        occupier = Owner_NEUTRAL;
         neighbors = c.neighbors;
         paramVerts = c.paramVerts;
         altitude = c.altitude;
@@ -326,7 +339,9 @@ class PlanetCell{
         visible = false;
         selected = false;
         moving = false;
+        building = false;
         myUnit = 0;
+        myUnit_pending = 0;
         myUnitId = -1;
         goalId = -1;
         baseMaterial = "MyMaterials/earth_day_bw";
@@ -336,6 +351,7 @@ class PlanetCell{
         id = c.id; //critical
         centerId = c.centerId;
         owner = c.owner;
+        occupier = Owner_NEUTRAL;
         neighbors = c.neighbors;
         paramVerts = c.paramVerts;
         altitude = c.altitude;
@@ -348,7 +364,9 @@ class PlanetCell{
         visible = false;
         selected = false;
         moving = false;
+        building = false;
         myUnit = 0;
+        myUnit_pending = 0;
         myUnitId = -1;
         goalId = -1;
         baseMaterial = "MyMaterials/earth_day_bw";

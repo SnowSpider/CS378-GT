@@ -1,3 +1,18 @@
+material MyMaterials/crate
+{
+   technique
+   {
+      pass
+      {
+         texture_unit
+         {
+            texture crate.png 2d
+            scale 1 1
+         }
+      }
+   }
+}
+
 material MyMaterials/Red
 {
     technique
@@ -20,7 +35,7 @@ material MyMaterials/Yellow
         {
             texture_unit
             {
-                colour_op_ex source1 src_manual src_current 1 0 0
+                colour_op_ex source1 src_manual src_current 1 1 0
             }
         } 
     }
@@ -34,7 +49,7 @@ material MyMaterials/Blue
         {
             texture_unit
             {
-                colour_op_ex source1 src_manual src_current 1 0 0
+                colour_op_ex source1 src_manual src_current 0 0 1
             }
         } 
     }

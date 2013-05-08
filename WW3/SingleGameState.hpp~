@@ -86,13 +86,16 @@ public:
     void BuildingImagesA3(PlanetCell &cell);
     void BuildingImagesN4(PlanetCell &cell);
     void BuildingImagesAF5(PlanetCell &cell);
-
-    bool createUnit(PlanetCell &cell);
+    
+    bool issueProduceOrder(PlanetCell& origin, PlanetCell& goal);
+    bool createUnit(PlanetCell &goal);
     bool issueMoveOrder(Unit& unit, PlanetCell& origin, PlanetCell& goal);
-    void moveUnit(Unit& unit, PlanetCell& origin, PlanetCell& goal);
+    bool moveUnit(Unit& unit, PlanetCell& origin, PlanetCell& goal);
     void illuminate(PlanetCell& targetCell);
     void deluminate(PlanetCell& targetCell);
- 
+    
+    void fireMissile();
+    
 private:
     Ogre::SceneNode*        m_pOgreHeadNode;
     Ogre::Entity*            m_pOgreHeadEntity;
@@ -147,6 +150,7 @@ private:
     int unitMoving;
     int unitMoney;
     int unitPlutonium;
+    int unitTimer;
     
     PlanetCell* currentCell;
     PlanetCell* lastCell;
