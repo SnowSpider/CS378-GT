@@ -81,12 +81,25 @@ public:
     bool DestroyerButton(const CEGUI::EventArgs &e);
     bool BomberButton(const CEGUI::EventArgs &e);
     bool FighterButton(const CEGUI::EventArgs &e);
+    bool CaptureButton(const CEGUI::EventArgs &e);
+    bool LaunchButton(const CEGUI::EventArgs &e);
     
+    void DeButton();
+    void BuildingImages0();
     void BuildingImages1(PlanetCell &cell);
     void BuildingImagesCB2(PlanetCell &cell);
     void BuildingImagesA3(PlanetCell &cell);
     void BuildingImagesN4(PlanetCell &cell);
     void BuildingImagesAF5(PlanetCell &cell);
+    void BuildingImagesNP6(PlanetCell &cell);
+    void UnitImagesI1(PlanetCell &cell);
+    void UnitImagesT2(PlanetCell &cell);
+    void UnitImagesS3(PlanetCell &cell);
+    void UnitImagesSM4(PlanetCell &cell);
+    void UnitImagesD5(PlanetCell &cell);
+    void UnitImagesB6(PlanetCell &cell);
+    void UnitImagesF7(PlanetCell &cell);
+    void BuildButtons();
     
     bool issueProduceOrder(PlanetCell& origin, PlanetCell& goal);
     bool createUnit(PlanetCell &goal);
@@ -179,6 +192,7 @@ private:
     int intId;
     
     std::vector<Unit> units;
+    std::vector<Missile> missiles;
 };
 //|||||||||||||||||||||||||||||||||||||||||||||||
  

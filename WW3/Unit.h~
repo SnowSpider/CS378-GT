@@ -243,6 +243,7 @@ class Unit {
     void translate(float x, float y, float z);
     void setDirection(btVector3& d);
     void grow();
+    void destroy(Ogre::SceneManager* scnMgr);
 };
 
 #endif

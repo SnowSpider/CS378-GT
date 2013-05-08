@@ -42,6 +42,8 @@ enum unitCost_gold{
     Au_AIRFORCEBASE = 25000,
     Au_NUCLEARPLANT = 150000,
     Au_ICBMSILO = 50000,
+    Au_LAUNCH = 100000,
+    Au_CAPTURE = 100,
     Au_SAMSITE = 1000
 };
 
@@ -67,6 +69,8 @@ enum unitCost_plutonium{
     Pt_AIRFORCEBASE = 0,
     Pt_NUCLEARPLANT = 2500,
     Pt_ICBMSILO = 1000,
+    Pt_LAUNCH = 100000,
+    Pt_CAPTURE = 0,
     Pt_SAMSITE = 0
 };
 
@@ -118,6 +122,8 @@ enum buildTime{
     BuildTime_AIRFORCEBASE = 5,
     BuildTime_NUCLEARPLANT = 5,
     BuildTime_ICBMSILO = 5,
+    BuildTime_LAUNCH = 5,
+    BuildTime_CAPTURE = 5,
     BuildTime_SAMSITE = 5
 };
 

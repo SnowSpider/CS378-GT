@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<Imageset Name="InfantryInterface" Imagefile="NuclearPlant.png" >
+	<Image Name="btnNormal" XPos="300" YPos="169" Width="300" Height="169" />
+	<Image Name="btnHover"  XPos="300" YPos="169" Width="300" Height="169" />
+	<Image Name="btnPushed" XPos="300" YPos="169" Width="300" Height="169" />
+	<Image Name="btnDisabl" XPos="300" YPos="169" Width="300" Height="169" />
+</Imageset>
