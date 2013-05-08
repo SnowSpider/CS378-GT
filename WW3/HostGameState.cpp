@@ -2,32 +2,35 @@
  
 #include "HostGameState.hpp"
 
-#include <ctime>    // For time()
-#include <cstdlib>  // For srand() and rand()
+#include <ctime>    // fortime()
+#include <cstdlib>  // forsrand() and rand()
 
 #include <iostream>
 #include <sstream>
 #include <math.h>
+#include <X11/Xlib.h>
 
 #include <btBulletCollisionCommon.h>
+
+#include <string.h>
 
 //|||||||||||||||||||||||||||||||||||||||||||||||
  
 using namespace Ogre;
-
+ 
 //|||||||||||||||||||||||||||||||||||||||||||||||
  
 HostGameState::HostGameState()
 {
-    m_MoveSpeed		= 0.1f;
-    m_RotateSpeed	= 0.3f;
+    m_MoveSpeed        = 50.0f;
+    m_RotateSpeed    = 0.3f;
  
     m_bLMouseDown       = false;
     m_bRMouseDown       = false;
     m_bQuit             = false;
     m_bSettingsMode     = false;
  
-    m_pDetailsPanel	= 0;
+    m_pDetailsPanel    = 0;
     
     // stuff from Assignment 2
     deltaX = 0;
@@ -43,11 +46,39 @@ HostGameState::HostGameState()
     soundIs = true;
     startUp = true;
     lost = false;
-    oppStartLost = btVector3(0,0,0);
-    multiStartLost = btVector3(0,0,0);
-    i = 0;
-    j = 0;
-    result = 0;
+    buildingImages = 1;
+    myOwner = Owner_BLUE;
+    myEnemy = Owner_RED;
+    commandBaseMax = 5;
+    commandBaseTotal = 0;
+    myCommandBase = 0;
+    enemyCommandBase = 5;
+    money = 100000000;
+    plutonium = 100000000;
+    population = 0;
+    onButton = false;
+    showWaterLand = false;
+    acceptNeighbors[6] = {0};
+    unitBuilding = 0;
+    unitMoving = 0;
+    unitMoney = 0;
+    unitPlutonium = 0; 
+    unitTimer = 0;
+    currentCell = NULL;
+    lastCell = NULL;
+    timerup = false;
+    tutorial = 0;
+    std::time(&currentTime);
+    musicBackground = NULL;
+	musicBuildComplete = NULL;
+	musicMoveComplete = NULL;
+	musicCaptureComplete = NULL;
+	musicEnemyUnitKilled = NULL;
+    musicUnitKilled = NULL;
+    musicEnemyCommandKilled = NULL;
+    musicCommandKilled = NULL;
+    musicVictory = NULL;
+    musicDefeat = NULL;
     socketset = NULL;
     isPlayer = false;
 }
@@ -56,83 +87,46 @@ HostGameState::HostGameState()
  
 void HostGameState::enter()
 {
+    HostGameState::initNetwork();
+    camDistance = 20000;
+    mRenderer = &CEGUI::OgreRenderer::bootstrapSystem();
+    Display* pdsp = NULL;
+    Window wid = 0;
+    pdsp = XOpenDisplay( NULL );
+    wid = DefaultRootWindow( pdsp );
+    XWindowAttributes xwAttr;
+    Status ret = XGetWindowAttributes( pdsp, wid, &xwAttr );
+    CEGUI::System::getSingleton().notifyDisplaySizeChanged(CEGUI::Size(xwAttr.width, xwAttr.height));
+    XCloseDisplay( pdsp );
+
     OgreFramework::getSingletonPtr()->m_pLog->logMessage("Entering HostGameState...");
-    
-    // Initialize SDL & SDL_net
-    if (SDL_Init(0) == -1){
-        cout << "SDL_Init: " << SDL_GetError() << "\n";
-        //exit(1);
-    }
-
-    if (SDLNet_Init() == -1){
-        cout << "SDLNet_Init: " << SDLNet_GetError() << "\n";
-        //exit(2);
-    }
-
-    // Create the socket set
-    socketset = SDLNet_AllocSocketSet(MAXSOCKET);
-    if (socketset == NULL){
-        cout << "SDLNet_AllocSocketSet: " << SDLNet_GetError() << "\n";
-        //exit(3);
-    }
-    else{
-        cout << "Max number of clients: " << MAXSOCKET << "\n";
-    }
-
-    // Initialize client sockets
-    for (i = 0; i < MAXSOCKET; i++){
-        client[i] = NULL;
-    }
-
-    // Try to resolve the host
-    if (SDLNet_ResolveHost(&ipaddress, NULL, PORT) == -1){
-        cout << "SDLNet_ResolveHost: " << SDLNet_GetError() << "\nContinuing...\n";
-    }
-
-    // Try to resolve the IP
-    if ((host = SDLNet_ResolveIP(&ipaddress)) == NULL){
-        cout << "SDLNet_ResolveIP: " << SDLNet_GetError() << "\nContinuing...\n";
-    }
-    else{
-        cout << "Local name: " << host << "\n";
-    }
-
-    // State which port we are listening on
-    cout << "Port: " << PORT << "\n";
-
-    // Try to open the server socket
-    tcpsock = SDLNet_TCP_Open(&ipaddress);
-    
-    if (!tcpsock){
-        cout << "SDLNet_TCP_Open: " << SDLNet_GetError() << "\n";
-        //exit(4);
-    }
-
-    // Add the server to the socket set
-    SDLNet_TCP_AddSocket(socketset, tcpsock);
-    
-    cout << "Awaiting clients...\n";
-
-    
+    OgreFramework::getSingletonPtr()->m_pTrayMgr->hideCursor();
     m_pSceneMgr = OgreFramework::getSingletonPtr()->m_pRoot->createSceneManager(ST_GENERIC, "GameSceneMgr");
     m_pSceneMgr->setAmbientLight(Ogre::ColourValue(0.7f, 0.7f, 0.7f));
- 
+    
+    m_pRSQ = m_pSceneMgr->createRayQuery(Ray());
+    
     m_pCamera = m_pSceneMgr->createCamera("GameCamera");
-    m_pCamera->setPosition(0,0,450); 
+    m_pSceneMgr->setSkyBox(true, "Examples/NebulaSkyBox");
+    m_pCamera->setPosition(0,0,20000); 
     m_pCamera->lookAt(Vector3(0, 0, 0));
     m_pCamera->setNearClipDistance(5);
- 
+    
     m_pCamera->setAspectRatio(Real(OgreFramework::getSingletonPtr()->m_pViewport->getActualWidth()) /
         Real(OgreFramework::getSingletonPtr()->m_pViewport->getActualHeight()));
  
     OgreFramework::getSingletonPtr()->m_pViewport->setCamera(m_pCamera);
     m_pCurrentObject = 0;
  
+    buildGUI();
+ 
     createScene();
+    m_pCamera->setAutoTracking(true, cameraNode);
 }
 
 bool HostGameState::pause()
 {
+    CEGUI::MouseCursor::getSingleton().hide();
     OgreFramework::getSingletonPtr()->m_pLog->logMessage("Pausing HostGameState...");
  
     return true;
@@ -142,8 +136,11 @@ bool HostGameState::pause()
  
 void HostGameState::resume()
 {
+    CEGUI::MouseCursor::getSingleton().show();
     OgreFramework::getSingletonPtr()->m_pLog->logMessage("Resuming HostGameState...");
-
+    OgreFramework::getSingletonPtr()->m_pTrayMgr->hideCursor();
+    buildGUI();
+ 
     OgreFramework::getSingletonPtr()->m_pViewport->setCamera(m_pCamera);
     m_bQuit = false;
 }
@@ -151,108 +148,82 @@ void HostGameState::resume()
 void HostGameState::exit()
 {
     OgreFramework::getSingletonPtr()->m_pLog->logMessage("Leaving HostGameState...");
- 
-    m_pSceneMgr->destroyCamera(m_pCamera);
-    //m_pSceneMgr->destroyQuery(m_pRSQ);
-    if(m_pSceneMgr)
-        OgreFramework::getSingletonPtr()->m_pRoot->destroySceneManager(m_pSceneMgr);
     
     sound.close();
+    myfile.close();
     
-    //SDLNet_TCP_Close(csd);
-    //SDLNet_TCP_Close(sd);
-    SDLNet_Quit(); 
-    SDL_Quit(); 
+    m_pSceneMgr->destroyCamera(m_pCamera);
+    m_pSceneMgr->destroyQuery(m_pRSQ);
+    if(m_pSceneMgr) OgreFramework::getSingletonPtr()->m_pRoot->destroySceneManager(m_pSceneMgr);
+
+    //CEGUI::System::getSingleton().destroy();cout << "6" << endl;
+    mRenderer->destroySystem();cout << "7" << endl;
+    //delete mRenderer;
 }
 
 void HostGameState::createScene()
 {
-    mRenderer = &CEGUI::OgreRenderer::bootstrapSystem();
+    cout << "sizeof(double) = " << sizeof(double) << endl;
+    cout << "sizeof(int) = " << sizeof(int) << endl;
+    cout << "sizeof(long) = " << sizeof(long) << endl;
+    cout << "sizeof(float) = " << sizeof(float) << endl;
+    cout << "sizeof(char) = " << sizeof(char) << endl;
+    cout << "sizeof(btVector3) = " << sizeof(btVector3) << endl;
     
+    //cout << "sizeof(btVector3*) = " << sizeof(btVector3*) << endl;
+    
+    myfile.open("waterland.txt");
+
     // Create SoundManager
     sound.open();
     sound.turnOn();
-    
+    sound.PlaySound(musicBackground);
     GameObject tempObject;
     
     // Create game objects
-    // Ball
-    tempObject = GameObject(m_pSceneMgr, &simulator, btVector3(0,0,0), "sphere.mesh", "Examples/PlasmaShit"); 
-    tempObject.rootNode->attachObject(m_pSceneMgr->createParticleSystem("Smoke", "Examples/Smoke"));
-    tempObject.scale(0.1, 0.1, 0.1);
-    tempObject.mass = 1.0f; 
-    tempObject.shape = new btSphereShape(10.0f);
-    tempObject.addToSimulator();
-    m_objects.push_back(tempObject);
     
-    // Host's paddle
-    tempObject = GameObject(m_pSceneMgr, &simulator, btVector3(0,0,200), "cube.mesh", "MyMaterials/wood1");
-    tempObject.scale(0.2, 0.2, 0.01);
-    tempObject.mass = 1.0f;
-    tempObject.shape = new btStaticPlaneShape(btVector3(0,0,-1), 0);
-    tempObject.addToSimulator();
-    m_objects.push_back(tempObject);
+    // Earth
+    earth = Planet( btVector3(0,0,0), //center
+                    btVector3(0,1,0), //axis
+                    btVector3(0,0,1), //longitude_zero
+                    6371,
+                    4);
+    earth.init();
+    earth.mapTerrain();
+    earth.mapFaction();
+    earth.mapPopDensity();
+    earth.createManualObjects(m_pSceneMgr);
+    earth.createManualObjects2(m_pSceneMgr);
     
-    // Client's paddle
-    tempObject = GameObject(m_pSceneMgr, &simulator, btVector3(0,0,-200), "cube.mesh", "MyMaterials/wood1");
-    tempObject.scale(0.2, 0.2, 0.01);
-    tempObject.mass = 1.0f;
-    tempObject.shape = new btStaticPlaneShape(btVector3(0,0,1), 0);
-    tempObject.addToSimulator();
-    m_objects.push_back(tempObject);
     
-    Ogre::Plane plane_x_pos_in(Ogre::Vector3::NEGATIVE_UNIT_X, 0);
-    Ogre::Plane plane_x_neg_in(Ogre::Vector3::UNIT_X, 0);
-    Ogre::Plane plane_y_pos_in(Ogre::Vector3::NEGATIVE_UNIT_Y, 0);
-    Ogre::Plane plane_y_neg_in(Ogre::Vector3::UNIT_Y, 0);
-    Ogre::Plane plane_z_pos_in(Ogre::Vector3::NEGATIVE_UNIT_Z, 0);
-    Ogre::Plane plane_z_neg_in(Ogre::Vector3::UNIT_Z, 0);
+    for(int i=0;i<earth.cells.size();i++){
+        string s = "Cell_";
+        stringstream ss;
+        Ogre::String name;
+        ss << i;
+        name = s.append(ss.str());
+        if(myOwner == Owner_BLUE){
+            if(earth.cells[i].owner == Owner_BLUE){
+                earth.own(m_pSceneMgr, earth.cells[i]);
+            }
+        }
+        else if(myOwner == Owner_RED){
+            if(earth.cells[i].owner == Owner_RED){
+                earth.own(m_pSceneMgr, earth.cells[i]);
+            }
+        }
+    }
     
-    // positive x plane
-    Ogre::MeshManager::getSingleton().createPlane("plane_x_pos_in", Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME, plane_x_pos_in, 400.0f, 200.0f, 1, 1, true, 1, 1.0f, 1.0f, Ogre::Vector3::UNIT_Y);
-    tempObject = GameObject(m_pSceneMgr, &simulator, btVector3(100,0,0), "plane_x_pos_in", "Examples/Rockwall");
-    tempObject.shape = new btStaticPlaneShape(btVector3(-1,0,0), 0);
-    tempObject.addToSimulator();
-    m_objects.push_back(tempObject);
+    earth.createBorderSegments(m_pSceneMgr, 50);
+    earth.updateBorderSegments(m_pSceneMgr);
+
+    mRayScnQuery = m_pSceneMgr->createRayQuery(Ogre::Ray());
     
-    // negative x plane
-    Ogre::MeshManager::getSingleton().createPlane("plane_x_neg_in", Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME, plane_x_neg_in, 400.0f, 200.0f, 1, 1, true, 1, 1.0f, 1.0f, Ogre::Vector3::UNIT_Y);
-    tempObject = GameObject(m_pSceneMgr, &simulator, btVector3(-100,0,0), "plane_x_neg_in", "Examples/Rockwall");
-    tempObject.shape = new btStaticPlaneShape(btVector3(1,0,0), 0);
-    tempObject.addToSimulator();
-    m_objects.push_back(tempObject);
+    cameraNode = m_pSceneMgr->getRootSceneNode();
     
-    // positive y plane
-    Ogre::MeshManager::getSingleton().createPlane("plane_y_pos_in", Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME, plane_y_pos_in, 400.0f, 200.0f, 1, 1, true, 1, 1.0f, 1.0f, Ogre::Vector3::UNIT_X);
-    tempObject = GameObject(m_pSceneMgr, &simulator, btVector3(0,100,0), "plane_y_pos_in", "MyMaterials/wood3");
-    tempObject.shape = new btStaticPlaneShape(btVector3(0,-1,0), 0);
-    tempObject.addToSimulator();
-    m_objects.push_back(tempObject);
-    
-    // negative y plane
-    Ogre::MeshManager::getSingleton().createPlane("plane_y_neg_in", Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME, plane_y_neg_in, 400.0f, 200.0f, 1, 1, true, 1, 1.0f, 1.0f, Ogre::Vector3::UNIT_X);
-    tempObject = GameObject(m_pSceneMgr, &simulator, btVector3(0,-100,0), "plane_y_neg_in", "MyMaterials/wood3");
-    tempObject.shape = new btStaticPlaneShape(btVector3(0,1,0), 0);
-    tempObject.addToSimulator();
-    m_objects.push_back(tempObject);
-    
-    // positive z plane
-    Ogre::MeshManager::getSingleton().createPlane("plane_z_pos_in", Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME, plane_z_pos_in, 200.0f, 200.0f, 1, 1, true, 1, 1.0f, 1.0f, Ogre::Vector3::UNIT_Y);
-    tempObject = GameObject(m_pSceneMgr, &simulator, btVector3(0,0,200), "plane_z_pos_in", "MyMaterials/buddha1");
-    tempObject.shape = new btStaticPlaneShape(btVector3(0,0,-1), 0);
-    tempObject.addToSimulator();
-    m_objects.push_back(tempObject);
-    
-    // negative z plane
-    Ogre::MeshManager::getSingleton().createPlane("plane_z_neg_in", Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME, plane_z_neg_in, 200.0f, 200.0f, 1, 1, true, 1, 1.0f, 1.0f, Ogre::Vector3::UNIT_Y);
-    tempObject = GameObject(m_pSceneMgr, &simulator, btVector3(0,0,-200), "plane_z_neg_in", "MyMaterials/buddha1");
-    tempObject.shape = new btStaticPlaneShape(btVector3(0,0,1), 0);
-    tempObject.addToSimulator();
-    m_objects.push_back(tempObject);
-	
     // Create a Light and set its position
     Ogre::Light* light = m_pSceneMgr->createLight("MainLight");
-    light->setPosition(75.0f, 75.0f, 75.0f);
+    light->setPosition(20000.0f, 20000.0f, 20000.0f);
     light->setDiffuseColour(1,1,1);
     
     //CEGUI SHIT(Stuff Hard to Improve Technically)
@@ -264,28 +235,585 @@ void HostGameState::createScene()
  
     CEGUI::SchemeManager::getSingleton().create("TaharezLook.scheme");
  
+    CEGUI::MouseCursor::getSingleton().setImage("TaharezLook", "MouseArrow");
+    try
+    {
+        CEGUI::System::getSingleton().setDefaultMouseCursor( "TaharezLook", "MouseArrow" );
+    }
+    catch (CEGUI::Exception& e)
+    {
+        // something went wrong - probably did not load the imageset first!
+        //TODO: Handle error,
+    }
     CEGUI::WindowManager &wmgr = CEGUI::WindowManager::getSingleton();
     CEGUI::Window *sheet = wmgr.createWindow("DefaultWindow", "CEGUIDemo/Sheet");
  
-    CEGUI::Window *counter = wmgr.createWindow("TaharezLook/Button", "Counter");
-    counter->setText("Score:  ");
-    counter->setSize(CEGUI::UVector2(CEGUI::UDim(0.15, 0), CEGUI::UDim(0.05, 0)));
+    CEGUI::Window *counter = wmgr.createWindow("TaharezLook/StaticText", "Counter");
+    std::string tempmoney;
+    std::string tempplut;
+    std::string tempmove;
+    std::string tempbuild;
+    std::stringstream out;
+    out << money;
+    tempmoney = out.str();
+    out.str( std::string() );
+    out.clear();
+    out << plutonium;
+    tempplut = out.str();
+    out.str( std::string() );
+    out.clear();
+    counter->setText("        Resources\nMoney: $"+tempmoney+"\nPlutonium: "+tempplut+"kg");
+    counter->setSize(CEGUI::UVector2(CEGUI::UDim(0.25, 0), CEGUI::UDim(0.10, 0)));
+    counter->setHorizontalAlignment(CEGUI::HA_LEFT);
+    counter->setProperty("FrameEnabled", "false");
+    counter->setProperty("BackgroundEnabled", "false");
  
     sheet->addChildWindow(counter);
+
+    counter = wmgr.createWindow("TaharezLook/StaticText", "CountDown");
+    counter->setText("Time until build:\n          0");
+    counter->setSize(CEGUI::UVector2(CEGUI::UDim(0.15, 0), CEGUI::UDim(0.15, 0)));
+    counter->setHorizontalAlignment(CEGUI::HA_LEFT);
+    counter->setVerticalAlignment(CEGUI::VA_BOTTOM);
+    counter->setVisible( false );
+    counter->setProperty("HorzFormatting", "WordWrapCentred");
+ 
+    sheet->addChildWindow(counter);
+
+    std::string commandMy;
+    std::string commandEnemy;
+    std::string commandTotal;
+    std::string commandMax;
+    out << commandBaseTotal;
+    commandTotal = out.str();
+    out.str( std::string() );
+    out.clear();
+    out << myCommandBase;
+    commandMy = out.str();
+    out.str( std::string() );
+    out.clear();
+    out << enemyCommandBase;
+    commandEnemy = out.str();
+    out.str( std::string() );
+    out.clear();   
+    out << commandBaseMax;
+    commandMax = out.str();
+    out.str( std::string() );
+    out.clear(); 
+
+    CEGUI::Window *resultWindow = wmgr.createWindow("TaharezLook/StaticText", "ProgressText1");
+    resultWindow->setHorizontalAlignment(CEGUI::HA_CENTRE);
+    resultWindow->setSize(CEGUI::UVector2(CEGUI::UDim(0.5f, 0), CEGUI::UDim(0.04f, 0)));
+    if(myOwner == Owner_BLUE)
+        resultWindow->setText("[colour='FF0000FF']Player Command Bases Remaining: "+commandMy+"/"+commandTotal+"");
+    else
+        resultWindow->setText("[colour='FFFF0000']Player Command Bases Remaining: "+commandMy+"/"+commandTotal+"");
+    resultWindow->setProperty("FrameEnabled", "false");
+    resultWindow->setProperty("BackgroundEnabled", "false");
+    resultWindow->setProperty("HorzFormatting", "WordWrapCentred");
+    sheet->addChildWindow(resultWindow);
+
+    resultWindow = wmgr.createWindow("TaharezLook/StaticText", "ProgressText2");
+    resultWindow->setHorizontalAlignment(CEGUI::HA_CENTRE);
+    resultWindow->setYPosition(CEGUI::UDim(0.05f, 0));
+    resultWindow->setSize(CEGUI::UVector2(CEGUI::UDim(0.5f, 0), CEGUI::UDim(0.04f, 0)));
+    if(myOwner == Owner_BLUE)
+        resultWindow->setText("[colour='FFFF0000']Enemy Command Bases Remaining: "+commandEnemy+"/"+commandMax+"");
+    else
+        resultWindow->setText("[colour='FF0000FF']Enemy Command Bases Remaining: "+commandEnemy+"/"+commandMax+"");
+    resultWindow->setProperty("FrameEnabled", "false");
+    resultWindow->setProperty("BackgroundEnabled", "false");
+    resultWindow->setProperty("HorzFormatting", "WordWrapCentred");
+    sheet->addChildWindow(resultWindow);
+
+    resultWindow = wmgr.createWindow("TaharezLook/Button", "FriendlyReminder");
+    resultWindow->setHorizontalAlignment(CEGUI::HA_LEFT);
+    resultWindow->setVerticalAlignment(CEGUI::VA_CENTRE);
+    resultWindow->setSize(CEGUI::UVector2(CEGUI::UDim(0.5f, 0), CEGUI::UDim(0.4f, 0)));
+    resultWindow->subscribeEvent(CEGUI::PushButton::EventClicked,CEGUI::Event::Subscriber(&HostGameState::FriendlyReminderButton,this));
+    sheet->addChildWindow(resultWindow);
+    resultWindow->setVisible( false );
+
+    resultWindow = wmgr.createWindow("TaharezLook/StaticText", "FriendlyReminderText1");
+    resultWindow->setHorizontalAlignment(CEGUI::HA_LEFT);
+    resultWindow->setVerticalAlignment(CEGUI::VA_CENTRE);
+    resultWindow->setXPosition(CEGUI::UDim(0.05f, 0));
+    resultWindow->setSize(CEGUI::UVector2(CEGUI::UDim(0.4f, 0), CEGUI::UDim(0.4f, 0)));
+    resultWindow->setText("Welcome! To interact with the world, use ASWD to move the camera around, QE to zoom in/out, and the left and right clicks to select/deselect, respectively, a cell. Click to Continue.");
+    resultWindow->setProperty("FrameEnabled", "false");
+    resultWindow->setProperty("BackgroundEnabled", "false");
+    resultWindow->setProperty("HorzFormatting", "WordWrapCentred");
+    resultWindow->disable();
+    resultWindow->setVisible( false );
+
+    sheet->addChildWindow(resultWindow);
+
+    resultWindow = wmgr.createWindow("TaharezLook/StaticText", "FriendlyReminderText2");
+    resultWindow->setHorizontalAlignment(CEGUI::HA_LEFT);
+    resultWindow->setVerticalAlignment(CEGUI::VA_CENTRE);
+    resultWindow->setXPosition(CEGUI::UDim(0.05f, 0));
+    resultWindow->setSize(CEGUI::UVector2(CEGUI::UDim(0.4f, 0), CEGUI::UDim(0.4f, 0)));
+    resultWindow->setText("In order to purge the world of Evil, the opposing views must be completely destroyed. Your representing color is seen at the top of the screen. Tiles on the screen are represented as Land (green outline), Water (blue outline), and WaterLand (yellow outline). The thicker outlines on the map mark your's and your opponent's territory. Click to Continue.");
+    resultWindow->setProperty("FrameEnabled", "false");
+    resultWindow->setProperty("BackgroundEnabled", "false");
+    resultWindow->setProperty("HorzFormatting", "WordWrapCentred");
+    resultWindow->disable();
+    resultWindow->setVisible( false );
+
+    sheet->addChildWindow(resultWindow);
+
+    resultWindow = wmgr.createWindow("TaharezLook/StaticText", "FriendlyReminderText3");
+    resultWindow->setHorizontalAlignment(CEGUI::HA_LEFT);
+    resultWindow->setVerticalAlignment(CEGUI::VA_CENTRE);
+    resultWindow->setXPosition(CEGUI::UDim(0.05f, 0));
+    resultWindow->setSize(CEGUI::UVector2(CEGUI::UDim(0.4f, 0), CEGUI::UDim(0.4f, 0)));
+    resultWindow->setText("Begin your reign of Justice by clicking any non-water tile within your boundries. From there, the CommandBase button (upper right cornor below Sound) will light up, allowing you to click and build. Begin by building "+commandMax+" CommandBases that will act as your foundation. Click this message to remove.");
+    resultWindow->setProperty("FrameEnabled", "false");
+    resultWindow->setProperty("BackgroundEnabled", "false");
+    resultWindow->setProperty("HorzFormatting", "WordWrapCentred");
+    resultWindow->disable();
+    resultWindow->setVisible( false );
+
+    sheet->addChildWindow(resultWindow);
+
+    resultWindow = wmgr.createWindow("TaharezLook/StaticText", "NetworkWaiting");
+    resultWindow->setHorizontalAlignment(CEGUI::HA_CENTRE);
+    resultWindow->setSize(CEGUI::UVector2(CEGUI::UDim(0.4f, 0), CEGUI::UDim(0.4f, 0)));
+    resultWindow->setText("Please wait until an opponent joins, until then you will not be allowed to click anything. When an opponent has joined this message will disappear and you may begin playing.");
+    resultWindow->setProperty("HorzFormatting", "WordWrapCentred");
+
+    sheet->addChildWindow(resultWindow);
+
+    CEGUI::Window *w;
+    if(myOwner == Owner_BLUE)
+    {
+        CEGUI::ImagesetManager::getSingleton().create( "BCommandBase.imageset" );
+        w = wmgr.loadWindowLayout("BCommandBase.layout");
+    }
+    else
+    {
+        CEGUI::ImagesetManager::getSingleton().create( "RCommandBase.imageset" );
+        w = wmgr.loadWindowLayout("RCommandBase.layout");
+    }
+    w->setHorizontalAlignment(CEGUI::HA_RIGHT);
+    w->setYPosition(CEGUI::UDim(0.05f, 0));
+    w->setVisible( true );
+    w->subscribeEvent(CEGUI::PushButton::EventClicked,CEGUI::Event::Subscriber(&HostGameState::CommandBaseButton,this));
+    w->disable();
+
+    sheet->addChildWindow(w);
+
+    w = CEGUI::WindowManager::getSingleton().getWindow("CommandBaseText");
+    out << Au_COMMANDBASE;
+    tempmoney = out.str();
+    out.str( std::string() );
+    out.clear();
+    out << BuildTime_COMMANDBASE;
+    tempbuild = out.str();
+    out.str( std::string() );
+    out.clear();
+    w->setText("Cost:$"+tempmoney+"\nBuild Time:"+tempbuild+"s");
+
+    CEGUI::ImagesetManager::getSingleton().create( "ArmyBase.imageset" );
+    w = wmgr.loadWindowLayout("ArmyBase.layout");
+    w->setHorizontalAlignment(CEGUI::HA_RIGHT);
+    w->setYPosition(CEGUI::UDim(0.20f, 0));
+    w->setVisible( true );
+    w->subscribeEvent(CEGUI::PushButton::EventClicked,CEGUI::Event::Subscriber(&HostGameState::ArmyBaseButton,this));
+    w->disable();
+
+    sheet->addChildWindow(w);
+
+    w = CEGUI::WindowManager::getSingleton().getWindow("ArmyBaseText");
+    out << Au_ARMYBASE;
+    tempmoney = out.str();
+    out.str( std::string() );
+    out.clear();
+    out << BuildTime_ARMYBASE;
+    tempbuild = out.str();
+    out.str( std::string() );
+    out.clear();
+    w->setText("Cost:$"+tempmoney+"\nBuild Time:"+tempbuild+"s");
+
+    CEGUI::ImagesetManager::getSingleton().create( "NavyBase.imageset" );
+    w = wmgr.loadWindowLayout("NavyBase.layout");
+    w->setHorizontalAlignment(CEGUI::HA_RIGHT);
+    w->setYPosition(CEGUI::UDim(0.35f, 0));
+    w->setVisible( true );
+    w->subscribeEvent(CEGUI::PushButton::EventClicked,CEGUI::Event::Subscriber(&HostGameState::NavyBaseButton,this));
+    w->disable();
+
+    sheet->addChildWindow(w);
+
+    w = CEGUI::WindowManager::getSingleton().getWindow("NavyBaseText");
+    out << Au_NAVYBASE;
+    tempmoney = out.str();
+    out.str( std::string() );
+    out.clear();
+    out << BuildTime_NAVYBASE;
+    tempbuild = out.str();
+    out.str( std::string() );
+    out.clear();
+    w->setText("Cost:$"+tempmoney+"\nBuild Time:"+tempbuild+"s");
+
+    CEGUI::ImagesetManager::getSingleton().create( "AirForceBase.imageset" );
+    w = wmgr.loadWindowLayout("AirForceBase.layout");
+    w->setHorizontalAlignment(CEGUI::HA_RIGHT);
+    w->setYPosition(CEGUI::UDim(0.50f, 0));
+    w->setVisible( true );
+    w->subscribeEvent(CEGUI::PushButton::EventClicked,CEGUI::Event::Subscriber(&HostGameState::AirForceBaseButton,this));
+    w->disable();
+
+    sheet->addChildWindow(w);
+
+    w = CEGUI::WindowManager::getSingleton().getWindow("AirForceBaseText");
+    out << Au_AIRFORCEBASE;
+    tempmoney = out.str();
+    out.str( std::string() );
+    out.clear();
+    out << BuildTime_AIRFORCEBASE;
+    tempbuild = out.str();
+    out.str( std::string() );
+    out.clear();
+    w->setText("Cost:$"+tempmoney+"\nBuild Time:"+tempbuild+"s");
+    
+    CEGUI::ImagesetManager::getSingleton().create( "NuclearPlant.imageset" );
+    w = wmgr.loadWindowLayout("NuclearPlant.layout");
+    w->setHorizontalAlignment(CEGUI::HA_RIGHT);
+    w->setYPosition(CEGUI::UDim(0.65f, 0));
+    w->setVisible( true );
+    w->subscribeEvent(CEGUI::PushButton::EventClicked,CEGUI::Event::Subscriber(&HostGameState::NuclearPlantButton,this));
+    w->disable();
+
+    sheet->addChildWindow(w);
+
+    w = CEGUI::WindowManager::getSingleton().getWindow("NuclearPlantText");
+    out << Au_NUCLEARPLANT;
+    tempmoney = out.str();
+    out.str( std::string() );
+    out.clear();
+    out << BuildTime_NUCLEARPLANT;
+    tempbuild = out.str();
+    out.str( std::string() );
+    out.clear();
+    w->setText("Cost:$"+tempmoney+"\nBuild Time:"+tempbuild+"s");
+
+    CEGUI::ImagesetManager::getSingleton().create( "ICBMSilo.imageset" );
+    w = wmgr.loadWindowLayout("ICBMSilo.layout");
+    w->setHorizontalAlignment(CEGUI::HA_RIGHT);
+    w->setYPosition(CEGUI::UDim(0.80f, 0));
+    w->setVisible( true );
+    w->subscribeEvent(CEGUI::PushButton::EventClicked,CEGUI::Event::Subscriber(&HostGameState::ICBMSiloButton,this));
+    w->disable();
+
+    sheet->addChildWindow(w);
+
+    w = CEGUI::WindowManager::getSingleton().getWindow("ICBMSiloText");
+    out << Au_ICBMSILO;
+    tempmoney = out.str();
+    out.str( std::string() );
+    out.clear();
+    out << BuildTime_ICBMSILO;
+    tempbuild = out.str();
+    out.str( std::string() );
+    out.clear();
+    w->setText("Cost:$"+tempmoney+"\nBuild Time:"+tempbuild+"s");
+    
+    CEGUI::ImagesetManager::getSingleton().create( "Infantry.imageset" );
+    w = wmgr.loadWindowLayout("Infantry.layout");
+    w->setHorizontalAlignment(CEGUI::HA_RIGHT);
+    w->setYPosition(CEGUI::UDim(0.05f, 0));
+    w->setVisible( false );
+    w->subscribeEvent(CEGUI::PushButton::EventClicked,CEGUI::Event::Subscriber(&HostGameState::InfantryButton,this));
+    w->disable();
+
+    sheet->addChildWindow(w);
+
+    w = CEGUI::WindowManager::getSingleton().getWindow("InfantryText");
+    out << Au_INFANTRY;
+    tempmoney = out.str();
+    out.str( std::string() );
+    out.clear();
+    out << BuildTime_INFANTRY;
+    tempbuild = out.str();
+    out.str( std::string() );
+    out.clear();
+    w->setText("Cost:$"+tempmoney+"\nBuild Time:"+tempbuild+"s");
+    
+    CEGUI::ImagesetManager::getSingleton().create( "Submarine.imageset" );
+    w = wmgr.loadWindowLayout("Submarine.layout");
+    w->setHorizontalAlignment(CEGUI::HA_RIGHT);
+    w->setYPosition(CEGUI::UDim(0.05f, 0));
+    w->setVisible( false );
+    w->subscribeEvent(CEGUI::PushButton::EventClicked,CEGUI::Event::Subscriber(&HostGameState::SubmarineButton,this));
+    w->disable();
+
+    sheet->addChildWindow(w);    
+
+    w = CEGUI::WindowManager::getSingleton().getWindow("SubmarineText");
+    out << Au_SUBMARINE;
+    tempmoney = out.str();
+    out.str( std::string() );
+    out.clear();
+    out << BuildTime_SUBMARINE;
+    tempbuild = out.str();
+    out.str( std::string() );
+    out.clear();
+    w->setText("Cost:$"+tempmoney+"\nBuild Time:"+tempbuild+"s");
+    
+    CEGUI::ImagesetManager::getSingleton().create( "Destroyer.imageset" );
+    w = wmgr.loadWindowLayout("Destroyer.layout");
+    w->setHorizontalAlignment(CEGUI::HA_RIGHT);
+    w->setYPosition(CEGUI::UDim(0.20f, 0));
+    w->setVisible( false );
+    w->subscribeEvent(CEGUI::PushButton::EventClicked,CEGUI::Event::Subscriber(&HostGameState::DestroyerButton,this));
+    w->disable();
+
+    sheet->addChildWindow(w);
+
+    w = CEGUI::WindowManager::getSingleton().getWindow("DestroyerText");
+    out << Au_DESTROYER;
+    tempmoney = out.str();
+    out.str( std::string() );
+    out.clear();
+    out << BuildTime_DESTROYER;
+    tempbuild = out.str();
+    out.str( std::string() );
+    out.clear();
+    w->setText("Cost:$"+tempmoney+"\nBuild Time:"+tempbuild+"s");
+    
+    CEGUI::ImagesetManager::getSingleton().create( "Tank.imageset" );
+    w = wmgr.loadWindowLayout("Tank.layout");
+    w->setHorizontalAlignment(CEGUI::HA_RIGHT);
+    w->setYPosition(CEGUI::UDim(0.05f, 0));
+    w->setVisible( false );
+    w->subscribeEvent(CEGUI::PushButton::EventClicked,CEGUI::Event::Subscriber(&HostGameState::TankButton,this));
+    w->disable();
+
+    sheet->addChildWindow(w);
+
+    w = CEGUI::WindowManager::getSingleton().getWindow("TankText");
+    out << Au_TANK;
+    tempmoney = out.str();
+    out.str( std::string() );
+    out.clear();
+    out << BuildTime_TANK;
+    tempbuild = out.str();
+    out.str( std::string() );
+    out.clear();
+    w->setText("Cost:$"+tempmoney+"\nBuild Time:"+tempbuild+"s");
+    
+    CEGUI::ImagesetManager::getSingleton().create( "Scud.imageset" );
+    w = wmgr.loadWindowLayout("Scud.layout");
+    w->setHorizontalAlignment(CEGUI::HA_RIGHT);
+    w->setYPosition(CEGUI::UDim(0.20f, 0));
+    w->setVisible( false );
+    w->subscribeEvent(CEGUI::PushButton::EventClicked,CEGUI::Event::Subscriber(&HostGameState::ScudButton,this));
+    w->disable();
+
+    sheet->addChildWindow(w);
+
+    w = CEGUI::WindowManager::getSingleton().getWindow("ScudText");
+    out << Au_SCUD;
+    tempmoney = out.str();
+    out.str( std::string() );
+    out.clear();
+    out << BuildTime_SCUD;
+    tempbuild = out.str();
+    out.str( std::string() );
+    out.clear();
+    w->setText("Cost:$"+tempmoney+"\nBuild Time:"+tempbuild+"s");
+
+    CEGUI::ImagesetManager::getSingleton().create( "Bomber.imageset" );
+    w = wmgr.loadWindowLayout("Bomber.layout");
+    w->setHorizontalAlignment(CEGUI::HA_RIGHT);
+    w->setYPosition(CEGUI::UDim(0.05f, 0));
+    w->setVisible( false );
+    w->subscribeEvent(CEGUI::PushButton::EventClicked,CEGUI::Event::Subscriber(&HostGameState::BomberButton,this));
+    w->disable();
+
+    sheet->addChildWindow(w);
+
+    w = CEGUI::WindowManager::getSingleton().getWindow("BomberText");
+    out << Au_BOMBER;
+    tempmoney = out.str();
+    out.str( std::string() );
+    out.clear();
+    out << BuildTime_BOMBER;
+    tempbuild = out.str();
+    out.str( std::string() );
+    out.clear();
+    w->setText("Cost:$"+tempmoney+"\nBuild Time:"+tempbuild+"s");
+    
+    CEGUI::ImagesetManager::getSingleton().create( "Fighter.imageset" );
+    w = wmgr.loadWindowLayout("Fighter.layout");
+    w->setHorizontalAlignment(CEGUI::HA_RIGHT);
+    w->setYPosition(CEGUI::UDim(0.20f, 0));
+    w->setVisible( false );
+    w->subscribeEvent(CEGUI::PushButton::EventClicked,CEGUI::Event::Subscriber(&HostGameState::FighterButton,this));
+    w->disable();
+
+    sheet->addChildWindow(w);
+
+    w = CEGUI::WindowManager::getSingleton().getWindow("FighterText");
+    out << Au_FIGHTER;
+    tempmoney = out.str();
+    out.str( std::string() );
+    out.clear();
+    out << BuildTime_FIGHTER;
+    tempbuild = out.str();
+    out.str( std::string() );
+    out.clear();
+    w->setText("Cost:$"+tempmoney+"\nBuild Time:"+tempbuild+"s");
+
+    if(myOwner == Owner_BLUE)
+    {
+        CEGUI::ImagesetManager::getSingleton().create( "BCapture.imageset" );
+        w = wmgr.loadWindowLayout("BCapture.layout");
+    }
+    else
+    {
+        CEGUI::ImagesetManager::getSingleton().create( "RCapture.imageset" );
+        w = wmgr.loadWindowLayout("RCapture.layout");
+    }
+    w->setHorizontalAlignment(CEGUI::HA_RIGHT);
+    w->setYPosition(CEGUI::UDim(0.05f, 0));
+    w->setVisible( false );
+    w->subscribeEvent(CEGUI::PushButton::EventClicked,CEGUI::Event::Subscriber(&HostGameState::CaptureButton,this));
+    w->disable();
+
+    sheet->addChildWindow(w);
+
+    CEGUI::ImagesetManager::getSingleton().create( "NuclearPlantInterface.imageset" );
+    w = wmgr.loadWindowLayout("NuclearPlantInterface.layout");
+    w->setHorizontalAlignment(CEGUI::HA_RIGHT);
+    w->setYPosition(CEGUI::UDim(0.05f, 0));
+    w->setVisible( false );
+    w->disable();
+
+    sheet->addChildWindow(w);
+
+    CEGUI::ImagesetManager::getSingleton().create( "BomberInterface.imageset" );
+    w = wmgr.loadWindowLayout("BomberInterface.layout");
+    w->setHorizontalAlignment(CEGUI::HA_RIGHT);
+    w->setYPosition(CEGUI::UDim(0.05f, 0));
+    w->setVisible( false );
+    w->disable();
+
+    sheet->addChildWindow(w);
+
+    w = CEGUI::WindowManager::getSingleton().getWindow("BomberInterfaceText");
+    out << MoveTime_BOMBER;
+    tempmove = out.str();
+    out.str( std::string() );
+    out.clear();
+    w->setText("Move Time:"+tempmove+"s");
+
+    CEGUI::ImagesetManager::getSingleton().create( "DestroyerInterface.imageset" );
+    w = wmgr.loadWindowLayout("DestroyerInterface.layout");
+    w->setHorizontalAlignment(CEGUI::HA_RIGHT);
+    w->setYPosition(CEGUI::UDim(0.05f, 0));
+    w->setVisible( false );
+    w->disable();
+
+    sheet->addChildWindow(w);
+
+    w = CEGUI::WindowManager::getSingleton().getWindow("DestroyerInterfaceText");
+    out << MoveTime_DESTROYER;
+    tempmove = out.str();
+    out.str( std::string() );
+    out.clear();
+    w->setText("Move Time:"+tempmove+"s");
+
+    CEGUI::ImagesetManager::getSingleton().create( "FighterInterface.imageset" );
+    w = wmgr.loadWindowLayout("FighterInterface.layout");
+    w->setHorizontalAlignment(CEGUI::HA_RIGHT);
+    w->setYPosition(CEGUI::UDim(0.05f, 0));
+    w->setVisible( false );
+    w->disable();
+
+    sheet->addChildWindow(w);
+
+    CEGUI::ImagesetManager::getSingleton().create( "InfantryInterface.imageset" );
+    w = wmgr.loadWindowLayout("InfantryInterface.layout");
+    w->setHorizontalAlignment(CEGUI::HA_RIGHT);
+    w->setYPosition(CEGUI::UDim(0.20f, 0));
+    w->setVisible( false );
+    w->disable();
+
+    sheet->addChildWindow(w);
+
+    w = CEGUI::WindowManager::getSingleton().getWindow("InfantryInterfaceText");
+    out << MoveTime_INFANTRY;
+    tempmove = out.str();
+    out.str( std::string() );
+    out.clear();
+    w->setText("Move Time:"+tempmove+"s");
+
+    CEGUI::ImagesetManager::getSingleton().create( "ScudInterface.imageset" );
+    w = wmgr.loadWindowLayout("ScudInterface.layout");
+    w->setHorizontalAlignment(CEGUI::HA_RIGHT);
+    w->setYPosition(CEGUI::UDim(0.05f, 0));
+    w->setVisible( false );
+    w->disable();
+
+    sheet->addChildWindow(w);
+
+    w = CEGUI::WindowManager::getSingleton().getWindow("ScudInterfaceText");
+    out << MoveTime_SCUD;
+    tempmove = out.str();
+    out.str( std::string() );
+    out.clear();
+    w->setText("Move Time:"+tempmove+"s");
+
+    CEGUI::ImagesetManager::getSingleton().create( "SubmarineInterface.imageset" );
+    w = wmgr.loadWindowLayout("SubmarineInterface.layout");
+    w->setHorizontalAlignment(CEGUI::HA_RIGHT);
+    w->setYPosition(CEGUI::UDim(0.05f, 0));
+    w->setVisible( false );
+    w->disable();
+
+    sheet->addChildWindow(w);
+
+    w = CEGUI::WindowManager::getSingleton().getWindow("SubmarineInterfaceText");
+    out << MoveTime_SUBMARINE;
+    tempmove = out.str();
+    out.str( std::string() );
+    out.clear();
+    w->setText("Move Time:"+tempmove+"s");
+
+    CEGUI::ImagesetManager::getSingleton().create( "TankInterface.imageset" );
+    w = wmgr.loadWindowLayout("TankInterface.layout");
+    w->setHorizontalAlignment(CEGUI::HA_RIGHT);
+    w->setYPosition(CEGUI::UDim(0.05f, 0));
+    w->setVisible( false );
+    w->disable();
+
+    sheet->addChildWindow(w);
+
+    w = CEGUI::WindowManager::getSingleton().getWindow("TankInterfaceText");
+    out << MoveTime_TANK;
+    tempmove = out.str();
+    out.str( std::string() );
+    out.clear();
+    w->setText("Move Time:"+tempmove+"s");
+
+    CEGUI::ImagesetManager::getSingleton().create( "Launch.imageset" );
+    w = wmgr.loadWindowLayout("Launch.layout");
+    w->setHorizontalAlignment(CEGUI::HA_RIGHT);
+    w->setYPosition(CEGUI::UDim(0.05f, 0));
+    w->setVisible( false );
+    w->subscribeEvent(CEGUI::PushButton::EventClicked,CEGUI::Event::Subscriber(&HostGameState::LaunchButton,this));
+    w->disable();
+
+    sheet->addChildWindow(w);
 
     CEGUI::Window *sounder = wmgr.createWindow("TaharezLook/Button", "SounderDontBreak");
     sounder->setText("Sound: On");
     sounder->setSize(CEGUI::UVector2(CEGUI::UDim(0.15, 0), CEGUI::UDim(0.05, 0)));
     sounder->setHorizontalAlignment(CEGUI::HA_RIGHT);
- 
+    sounder->subscribeEvent(CEGUI::PushButton::EventClicked,CEGUI::Event::Subscriber(&HostGameState::soundButton,this));
     sheet->addChildWindow(sounder);
-
-    CEGUI::Window *starter = wmgr.createWindow("TaharezLook/StaticText", "StartingWindow");
-    starter->setText("Welcome, please click to begin.\nClick X to toggle sound.");
-    starter->setSize(CEGUI::UVector2(CEGUI::UDim(0.30, 0), CEGUI::UDim(0.10, 0)));
-    starter->setPosition(CEGUI::UVector2(CEGUI::UDim(0.35f, 0), CEGUI::UDim(0.45f, 0 )));
- 
-    sheet->addChildWindow(starter);
 
     CEGUI::Window *gameOver = wmgr.createWindow("TaharezLook/StaticText", "GameOverWindow");
     gameOver->setText("");
@@ -299,77 +827,66 @@ void HostGameState::createScene()
     // stuff from createFrameListener
     
     // Backgroun Music
-    sound.PlaySound("buddhist_chant.wav");
+    //sound.PlaySound("buddhist_chant.wav");
     
     srand(time(0));  // Initialize random number generator.
-    // Set default values for variables
+    // Set default values forvariables
     float r1 = (rand() % 100);
     float r2 = (rand() % 100);
     float r3 = (rand() % 100);
     
-    myBall = &m_objects[0];
-    myBall->tr = btTransform(btMatrix3x3(1,0,0,0,1,0,0,0,1),btVector3(r1, r2, -500));
-    myBall->updateTransform();
-    
-    myBall->direction = btVector3(r1, r2, -500);
-    myBall->direction.normalize();
-    myBall->speed = speed_default;
-    myBall->setPosition(btVector3(0,0,0));
 }
 
 bool HostGameState::keyPressed(const OIS::KeyEvent &keyEventRef)
 {
-    if(m_bSettingsMode == true)
-    {
-        if(OgreFramework::getSingletonPtr()->m_pKeyboard->isKeyDown(OIS::KC_S))
-        {
-            OgreBites::SelectMenu* pMenu = (OgreBites::SelectMenu*)OgreFramework::getSingletonPtr()->m_pTrayMgr->getWidget("ChatModeSelMenu");
-            if(pMenu->getSelectionIndex() + 1 < (int)pMenu->getNumItems())
-                pMenu->selectItem(pMenu->getSelectionIndex() + 1);
-        }
- 
-        if(OgreFramework::getSingletonPtr()->m_pKeyboard->isKeyDown(OIS::KC_W))
-        {
-            OgreBites::SelectMenu* pMenu = (OgreBites::SelectMenu*)OgreFramework::getSingletonPtr()->m_pTrayMgr->getWidget("ChatModeSelMenu");
-            if(pMenu->getSelectionIndex() - 1 >= 0)
-                pMenu->selectItem(pMenu->getSelectionIndex() - 1);
-        }
-    }
- 
-    if(OgreFramework::getSingletonPtr()->m_pKeyboard->isKeyDown(OIS::KC_ESCAPE))
+    CEGUI::System &sys = CEGUI::System::getSingleton();
+    sys.injectKeyDown(keyEventRef.key);
+    sys.injectChar(keyEventRef.text);
+    if(keyEventRef.key == OIS::KC_ESCAPE)
     {
         pushAppState(findByName("PauseState"));
-        OgreFramework::getSingletonPtr()->m_pTrayMgr->showCursor();
         return true;
     }
- 
-    if(OgreFramework::getSingletonPtr()->m_pKeyboard->isKeyDown(OIS::KC_I))
+    if(keyEventRef.key == OIS::KC_R) //retire the unit on the current cell
     {
-        if(m_pDetailsPanel->getTrayLocation() == OgreBites::TL_NONE)
-        {
-            OgreFramework::getSingletonPtr()->m_pTrayMgr->moveWidgetToTray(m_pDetailsPanel, OgreBites::TL_TOPLEFT, 0);
-            m_pDetailsPanel->show();
+        if(currentCell->myUnit != Unit_EMPTY && currentCell->occupier == myOwner){
+            currentCell->myUnit = 0;
+            currentCell->myUnitId = -1;
+            currentCell->occupier == Owner_NEUTRAL;
+            units[currentCell->myUnitId].destroy(m_pSceneMgr);
+            BuildButtons();
         }
-        else
-        {
-            OgreFramework::getSingletonPtr()->m_pTrayMgr->removeWidgetFromTray(m_pDetailsPanel);
-            m_pDetailsPanel->hide();
-        }
-    }
- 
-    if(OgreFramework::getSingletonPtr()->m_pKeyboard->isKeyDown(OIS::KC_TAB))
-    {
-        m_bSettingsMode = !m_bSettingsMode;
         return true;
     }
- 
-    if(m_bSettingsMode && OgreFramework::getSingletonPtr()->m_pKeyboard->isKeyDown(OIS::KC_RETURN) ||
-        OgreFramework::getSingletonPtr()->m_pKeyboard->isKeyDown(OIS::KC_NUMPADENTER))
+    if(keyEventRef.key == OIS::KC_X)
     {
+        HostGameState::soundSwitch();
     }
- 
-    if(!m_bSettingsMode || (m_bSettingsMode && !OgreFramework::getSingletonPtr()->m_pKeyboard->isKeyDown(OIS::KC_O)))
-        OgreFramework::getSingletonPtr()->keyPressed(keyEventRef);
+    if(keyEventRef.key == OIS::KC_Z)
+    {
+        if(showWaterLand) {
+            showWaterLand = false;
+            for(int i=0;i<earth.cells.size();i++){
+                string s = "CellBoundary_";
+                stringstream ss;
+                Ogre::String name;
+                ss << i;
+                name = s.append(ss.str());
+                m_pSceneMgr->getEntity(name)->setVisible(true);
+            }
+        }
+        else {
+            showWaterLand = true;
+            for(int i=0;i<earth.cells.size();i++){
+                string s = "CellBoundary_";
+                stringstream ss;
+                Ogre::String name;
+                ss << i;
+                name = s.append(ss.str());
+                m_pSceneMgr->getEntity(name)->setVisible(false);
+            }
+        }
+    }
     
     return true;
 }
@@ -384,80 +901,43 @@ bool HostGameState::keyReleased(const OIS::KeyEvent &keyEventRef)
 
 bool HostGameState::mouseMoved(const OIS::MouseEvent &evt)
 {
+    CEGUI::System::getSingleton().injectMouseMove(evt.state.X.rel, evt.state.Y.rel);
     if(OgreFramework::getSingletonPtr()->m_pTrayMgr->injectMouseMove(evt)) return true;
-    
+    CEGUI::Vector2 guiMouse = CEGUI::MouseCursor::getSingleton().getPosition();
     deltaX = evt.state.X.rel;
     deltaY = -evt.state.Y.rel;
     //xi = evt.state.X.abs - (1024/2);
     //yi = -evt.state.Y.abs + (768/2); 
-    xi += evt.state.X.rel;
-    yi += -evt.state.Y.rel; 
-    if (xi > 90) xi = 90;
-    if (xi < -90) xi = -90;
-    if (yi > 90) yi = 90;
-    if (yi < -90) yi = -90;
+    xi += guiMouse.d_x;
+    yi += -guiMouse.d_y; 
+    if(xi > 90) xi = 90;
+    if(xi < -90) xi = -90;
+    if(yi > 90) yi = 90;
+    if(yi < -90) yi = -90;
     //cout << "move: (" << deltaX << "," << deltaY << ")" << endl;
-    return true;
     
-    /*
- 
     if(m_bRMouseDown)
     {
         m_pCamera->yaw(Degree(evt.state.X.rel * -0.1f));
         m_pCamera->pitch(Degree(evt.state.Y.rel * -0.1f));
     }
- 
+    
     return true;
-    */
 }
 
 //|||||||||||||||||||||||||||||||||||||||||||||||
  
 bool HostGameState::mousePressed(const OIS::MouseEvent &evt, OIS::MouseButtonID id)
 {
+    if(!isPlayer)return true;
+    CEGUI::System::getSingleton().injectMouseButtonDown(HostGameState::convertButton(id));
+    if(onButton)
+    {
+        onButton = false;
+        return true;
+    }
     if(OgreFramework::getSingletonPtr()->m_pTrayMgr->injectMouseDown(evt, id)) return true;
     
-    switch (id) {
-        case OIS::MB_Left:
-            onLeftPressed(evt);
-            m_bLMouseDown = true;
-            //cout << "Left Click" << endl;
-            if (ready){
-                ready = false;
-            }
-            OgreFramework::getSingletonPtr()->m_pTrayMgr->hideCursor();
-            break;
-        case OIS::MB_Right: 
-            m_bRMouseDown = true;
-            //cout << "Right Click" << endl;
-            break;
-        default:
-            break;
-    }
-    if(startUp)
-    {
-        multiStartLost.setX(1);
-        startUp = false;
-        CEGUI::Window* starting = CEGUI::WindowManager::getSingleton().getWindow("StartingWindow");
-        starting->setVisible(false);
-        CEGUI::Window* counter = CEGUI::WindowManager::getSingleton().getWindow("Counter");
-        counter->setText("Score: 0");
-
-    }
-    if(lost)
-    {
-        multiStartLost.setY(0);
-        multiStartLost.setX(1);
-        lost = false;
-        CEGUI::Window* gameOver = CEGUI::WindowManager::getSingleton().getWindow("GameOverWindow");
-        gameOver->setVisible(false);
-        CEGUI::Window* counter = CEGUI::WindowManager::getSingleton().getWindow("Counter");
-            std::string shownScore;
-            std::stringstream out;
-            out << score;
-            shownScore = out.str();
-            counter->setText("Score: " + shownScore);
-    }
     //mCameraMan->injectMouseDown(evt, id);
     return true;
 }
@@ -466,64 +946,253 @@ bool HostGameState::mousePressed(const OIS::MouseEvent &evt, OIS::MouseButtonID 
  
 bool HostGameState::mouseReleased(const OIS::MouseEvent &evt, OIS::MouseButtonID id)
 {
+    if(!isPlayer)return true;
+    CEGUI::System::getSingleton().injectMouseButtonUp(convertButton(id));
+    if(onButton)
+    {
+        onButton = false;
+        return true;
+    }
     if(OgreFramework::getSingletonPtr()->m_pTrayMgr->injectMouseUp(evt, id)) return true;
  
-    if(id == OIS::MB_Left)
-    {
-        m_bLMouseDown = false;
-    }
-    else if(id == OIS::MB_Right)
-    {
-        m_bRMouseDown = false;
+    switch (id) {
+        case OIS::MB_Left:
+            onLeftPressed(evt);
+            m_bLMouseDown = true;
+            //cout << "Left Click" << endl;
+            if(ready){
+                ready = false;
+            }
+            //OgreFramework::getSingletonPtr()->m_pTrayMgr->hideCursor();
+            break;
+        case OIS::MB_Right: 
+            onRightPressed(evt);
+            m_bRMouseDown = true;
+            //cout << "Right Click" << endl;
+            break;
+        default:
+            break;
     }
  
     return true;
 }
 
+void HostGameState::deselect(){
+    unitBuilding = 0;
+    unitMoving = 0;
+    if(m_pCurrentObject){
+        m_pCurrentObject->showBoundingBox(false);
+    }
+    if(lastCell != NULL){
+        earth.changeMaterial(m_pSceneMgr, *lastCell, lastCell->baseMaterial);
+        for(int i=0; i<lastCell->neighbors.size(); i++){
+            PlanetCell& temp = earth.cells[lastCell->neighbors[i]];
+            earth.changeMaterial(m_pSceneMgr, temp, temp.baseMaterial);
+        }
+    }
+    m_pCurrentObject = NULL;
+    m_pCurrentEntity = NULL;
+    currentCell = NULL;
+    lastCell = NULL;
+    BuildButtons();
+}
+
 void HostGameState::onLeftPressed(const OIS::MouseEvent &evt)
 {
-    if(m_pCurrentObject)
-    {
-        m_pCurrentObject->showBoundingBox(false);
-        m_pCurrentEntity->getSubEntity(1)->setMaterial(m_pOgreHeadMat);
+    printf("%d THE WIDTH",evt.state.width);
+    printf("%d THE HEIGHT",evt.state.height);
+    
+    if(m_pCurrentObject){
+        m_pCurrentObject->showBoundingBox(false); 
     }
+    CEGUI::Vector2 guiMouse = CEGUI::MouseCursor::getSingleton().getPosition();
+    Ogre::Ray mouseRay = m_pCamera->getCameraToViewportRay(guiMouse.d_x / float(evt.state.width),
+        guiMouse.d_y / float(evt.state.height));
+    m_pRSQ->setRay(mouseRay);
+    m_pRSQ->setSortByDistance(true);
+ 
+    Ogre::RaySceneQueryResult &result = m_pRSQ->execute();
+    Ogre::RaySceneQueryResult::iterator itr;
+    
+    for(itr = result.begin(); itr != result.end(); itr++)
+    {
+        if(itr->movable)
+        {
+            string name = itr->movable->getName();
+            string idType = name.substr(0, 5);
+            
+            if(idType == "Cell_"){ // Select a cell.
+                
+                if(lastCell != NULL){
+                    earth.changeMaterial(m_pSceneMgr, *lastCell, lastCell->baseMaterial);
+                    for(int i=0; i<lastCell->neighbors.size(); i++){
+                        PlanetCell& temp = earth.cells[lastCell->neighbors[i]];
+                        earth.changeMaterial(m_pSceneMgr, temp, temp.baseMaterial);
+                    }
+                }
+                
+                string idNumber = name.substr(5, name.length()-1); 
+                istringstream(idNumber) >> intId; 
+                currentCell = &(earth.cells[intId]); 
+                
+                cout << "Cell id = " << intId << endl; 
+                
+                if(unitBuilding){
+                    if(lastCell != NULL && currentCell->myUnit == Unit_EMPTY && currentCell->building == false){
+                        issueProduceOrder(*lastCell, *currentCell);
+                    }   
+                    else{
+                        unitBuilding = false;
+                    }             
+                }
+                else if(unitMoving){
+                    if(lastCell != NULL && (currentCell->myUnit == Unit_EMPTY || currentCell->occupier != myOwner) && currentCell->building == false){
+                        issueMoveOrder(units[lastCell->myUnitId], *lastCell, *currentCell);
+                    }
+                    else{
+                        unitMoving = false;
+                    }
+                }
+                
+                BuildButtons();
+                if(currentCell->myUnit >= 1 && currentCell->myUnit <= 5){ //land unit
+                    for(int i=0;i<currentCell->neighbors.size();i++){
+                        PlanetCell& temp = earth.cells[currentCell->neighbors[i]];
+                        if(temp.terrain != Terrain_WATER && temp.myUnit == Unit_EMPTY){
+                            acceptNeighbors[i] = currentCell->neighbors[i];
+                            earth.changeMaterial(m_pSceneMgr, temp, "MyMaterials/earth_day_green");
+                        }
+                        else{
+                            acceptNeighbors[i] = -1;
+                            earth.changeMaterial(m_pSceneMgr, temp, "MyMaterials/earth_day_red");
+                        }
+                    }
+                    unitMoving = currentCell->myUnit;
+                }
+                else if(currentCell->myUnit >= 6 && currentCell->myUnit <= 9){ //naval unit
+                    for(int i=0;i<currentCell->neighbors.size();i++){
+                        PlanetCell& temp = earth.cells[currentCell->neighbors[i]];
+                        if(temp.terrain != Terrain_LAND && temp.myUnit == Unit_EMPTY){
+                            acceptNeighbors[i] = currentCell->neighbors[i];
+                            earth.changeMaterial(m_pSceneMgr, temp, "MyMaterials/earth_day_green");
+                        }
+                        else{
+                            acceptNeighbors[i] = -1;
+                            earth.changeMaterial(m_pSceneMgr, temp, "MyMaterials/earth_day_red");
+                        }
+                    }
+                    unitMoving = currentCell->myUnit;
+                }
+                else if(currentCell->myUnit >= 10 && currentCell->myUnit <= 12){ //air unit
+                    for(int i=0;i<currentCell->neighbors.size();i++){
+                        PlanetCell& temp = earth.cells[currentCell->neighbors[i]];
+                        if(temp.myUnit == Unit_EMPTY){
+                            acceptNeighbors[i] = currentCell->neighbors[i];
+                            earth.changeMaterial(m_pSceneMgr, temp, "MyMaterials/earth_day_green");
+                        }
+                        else{
+                            acceptNeighbors[i] = -1;
+                            earth.changeMaterial(m_pSceneMgr, temp, "MyMaterials/earth_day_red");
+                        }
+                    }
+                    unitMoving = currentCell->myUnit;
+                }
+                
+                m_pCurrentObject = m_pSceneMgr->getEntity(name)->getParentSceneNode();
+                m_pCurrentObject->showBoundingBox(true);
+                m_pCurrentEntity = m_pSceneMgr->getEntity(name);
+                
+                lastCell = currentCell;
+                
+                /*
+                cout << tempLandCellId << " = " << earth.cells[intId].terrain << endl;
+                cout << "Average color = " << earth.cells[intId].avg_color << endl;
+                cout << "Longitude = " << earth.cells[intId].longitude << ", latitude = " << earth.cells[intId].latitude << endl;
+                cout << endl;
+                */
+                break;
+            }
+        }
+    }
+    if(m_pCurrentObject){
+        m_pCurrentObject->showBoundingBox(true); 
+    }
+}
+
+void HostGameState::onRightPressed(const OIS::MouseEvent &evt){
+    deselect();
 }
 
 void HostGameState::moveCamera()
 {
-    if(OgreFramework::getSingletonPtr()->m_pKeyboard->isKeyDown(OIS::KC_LSHIFT))
-        m_pCamera->moveRelative(m_TranslateVector);
-    m_pCamera->moveRelative(m_TranslateVector / 10);
+    float z2 = m_pCamera->getPosition().z * m_pCamera->getPosition().z;
+    float y2 = m_pCamera->getPosition().y * m_pCamera->getPosition().y;
+    float x2 = m_pCamera->getPosition().x * m_pCamera->getPosition().x;
+    float distance = sqrt(x2 + y2 + z2);
+    if(OgreFramework::getSingletonPtr()->m_pKeyboard->isKeyDown(OIS::KC_LSHIFT)) //4x speed
+        m_pCamera->moveRelative(m_TranslateVector / 2.5);
+    else m_pCamera->moveRelative(m_TranslateVector / 10);
+    z2 = m_pCamera->getPosition().z * m_pCamera->getPosition().z;
+    y2 = m_pCamera->getPosition().y * m_pCamera->getPosition().y;
+    x2 = m_pCamera->getPosition().x * m_pCamera->getPosition().x;
+    float newdistance = sqrt(x2 + y2 + z2);
+    float shift = newdistance - distance;
+    m_pCamera->lookAt(0,0,0);
+    if(OgreFramework::getSingletonPtr()->m_pKeyboard->isKeyDown(OIS::KC_Q)){
+	    if(distance >= 11000){
+	    	m_pCamera->moveRelative(m_TranslateVector/10);
+	    }
+    }
+    else if(OgreFramework::getSingletonPtr()->m_pKeyboard->isKeyDown(OIS::KC_E)){
+	    if(distance <= 20000){
+	    	m_pCamera->moveRelative(m_TranslateVector/10);
+	    }
+    }
+    m_TranslateVector = Vector3::ZERO;
+    m_TranslateVector.z = -shift;
+    m_pCamera->moveRelative(m_TranslateVector);
 }
 
 void HostGameState::getInput()
 {
     if(m_bSettingsMode == false)
     {
-        if(OgreFramework::getSingletonPtr()->m_pKeyboard->isKeyDown(OIS::KC_A))
+	float z2 = m_pCamera->getPosition().z * m_pCamera->getPosition().z;
+	float y2 = m_pCamera->getPosition().y * m_pCamera->getPosition().y;
+	float x2 = m_pCamera->getPosition().x * m_pCamera->getPosition().x;
+	float distance = sqrt(x2 + y2 + z2);
+        if(OgreFramework::getSingletonPtr()->m_pKeyboard->isKeyDown(OIS::KC_A)){
             m_TranslateVector.x = -m_MoveScale;
+	}
  
-        if(OgreFramework::getSingletonPtr()->m_pKeyboard->isKeyDown(OIS::KC_D))
+        if(OgreFramework::getSingletonPtr()->m_pKeyboard->isKeyDown(OIS::KC_D)){
             m_TranslateVector.x = m_MoveScale;
+	}
  
-        if(OgreFramework::getSingletonPtr()->m_pKeyboard->isKeyDown(OIS::KC_W))
-            m_TranslateVector.z = -m_MoveScale;
+        if(OgreFramework::getSingletonPtr()->m_pKeyboard->isKeyDown(OIS::KC_W)){
+		if(distance - m_pCamera->getPosition().y > 1000)
+                	m_TranslateVector.y = m_MoveScale;
+
+	}
  
-        if(OgreFramework::getSingletonPtr()->m_pKeyboard->isKeyDown(OIS::KC_S))
-            m_TranslateVector.z = m_MoveScale;
- 
-        if(OgreFramework::getSingletonPtr()->m_pKeyboard->isKeyDown(OIS::KC_Q))
-            m_TranslateVector.y = -m_MoveScale;
- 
-        if(OgreFramework::getSingletonPtr()->m_pKeyboard->isKeyDown(OIS::KC_E))
-            m_TranslateVector.y = m_MoveScale;
- 
-        //camera roll
-        if(OgreFramework::getSingletonPtr()->m_pKeyboard->isKeyDown(OIS::KC_Z))
-            m_pCamera->roll(Angle(-m_MoveScale));
- 
-        if(OgreFramework::getSingletonPtr()->m_pKeyboard->isKeyDown(OIS::KC_X))
-            m_pCamera->roll(Angle(m_MoveScale));
+	if(OgreFramework::getSingletonPtr()->m_pKeyboard->isKeyDown(OIS::KC_S)){
+		if(distance + m_pCamera->getPosition().y > 1000)
+			m_TranslateVector.y = -m_MoveScale;
+	}
+
+	if(OgreFramework::getSingletonPtr()->m_pKeyboard->isKeyDown(OIS::KC_E)){
+	    if(distance < 20000){
+		m_TranslateVector.z = m_MoveScale;
+	    }
+	}
+	 
+	if(OgreFramework::getSingletonPtr()->m_pKeyboard->isKeyDown(OIS::KC_Q)){
+
+            if(distance > 11000){
+                m_TranslateVector.z = -m_MoveScale;
+            }
+        }
+
  
         //reset roll
         if(OgreFramework::getSingletonPtr()->m_pKeyboard->isKeyDown(OIS::KC_C))
@@ -535,32 +1204,14 @@ void HostGameState::update(double timeSinceLastFrame)
 {
     m_FrameEvent.timeSinceLastFrame = timeSinceLastFrame / 1000.0;
     OgreFramework::getSingletonPtr()->m_pTrayMgr->frameRenderingQueued(m_FrameEvent);
-    
+ 
     if(m_bQuit == true)
     {
         popAppState();
         return;
     }
-    /*
-    if(!OgreFramework::getSingletonPtr()->m_pTrayMgr->isDialogVisible())
-    {
-        if(m_pDetailsPanel->isVisible())
-        {
-            m_pDetailsPanel->setParamValue(0, Ogre::StringConverter::toString(m_pCamera->getDerivedPosition().x));
-            m_pDetailsPanel->setParamValue(1, Ogre::StringConverter::toString(m_pCamera->getDerivedPosition().y));
-            m_pDetailsPanel->setParamValue(2, Ogre::StringConverter::toString(m_pCamera->getDerivedPosition().z));
-            m_pDetailsPanel->setParamValue(3, Ogre::StringConverter::toString(m_pCamera->getDerivedOrientation().w));
-            m_pDetailsPanel->setParamValue(4, Ogre::StringConverter::toString(m_pCamera->getDerivedOrientation().x));
-            m_pDetailsPanel->setParamValue(5, Ogre::StringConverter::toString(m_pCamera->getDerivedOrientation().y));
-            m_pDetailsPanel->setParamValue(6, Ogre::StringConverter::toString(m_pCamera->getDerivedOrientation().z));
-            if(m_bSettingsMode)
-                m_pDetailsPanel->setParamValue(7, "Buffered Input");
-            else
-                m_pDetailsPanel->setParamValue(7, "Un-Buffered Input");
-        }
-    }
-    */
-    
+ 
+    HostGameState::updateNetwork();
     m_MoveScale = m_MoveSpeed   * timeSinceLastFrame;
     m_RotScale  = m_RotateSpeed * timeSinceLastFrame;
  
@@ -569,228 +1220,10 @@ void HostGameState::update(double timeSinceLastFrame)
     getInput();
     moveCamera();
     
-    // stuff from Assignment 2
-    myBall = &m_objects[0];
-    hostPaddle = &m_objects[1];
-    clientPaddle = &m_objects[2];
-    GameObject* myWall_x_pos = &m_objects[3];
-    GameObject* myWall_x_neg = &m_objects[4];
-    GameObject* myWall_y_pos = &m_objects[5];
-    GameObject* myWall_y_neg = &m_objects[6];
-    GameObject* myWall_z_pos = &m_objects[7];
-    GameObject* myWall_z_neg = &m_objects[8];
+    processTimer();
+    processEvents();
     
-    // Check for activity on the socket set
-    SDLNet_CheckSockets(socketset, 0);
-
-    if (SDLNet_SocketReady(tcpsock)){
-        // Accept the connection, add it to our array and the socket set
-        cout << "Client connected.\n";
-        new_tcpsock = SDLNet_TCP_Accept(tcpsock);
-        client[j] = new_tcpsock;
-        SDLNet_TCP_AddSocket(socketset, client[j]);
-        j++;
-    }
-    // Check client sockets for activity
-    for (i = 0; i < MAXSOCKET; i++){
-        if (SDLNet_SocketReady(client[i])){
-            isPlayer = true;
-            // There is an incoming message
-            result = SDLNet_TCP_Recv(client[i], data, BUFFER);
-            if (result == 0){
-                cout << "Client " << i << " disconnected.\n";
-                client[i] = NULL;
-            }
-            else if (result == -1){
-                cout << "Error.\n";
-                client[i] = NULL;
-            }
-            else{
-                memcpy(oppStartLost, data, sizeof(btVector3));
-                memcpy(pos_opponent, data+(sizeof(btVector3)), sizeof(btVector3));
-                memcpy(ballDir, data+(2*sizeof(btVector3)), sizeof(btVector3));
-                clientPaddle->setPosition(pos_opponent);;
-            }
-        }
-    }
-
-    if(oppStartLost.y() == 1)
-    {
-            //cout << "Score:" << score << "\nClick to restart" << endl;
-            lost = true;
-            multiStartLost.setY(0);
-            multiStartLost.setX(0);
-
-            score = (oppStartLost.z()*100);
-            highScore = multiStartLost.z()*100;
-
-            CEGUI::Window* gameOver = CEGUI::WindowManager::getSingleton().getWindow("GameOverWindow");
-            std::string shownScore;
-            std::string shownHighScore;
-            std::stringstream out;
-            std::stringstream highOut;
-            out << score;
-            highOut << highScore;
-            shownScore = out.str();
-            shownHighScore = highOut.str();
-            gameOver->setText("Your Score: " + shownScore + "\nOpponent Score: " + shownHighScore + "\nClick To Restart");
-            gameOver->setVisible(true);
-            ready = true;
-            float r1 = (rand() % 100);
-            float r2 = (rand() % 100);
-            myBall->direction = btVector3(r1, r2, -1000);
-            myBall->direction.normalize();
-            myBall->speed = speed_default;
-            myBall->setPosition(btVector3(0,0,0));
-    }
-    else{
-    // Apply gravity
-    myBall->direction += btVector3(0, -(0.00001*GRAVITY), 0);
-    myBall->direction.normalize();
     
-    // Move the ball
-    if (!ready && isPlayer){
-        //myBall->simulator->stepSimulation(1);
-        myBall->move(m_FrameEvent);
-    }
-    
-    // Move the paddle
-    hostPaddle->direction = btVector3(deltaX, deltaY, 0);
-    hostPaddle->speed = sqrt(deltaX*deltaX + deltaY*deltaY);
-    hostPaddle->setPosition(btVector3(xi, yi, 200));
-    //hostPaddle->move(evt);
-    
-    if (hostPaddle->position.x() > 90){
-        hostPaddle->setPosition(btVector3(90, hostPaddle->position.y(), hostPaddle->position.z()));
-    }
-    if (hostPaddle->position.x() < -90){
-        hostPaddle->setPosition(btVector3(-90, hostPaddle->position.y(), hostPaddle->position.z()));
-    }
-    if (hostPaddle->position.y() > 90){
-        hostPaddle->setPosition(btVector3(hostPaddle->position.x(), 90, hostPaddle->position.z()));
-    }
-    if (hostPaddle->position.y() < -90){
-        hostPaddle->setPosition(btVector3(hostPaddle->position.x(), -90, hostPaddle->position.z()));
-    }
-    
-    //cout << hostPaddle->direction << endl;
-    //cout << hostPaddle->speed << endl;
-    
-    /*
-    Reflection vector formula:
-    
-    L = light
-    R = reflection
-    
-    R = 2(N dot L)N - L
-    
-    */
-    
-    //myBall->nextPosition.x() >= 90-myBall->position.x()
-    
-    // The ball hits the positive x plane
-    if (myBall->position.x() > 90 || myBall->nextPosition.x() > 90){
-        myBall->setPosition(btVector3(90, myBall->position.y(), myBall->position.z()));
-        myBall->direction += (-2.0 * (btVector3(-1,0,0).dot(myBall->direction)) * btVector3(-1,0,0));
-        //cout << "hit!" << endl;
-	    sound.PlaySound("boink1_cx65377.wav");
-    }
-    
-    // The ball hits the negative x plane
-    else if (myBall->position.x() < -90 || myBall->nextPosition.x() < -90){
-        myBall->setPosition(btVector3(-90, myBall->position.y(), myBall->position.z()));
-        myBall->direction += (-2.0 * (btVector3(1,0,0).dot(myBall->direction)) * btVector3(1,0,0));
-        //cout << "hit!" << endl;
-	    sound.PlaySound("boink1_cx65377.wav");
-    }
-    
-    // The ball hits the positive y plane
-    else if (myBall->position.y() > 90 || myBall->nextPosition.y() > 90){
-        myBall->setPosition(btVector3(myBall->position.x(), 90, myBall->position.z()));
-        myBall->direction += (-2.0 * (btVector3(0,-1,0).dot(myBall->direction)) * btVector3(0,-1,0));
-        //cout << "hit!" << endl;
-	    sound.PlaySound("boink1_cx65377.wav");
-    }
-    
-    // The ball hits the negative y plane
-    else if (myBall->position.y() < -90 || myBall->nextPosition.y() < -90){
-        myBall->setPosition(btVector3(myBall->position.x(), -90, myBall->position.z()));
-        myBall->direction += (-2.0 * (btVector3(0,1,0).dot(myBall->direction)) * btVector3(0,1,0));
-        //cout << "hit!" << endl;
-	    sound.PlaySound("boink1_cx65377.wav");
-    }
-    
-    // The ball hits the positive z plane
-    else if (myBall->position.z() > 190 || myBall->nextPosition.z() > 190){
-        myBall->setPosition(btVector3(myBall->position.x(), myBall->position.y(), 190));
-        myBall->direction += (-2.0 * (btVector3(0,0,-1).dot(myBall->direction)) * btVector3(0,0,-1));
-        if (abs(hostPaddle->position.x() - myBall->position.x()) <= 25 && abs(hostPaddle->position.y() - myBall->position.y()) <= 25){
-            myBall->direction += (0.2 * hostPaddle->direction);
-            myBall->direction.normalize();
-            myBall->speed += increment;
-            CEGUI::Window* counter = CEGUI::WindowManager::getSingleton().getWindow("Counter");
-            std::string shownScore;
-            std::stringstream out;
-            out << score;
-            shownScore = out.str();
-            counter->setText("Score: " + shownScore);
-            //cout << "HIT" << endl;
-            sound.PlaySound("boink1_cx65377.wav");
-        }
-        else if (abs(hostPaddle->nextPosition.x() - myBall->nextPosition.x()) <= 25 && abs(hostPaddle->nextPosition.y() - myBall->nextPosition.y()) <= 25){
-            myBall->direction += (0.2 * hostPaddle->direction);
-            myBall->direction.normalize();
-            myBall->speed += increment;
-            CEGUI::Window* counter = CEGUI::WindowManager::getSingleton().getWindow("Counter");
-            std::string shownScore;
-            std::stringstream out;
-            out << score;
-            shownScore = out.str();
-            counter->setText("Score: " + shownScore);
-            //cout << "HIT" << endl;
-	        sound.PlaySound("boink1_cx65377.wav");
-        }
-        else{
-            //cout << "Score:" << score << "\nClick to restart" << endl;
-            lost = true;
-            multiStartLost.setY(1);
-            multiStartLost.setX(0);
-
-            multiStartLost.setZ(multiStartLost.z()+.01);
-            score = (oppStartLost.z()*100);
-            highScore = multiStartLost.z()*100;
-
-            CEGUI::Window* gameOver = CEGUI::WindowManager::getSingleton().getWindow("GameOverWindow");
-            std::string shownScore;
-            std::string shownHighScore;
-            std::stringstream out;
-            std::stringstream highOut;
-            out << score;
-            highOut << highScore;
-            shownScore = out.str();
-            shownHighScore = highOut.str();
-            gameOver->setText("Your Score: " + shownScore + "\nOpponent Score: " + shownHighScore + "\nClick To Restart");
-            gameOver->setVisible(true);
-            ready = true;
-            float r1 = (rand() % 100);
-            float r2 = (rand() % 100);
-            myBall->direction = btVector3(r1, r2, -1000);
-            myBall->direction.normalize();
-            myBall->speed = speed_default;
-            myBall->setPosition(btVector3(0,0,0));
-        }
-        //cout << "hit!" << endl;
-    }
-    
-    // The ball hits the negative z plane
-    else if (myBall->position.z() < -190 || myBall->nextPosition.z() < -190){
-        myBall->setPosition(btVector3(myBall->position.x(), myBall->position.y(), -190));
-        myBall->direction += (-2.0 * (btVector3(0,0,1).dot(myBall->direction)) * btVector3(0,0,1));
-        //cout << "hit!" << endl;
-	    sound.PlaySound("boink1_cx65377.wav");
-	    myBall->speed -= 10;
-    }
-    }
     /*
     if(mWindow->isClosed())
         return false;
@@ -799,35 +1232,42 @@ void HostGameState::update(double timeSinceLastFrame)
         return false;
     */
     
-    
-    // Send message
-    //strcpy(data, "Hello Client!");
-    memcpy(data, multiStartLost, sizeof(btVector3));
-    memcpy(data+(sizeof(btVector3)), hostPaddle->position, sizeof(btVector3));
-    memcpy(data+(2*sizeof(btVector3)), myBall->position, sizeof(btVector3));
-    memcpy(data+(3*sizeof(btVector3)), myBall->direction, sizeof(btVector3));
-    memcpy(data+(4*sizeof(btVector3)), myBall->nextPosition, sizeof(btVector3));
-    // Check client sockets for activity
-    for (i = 0; i < MAXSOCKET; i++){
-        // There is an incoming message
-        if(client[i] != NULL){
-            result = SDLNet_TCP_Send(client[i], data, BUFFER);
-            if (result == 0){
-                cout << "Client " << i << " disconnected.\n";
-                client[i] = NULL;
-            }
-            else if (result == -1){
-                cout << "Error.\n";
-                client[i] = NULL;
-            }
-            else{
-                //cout << "Sent: " << data << endl;
-            }
-        }
-    }
-    
     //Need to capture/update each device
     OgreFramework::getSingletonPtr()->m_pKeyboard->capture();
+}
+
+void HostGameState::buildGUI()
+{
+    /*
+    OgreFramework::getSingletonPtr()->m_pTrayMgr->showFrameStats(OgreBites::TL_BOTTOMLEFT);
+    OgreFramework::getSingletonPtr()->m_pTrayMgr->showLogo(OgreBites::TL_BOTTOMRIGHT);
+    OgreFramework::getSingletonPtr()->m_pTrayMgr->createLabel(OgreBites::TL_TOP, "GameLbl", "Singleplayer Game mode", 250);
+    //OgreFramework::getSingletonPtr()->m_pTrayMgr->showCursor();
+ 
+    Ogre::StringVector items;
+    items.push_back("cam.pX");
+    items.push_back("cam.pY");
+    items.push_back("cam.pZ");
+    items.push_back("cam.oW");
+    items.push_back("cam.oX");
+    items.push_back("cam.oY");
+    items.push_back("cam.oZ");
+    items.push_back("Mode");
+    
+    m_pDetailsPanel = OgreFramework::getSingletonPtr()->m_pTrayMgr->createParamsPanel(OgreBites::TL_TOPLEFT, "DetailsPanel", 200, items);
+    m_pDetailsPanel->show();
+    
+    Ogre::String infoText = "[TAB] - Switch input mode\n\n[W] - Forward / Mode up\n[S] - Backwards/ Mode down\n[A] - Left\n";
+    infoText.append("[D] - Right\n\nPress [SHIFT] to move faster\n\n[O] - Toggle FPS / logo\n");
+    infoText.append("[Print] - Take screenshot\n\n[ESC] - Exit");
+    OgreFramework::getSingletonPtr()->m_pTrayMgr->createTextBox(OgreBites::TL_RIGHT, "InfoPanel", infoText, 300, 220);
+    
+    Ogre::StringVector chatModes;
+    chatModes.push_back("Solid mode");
+    chatModes.push_back("Wireframe mode");
+    chatModes.push_back("Point mode");
+    OgreFramework::getSingletonPtr()->m_pTrayMgr->createLongSelectMenu(OgreBites::TL_TOPRIGHT, "ChatModeSelMenu", "ChatMode", 200, 3, chatModes);
+    */
 }
 
 void HostGameState::itemSelected(OgreBites::SelectMenu* menu)
@@ -843,6 +1283,1675 @@ void HostGameState::itemSelected(OgreBites::SelectMenu* menu)
     }
 }
 
+CEGUI::MouseButton HostGameState::convertButton(OIS::MouseButtonID buttonID)
+{
+    switch (buttonID)
+    {
+    case OIS::MB_Left:
+        return CEGUI::LeftButton;
+        break;
+ 
+    case OIS::MB_Right:
+        return CEGUI::RightButton;
+        break;
+ 
+    case OIS::MB_Middle:
+        return CEGUI::MiddleButton;
+        break;
+ 
+    default:
+        return CEGUI::LeftButton;
+        break;
+    }
+}
+
+bool HostGameState::soundButton(const CEGUI::EventArgs &e)
+{
+    HostGameState::soundSwitch();
+    onButton = true;
+    return true;
+}
 
 
+bool HostGameState::soundSwitch(void)
+{
+    CEGUI::Window* sounder = CEGUI::WindowManager::getSingleton().getWindow("SounderDontBreak");
+    if(soundIs)
+    {
+       sound.turnOff();
+       sounder->setText("Sound: Off");
+    }
+    else
+    {
+        sound.turnOn();
+        sounder->setText("Sound: On");
+    }
+    soundIs = !soundIs;
+    return true;
+} 
 
+bool HostGameState::CommandBaseButton(const CEGUI::EventArgs &e)
+{
+    currentCell->myUnit_pending = Unit_COMMANDBASE;
+    currentCell->timer = BuildTime_COMMANDBASE;
+    currentCell->building = true;
+    processResources(-Au_COMMANDBASE,-Pt_COMMANDBASE);
+    
+    Unit newUnit(myOwner, Unit_COMMANDBASE);
+    commandBaseChange(true, false);
+    newUnit.createManualObject(m_pSceneMgr);
+    newUnit.relocate(earth.vertices[currentCell->id]);
+    newUnit.translate(0,150,0);
+    units.push_back(newUnit);
+    currentCell->myUnitId = newUnit.id;
+
+    std::time(&currentTime);
+    currentCell->timeNeeded = currentTime+currentCell->timer;
+    Times temp(currentTime+currentCell->timer , currentCell->id);
+    eventQueue.push(temp);
+
+    onButton = true;
+    return true;
+}
+bool HostGameState::ArmyBaseButton(const CEGUI::EventArgs &e)
+{
+    currentCell->myUnit_pending = Unit_ARMYBASE;
+    currentCell->timer = BuildTime_ARMYBASE;
+    currentCell->building = true;
+    processResources(-Au_ARMYBASE,-Pt_ARMYBASE);
+
+    Unit newUnit(myOwner, Unit_ARMYBASE);
+    newUnit.createManualObject(m_pSceneMgr);
+    newUnit.relocate(earth.vertices[currentCell->id]); 
+    newUnit.translate(0,150,0);
+    units.push_back(newUnit);
+    currentCell->myUnitId = newUnit.id;
+
+    std::time(&currentTime);
+    currentCell->timeNeeded = currentTime+currentCell->timer;
+    Times temp(currentTime+currentCell->timer , currentCell->id);
+    eventQueue.push(temp);
+
+    onButton = true;
+    return true;
+}
+bool HostGameState::NavyBaseButton(const CEGUI::EventArgs &e)
+{
+    currentCell->myUnit_pending = Unit_NAVYBASE;
+    currentCell->timer = BuildTime_NAVYBASE;
+    currentCell->building = true;
+    processResources(-Au_NAVYBASE,-Pt_NAVYBASE);
+    
+    Unit newUnit(myOwner, Unit_NAVYBASE);
+    newUnit.createManualObject(m_pSceneMgr);
+    newUnit.relocate(earth.vertices[currentCell->id]);
+    newUnit.translate(0,150,0);
+    units.push_back(newUnit);
+    currentCell->myUnitId = newUnit.id;
+
+    std::time(&currentTime);
+    currentCell->timeNeeded = currentTime+currentCell->timer;
+    Times temp(currentTime+currentCell->timer , currentCell->id);
+    eventQueue.push(temp);
+
+    onButton = true;
+    return true;
+}
+bool HostGameState::AirForceBaseButton(const CEGUI::EventArgs &e)
+{
+    currentCell->myUnit_pending = Unit_AIRFORCEBASE;
+    currentCell->timer = BuildTime_AIRFORCEBASE;
+    currentCell->building = true;
+    processResources(-Au_AIRFORCEBASE,-Pt_AIRFORCEBASE);
+    
+    Unit newUnit(myOwner, Unit_AIRFORCEBASE);
+    newUnit.createManualObject(m_pSceneMgr);
+    newUnit.relocate(earth.vertices[currentCell->id]); 
+    newUnit.translate(0,150,0);
+    units.push_back(newUnit);
+    currentCell->myUnitId = newUnit.id;
+
+    std::time(&currentTime);
+    currentCell->timeNeeded = currentTime+currentCell->timer;
+    Times temp(currentTime+currentCell->timer , currentCell->id);
+    eventQueue.push(temp);
+
+    onButton = true;
+    return true;
+}
+bool HostGameState::NuclearPlantButton(const CEGUI::EventArgs &e)
+{
+    currentCell->myUnit_pending = Unit_NUCLEARPLANT;
+    currentCell->timer = BuildTime_NUCLEARPLANT;
+    currentCell->building = true;
+    processResources(-Au_NUCLEARPLANT,-Pt_NUCLEARPLANT);
+    
+    Unit newUnit(myOwner, Unit_NUCLEARPLANT);
+    newUnit.createManualObject(m_pSceneMgr);
+    newUnit.relocate(earth.vertices[currentCell->id]); 
+    newUnit.translate(0,150,0);
+    units.push_back(newUnit);
+    currentCell->myUnitId = newUnit.id;
+
+    std::time(&currentTime);
+    currentCell->timeNeeded = currentTime+currentCell->timer;
+    Times temp(currentTime+currentCell->timer , currentCell->id);
+    eventQueue.push(temp);
+
+    onButton = true;
+    return true;
+}
+bool HostGameState::ICBMSiloButton(const CEGUI::EventArgs &e)
+{
+    currentCell->myUnit_pending = Unit_ICBMSILO;
+    currentCell->timer = BuildTime_ICBMSILO;
+    currentCell->building = true;
+    processResources(-Au_ICBMSILO,-Pt_ICBMSILO);
+    
+    Unit newUnit(myOwner, Unit_ICBMSILO);
+    newUnit.createManualObject(m_pSceneMgr);
+    newUnit.relocate(earth.vertices[currentCell->id]);
+    newUnit.translate(0,150,0);
+    units.push_back(newUnit);
+    currentCell->myUnitId = newUnit.id;
+
+    std::time(&currentTime);
+    currentCell->timeNeeded = currentTime+currentCell->timer;
+    Times temp(currentTime+currentCell->timer , currentCell->id);
+    eventQueue.push(temp);
+
+    onButton = true;
+    return true;
+}
+bool HostGameState::InfantryButton(const CEGUI::EventArgs &e)
+{
+    for(int i=0;i<currentCell->neighbors.size();i++){
+        PlanetCell& temp = earth.cells[currentCell->neighbors[i]];
+        if(temp.terrain != Terrain_WATER && temp.myUnit == Unit_EMPTY)
+        {
+            acceptNeighbors[i] = currentCell->neighbors[i];
+            earth.changeMaterial(m_pSceneMgr, temp, "MyMaterials/earth_day_green");
+        }
+        else
+        {
+            acceptNeighbors[i] = -1;
+            earth.changeMaterial(m_pSceneMgr, temp, "MyMaterials/earth_day_red");
+        }
+    }
+    unitBuilding = Unit_INFANTRY;
+    unitMoney = Au_INFANTRY;
+    unitPlutonium = Pt_INFANTRY;
+    unitTimer = BuildTime_INFANTRY;
+    onButton = true;
+    return true;
+}
+bool HostGameState::TankButton(const CEGUI::EventArgs &e)
+{
+    for(int i=0;i<currentCell->neighbors.size();i++){
+        PlanetCell& temp = earth.cells[currentCell->neighbors[i]];
+        if(temp.terrain != Terrain_WATER && temp.myUnit == Unit_EMPTY)
+        {
+            acceptNeighbors[i] = currentCell->neighbors[i];
+            earth.changeMaterial(m_pSceneMgr, temp, "MyMaterials/earth_day_green");
+        }
+        else
+        {
+            acceptNeighbors[i] = -1;
+            earth.changeMaterial(m_pSceneMgr, temp, "MyMaterials/earth_day_red");
+        }
+    }
+    unitBuilding = Unit_TANK;
+    unitMoney = Au_TANK;
+    unitPlutonium = Pt_TANK;
+    unitTimer = BuildTime_INFANTRY;
+    onButton = true;
+    return true;
+}
+bool HostGameState::ScudButton(const CEGUI::EventArgs &e)
+{
+    for(int i=0;i<currentCell->neighbors.size();i++){
+        PlanetCell& temp = earth.cells[currentCell->neighbors[i]];
+        if(temp.terrain != Terrain_WATER && temp.myUnit == Unit_EMPTY)
+        {
+            acceptNeighbors[i] = currentCell->neighbors[i];
+            earth.changeMaterial(m_pSceneMgr, temp, "MyMaterials/earth_day_green");
+        }
+        else
+        {
+            acceptNeighbors[i] = -1;
+            earth.changeMaterial(m_pSceneMgr, temp, "MyMaterials/earth_day_red");
+        }
+    }
+    unitBuilding = Unit_SCUD;
+    unitMoney = Au_SCUD;
+    unitPlutonium = Pt_SCUD;
+    unitTimer = BuildTime_INFANTRY;
+    onButton = true;
+    return true;
+}
+bool HostGameState::SubmarineButton(const CEGUI::EventArgs &e)
+{
+    for(int i=0;i<currentCell->neighbors.size();i++){
+        PlanetCell& temp = earth.cells[currentCell->neighbors[i]];
+        if(temp.terrain != Terrain_LAND && temp.myUnit == Unit_EMPTY)
+        {
+            acceptNeighbors[i] = currentCell->neighbors[i];
+            earth.changeMaterial(m_pSceneMgr, temp, "MyMaterials/earth_day_green");
+        }
+        else
+        {
+            acceptNeighbors[i] = -1;
+            earth.changeMaterial(m_pSceneMgr, temp, "MyMaterials/earth_day_red");
+        }
+    }
+    unitBuilding = Unit_SUBMARINE;
+    unitMoney = Au_SUBMARINE;
+    unitPlutonium = Pt_SUBMARINE;
+    unitTimer = BuildTime_INFANTRY;
+    onButton = true;
+    return true;
+}
+bool HostGameState::DestroyerButton(const CEGUI::EventArgs &e)
+{
+    for(int i=0;i<currentCell->neighbors.size();i++){
+        PlanetCell& temp = earth.cells[currentCell->neighbors[i]];
+        if(temp.terrain != Terrain_LAND && temp.myUnit == Unit_EMPTY)
+        {
+            acceptNeighbors[i] = currentCell->neighbors[i];
+            earth.changeMaterial(m_pSceneMgr, temp, "MyMaterials/earth_day_green");
+        }
+        else
+        {
+            acceptNeighbors[i] = -1;
+            earth.changeMaterial(m_pSceneMgr, temp, "MyMaterials/earth_day_red");
+        }
+    }
+    unitBuilding = Unit_DESTROYER;
+    unitMoney = Au_DESTROYER;
+    unitPlutonium = Pt_DESTROYER;
+    unitTimer = BuildTime_INFANTRY;
+    onButton = true;
+    return true;
+}
+bool HostGameState::BomberButton(const CEGUI::EventArgs &e)
+{
+    for(int i=0;i<currentCell->neighbors.size();i++){
+        PlanetCell& temp = earth.cells[currentCell->neighbors[i]];
+        if(temp.myUnit == Unit_EMPTY)
+        {
+            acceptNeighbors[i] = currentCell->neighbors[i];
+            earth.changeMaterial(m_pSceneMgr, temp, "MyMaterials/earth_day_green");
+        }
+        else
+        {
+            acceptNeighbors[i] = -1;
+            earth.changeMaterial(m_pSceneMgr, temp, "MyMaterials/earth_day_red");
+        }
+    }
+    unitBuilding = Unit_BOMBER;
+    unitMoney = Au_BOMBER;
+    unitPlutonium = Pt_BOMBER;
+    unitTimer = BuildTime_INFANTRY;
+    onButton = true;
+    return true;
+}
+bool HostGameState::FighterButton(const CEGUI::EventArgs &e)
+{
+    for(int i=0;i<currentCell->neighbors.size();i++){
+        PlanetCell& temp = earth.cells[currentCell->neighbors[i]];
+        if(temp.myUnit == Unit_EMPTY)
+        {
+            acceptNeighbors[i] = currentCell->neighbors[i];
+            earth.changeMaterial(m_pSceneMgr, temp, "MyMaterials/earth_day_green");
+        }
+        else
+        {
+            acceptNeighbors[i] = -1;
+            earth.changeMaterial(m_pSceneMgr, temp, "MyMaterials/earth_day_red");
+        }
+    }
+    unitBuilding = Unit_FIGHTER;
+    unitMoney = Au_FIGHTER;
+    unitPlutonium = Pt_FIGHTER;
+    unitTimer = BuildTime_INFANTRY;
+    onButton = true;
+    return true;
+}
+
+bool HostGameState::CaptureButton(const CEGUI::EventArgs &e)
+{
+    currentCell->timer = BuildTime_CAPTURE;
+    currentCell->capturing = true;
+    currentCell->moving = false;
+    processResources(-Au_CAPTURE,-Pt_CAPTURE);
+
+    std::time(&currentTime);
+    currentCell->timeNeeded = currentTime+currentCell->timer;
+    Times temp(currentTime+currentCell->timer , currentCell->id);
+    eventQueue.push(temp);
+    onButton = true;
+    return true;
+}
+
+bool HostGameState::LaunchButton(const CEGUI::EventArgs &e)
+{
+    return true;
+}
+
+bool HostGameState::FriendlyReminderButton(const CEGUI::EventArgs &e)
+{
+    if(tutorial == 0){
+        CEGUI::Window *resultWindow = CEGUI::WindowManager::getSingleton().getWindow("FriendlyReminderText1");
+        resultWindow->setVisible( false );
+        resultWindow = CEGUI::WindowManager::getSingleton().getWindow("FriendlyReminderText2");
+        resultWindow->setVisible( true );
+        resultWindow->activate();
+        tutorial++;
+    }
+    else if(tutorial == 1){
+        CEGUI::Window *resultWindow = CEGUI::WindowManager::getSingleton().getWindow("FriendlyReminderText2");
+        resultWindow->setVisible( false );
+        resultWindow = CEGUI::WindowManager::getSingleton().getWindow("FriendlyReminderText3");
+        resultWindow->setVisible( true );
+        resultWindow->activate();
+        tutorial++;
+    }
+    else if(tutorial == 2){
+        CEGUI::Window *resultWindow = CEGUI::WindowManager::getSingleton().getWindow("FriendlyReminder");
+        resultWindow->setVisible( false );
+        resultWindow = CEGUI::WindowManager::getSingleton().getWindow("FriendlyReminderText3");
+        resultWindow->setVisible( false );
+        tutorial++;
+    }
+    return true;
+}
+
+void HostGameState::BuildingImages0()
+{
+    CEGUI::Window* w;
+    if(buildingImages != 1)
+    {
+        w = CEGUI::WindowManager::getSingleton().getWindow("CommandBase");
+        w->setVisible( true );
+        w->disable();
+        w = CEGUI::WindowManager::getSingleton().getWindow("ArmyBase");
+        w->setVisible( true );
+        w->disable();
+        w = CEGUI::WindowManager::getSingleton().getWindow("NavyBase");
+        w->setVisible( true );
+        w->disable();
+        w = CEGUI::WindowManager::getSingleton().getWindow("AirForceBase");
+        w->setVisible( true );
+        w->disable();
+        w = CEGUI::WindowManager::getSingleton().getWindow("NuclearPlant");
+        w->setVisible( true );
+        w->disable();
+        w = CEGUI::WindowManager::getSingleton().getWindow("ICBMSilo");
+        w->setVisible( true );
+        w->disable();
+        HostGameState::DeButton();
+        buildingImages = 1;
+    }
+    else
+    {
+        w = CEGUI::WindowManager::getSingleton().getWindow("CommandBase");
+        w->disable();
+        w = CEGUI::WindowManager::getSingleton().getWindow("ArmyBase");
+        w->disable();
+        w = CEGUI::WindowManager::getSingleton().getWindow("NavyBase");
+        w->disable();
+        w = CEGUI::WindowManager::getSingleton().getWindow("AirForceBase");
+        w->disable();
+        w = CEGUI::WindowManager::getSingleton().getWindow("NuclearPlant");
+        w->disable();
+        w = CEGUI::WindowManager::getSingleton().getWindow("ICBMSilo");
+        w->disable();
+    }
+}
+
+void HostGameState::BuildingImages1(PlanetCell &cell)
+{
+    CEGUI::Window* w;
+    if(buildingImages != 1)
+    {
+        w = CEGUI::WindowManager::getSingleton().getWindow("CommandBase");
+        w->setVisible( true );
+        w->enable();
+        w = CEGUI::WindowManager::getSingleton().getWindow("ArmyBase");
+        w->setVisible( true );
+        w->enable();
+        w = CEGUI::WindowManager::getSingleton().getWindow("NavyBase");
+        w->setVisible( true );
+        w->enable();
+        w = CEGUI::WindowManager::getSingleton().getWindow("AirForceBase");
+        w->setVisible( true );
+        w->enable();
+        w = CEGUI::WindowManager::getSingleton().getWindow("NuclearPlant");
+        w->setVisible( true );
+        w->enable();
+        w = CEGUI::WindowManager::getSingleton().getWindow("ICBMSilo");
+        w->setVisible( true );
+        w->enable();
+        HostGameState::DeButton();
+        buildingImages = 1;
+    }
+    else
+    {
+        w = CEGUI::WindowManager::getSingleton().getWindow("CommandBase");
+        w->enable();
+        w = CEGUI::WindowManager::getSingleton().getWindow("ArmyBase");
+        w->enable();
+        w = CEGUI::WindowManager::getSingleton().getWindow("NavyBase");
+        w->enable();
+        w = CEGUI::WindowManager::getSingleton().getWindow("AirForceBase");
+        w->enable();
+        w = CEGUI::WindowManager::getSingleton().getWindow("NuclearPlant");
+        w->enable();
+        w = CEGUI::WindowManager::getSingleton().getWindow("ICBMSilo");
+        w->enable();
+    }
+
+    if(cell.owner != myOwner || cell.terrain == Terrain_WATER || cell.myUnit != 0 || cell.building)
+    {
+        w = CEGUI::WindowManager::getSingleton().getWindow("CommandBase");
+        w->disable();
+        w = CEGUI::WindowManager::getSingleton().getWindow("ArmyBase");
+        w->disable();
+        w = CEGUI::WindowManager::getSingleton().getWindow("NavyBase");
+        w->disable();
+        w = CEGUI::WindowManager::getSingleton().getWindow("AirForceBase");
+        w->disable();
+        w = CEGUI::WindowManager::getSingleton().getWindow("NuclearPlant");
+        w->disable();
+        w = CEGUI::WindowManager::getSingleton().getWindow("ICBMSilo");
+        w->disable();
+    }
+    else
+    {
+
+        if(money < Au_COMMANDBASE || plutonium < Pt_COMMANDBASE)
+        {
+            w = CEGUI::WindowManager::getSingleton().getWindow("CommandBase");
+            w->disable();    
+        }
+        if(money < Au_ARMYBASE || plutonium < Pt_ARMYBASE)
+        {
+            w = CEGUI::WindowManager::getSingleton().getWindow("ArmyBase");
+            w->disable();    
+        }
+        if(money < Au_AIRFORCEBASE || plutonium < Pt_AIRFORCEBASE)
+        {
+            w = CEGUI::WindowManager::getSingleton().getWindow("AirForceBase");
+            w->disable();    
+        }
+        if(money < Au_NUCLEARPLANT || plutonium < Pt_NUCLEARPLANT)
+        {
+            w = CEGUI::WindowManager::getSingleton().getWindow("NuclearPlant");
+            w->disable();    
+        }
+        if(money < Au_ICBMSILO || plutonium < Pt_ICBMSILO)
+        {
+            w = CEGUI::WindowManager::getSingleton().getWindow("ICBMSilo");
+            w->disable();    
+        }
+        if(cell.terrain == Terrain_LAND || money < Au_NAVYBASE || plutonium < Pt_NAVYBASE)
+        {
+            w = CEGUI::WindowManager::getSingleton().getWindow("NavyBase");
+            w->disable();    
+        }
+    }
+    if(commandBaseTotal < commandBaseMax)
+    {
+        w = CEGUI::WindowManager::getSingleton().getWindow("ArmyBase");
+        w->disable();
+        w = CEGUI::WindowManager::getSingleton().getWindow("NavyBase");
+        w->disable();
+        w = CEGUI::WindowManager::getSingleton().getWindow("AirForceBase");
+        w->disable();
+        w = CEGUI::WindowManager::getSingleton().getWindow("NuclearPlant");
+        w->disable();
+        w = CEGUI::WindowManager::getSingleton().getWindow("ICBMSilo");
+        w->disable();
+    }
+    else
+    {
+        w = CEGUI::WindowManager::getSingleton().getWindow("CommandBase");
+        w->disable();
+    }
+}
+void HostGameState::BuildingImagesCB2(PlanetCell &cell)
+{
+    CEGUI::Window* w;
+    if(buildingImages != 2)
+    {
+        w = CEGUI::WindowManager::getSingleton().getWindow("Infantry");
+        w->setVisible( true );    
+        w->enable();
+        HostGameState::DeButton();
+        buildingImages = 2;
+    }
+    else
+    {
+        w = CEGUI::WindowManager::getSingleton().getWindow("Infantry");
+        w->enable();
+    }
+    if(money < Au_INFANTRY || plutonium < Pt_INFANTRY)
+    {
+        w = CEGUI::WindowManager::getSingleton().getWindow("Infantry");
+        w->disable();
+    }
+    if(commandBaseTotal < commandBaseMax)
+    {
+        w = CEGUI::WindowManager::getSingleton().getWindow("Infantry");
+        w->disable();
+    }
+}
+void HostGameState::BuildingImagesA3(PlanetCell &cell)
+{
+    CEGUI::Window* w;
+    if(buildingImages != 3)
+    {
+        w = CEGUI::WindowManager::getSingleton().getWindow("Tank");
+        w->setVisible( true );
+        w->enable();
+        w = CEGUI::WindowManager::getSingleton().getWindow("Scud");
+        w->setVisible( true );    
+        w->enable();
+        HostGameState::DeButton();
+        buildingImages = 3;
+    }
+    else
+    {
+        w = CEGUI::WindowManager::getSingleton().getWindow("Tank");
+        w->enable();
+        w = CEGUI::WindowManager::getSingleton().getWindow("Scud");
+        w->enable();
+    }
+    if(money < Au_TANK || plutonium < Pt_TANK)
+    {
+        w = CEGUI::WindowManager::getSingleton().getWindow("Tank");
+        w->disable();
+    }
+    if(money < Au_SCUD || plutonium < Pt_SCUD)
+    {
+        w = CEGUI::WindowManager::getSingleton().getWindow("Scud");
+        w->disable();
+    }
+}
+void HostGameState::BuildingImagesN4(PlanetCell &cell)
+{
+    CEGUI::Window* w;
+    if(buildingImages != 4)
+    {
+        w = CEGUI::WindowManager::getSingleton().getWindow("Submarine");
+        w->setVisible( true );
+        w->enable();
+        w = CEGUI::WindowManager::getSingleton().getWindow("Destroyer");
+        w->setVisible( true );    
+        w->enable();
+        HostGameState::DeButton();
+        buildingImages = 4;
+    }
+    else
+    {
+        w = CEGUI::WindowManager::getSingleton().getWindow("Submarine");
+        w->enable();
+        w = CEGUI::WindowManager::getSingleton().getWindow("Destroyer");
+        w->enable();
+    }
+    if(money < Au_SUBMARINE || plutonium < Pt_SUBMARINE)
+    {
+        w = CEGUI::WindowManager::getSingleton().getWindow("Submarine");
+        w->disable();
+    }
+    if(money < Au_DESTROYER || plutonium < Pt_DESTROYER)
+    {
+        w = CEGUI::WindowManager::getSingleton().getWindow("Destroyer");
+        w->disable();
+    }
+}
+void HostGameState::BuildingImagesAF5(PlanetCell &cell)
+{
+    CEGUI::Window* w;
+    if(buildingImages != 5)
+    {
+        w = CEGUI::WindowManager::getSingleton().getWindow("Bomber");
+        w->setVisible( true );
+        w->enable();
+        w = CEGUI::WindowManager::getSingleton().getWindow("Fighter");
+        w->setVisible( true );
+        w->enable();
+        HostGameState::DeButton();
+        buildingImages = 5;
+    }
+    else
+    {
+        w = CEGUI::WindowManager::getSingleton().getWindow("Bomber");
+        w->enable();
+        w = CEGUI::WindowManager::getSingleton().getWindow("Fighter");
+        w->enable();
+    }
+    if(money < Au_BOMBER || plutonium < Pt_BOMBER)
+    {
+        w = CEGUI::WindowManager::getSingleton().getWindow("Bomber");
+        w->disable();
+    }
+    if(money < Au_FIGHTER || plutonium < Pt_FIGHTER)
+    {
+        w = CEGUI::WindowManager::getSingleton().getWindow("Fighter");
+        w->disable();
+    }
+}
+
+void HostGameState::BuildingImagesNP6(PlanetCell &cell)
+{
+    CEGUI::Window* w;
+    if(buildingImages != 6)
+    {
+        w = CEGUI::WindowManager::getSingleton().getWindow("NuclearPlantInterface");
+        w->setVisible( true );    
+        w->enable();
+        HostGameState::DeButton();
+        buildingImages = 6;
+    }
+    else
+    {
+        w = CEGUI::WindowManager::getSingleton().getWindow("NuclearPlantInterface");
+        w->enable();
+    }
+}
+void HostGameState::BuildingImagesICBMS7(PlanetCell &cell)
+{
+    CEGUI::Window* w;
+    if(buildingImages != 14)
+    {
+        w = CEGUI::WindowManager::getSingleton().getWindow("Launch");
+        w->setVisible( true );    
+        w->enable();
+        HostGameState::DeButton();
+        buildingImages = 14;
+    }
+    else
+    {
+        w = CEGUI::WindowManager::getSingleton().getWindow("Launch");
+        w->enable();
+    }
+    if(money < Au_LAUNCH || plutonium < Pt_LAUNCH)
+    {
+        w = CEGUI::WindowManager::getSingleton().getWindow("Launch");
+        w->disable();
+    }
+}
+void HostGameState::UnitImagesI1(PlanetCell &cell)
+{
+    CEGUI::Window* w;
+    if(buildingImages != 7)
+    {
+        w = CEGUI::WindowManager::getSingleton().getWindow("Capture");
+        w->setVisible( true );    
+        w->enable();
+        w = CEGUI::WindowManager::getSingleton().getWindow("InfantryInterface");
+        w->setVisible( true );    
+        w->enable();
+        HostGameState::DeButton();
+        buildingImages = 7;
+    }
+    else
+    {
+        w = CEGUI::WindowManager::getSingleton().getWindow("Capture");
+        w->enable();
+        w = CEGUI::WindowManager::getSingleton().getWindow("InfantryInterface");
+        w->enable();
+    }
+    if(money < Au_CAPTURE || plutonium < Pt_CAPTURE || cell.owner == myOwner || cell.terrain == Terrain_WATER)
+    {
+        w = CEGUI::WindowManager::getSingleton().getWindow("Capture");
+        w->disable();
+    }
+}
+void HostGameState::UnitImagesT2(PlanetCell &cell)
+{
+    CEGUI::Window* w;
+    if(buildingImages != 8)
+    {
+        w = CEGUI::WindowManager::getSingleton().getWindow("TankInterface");
+        w->setVisible( true );    
+        w->enable();
+        HostGameState::DeButton();
+        buildingImages = 8;
+    }
+    else
+    {
+        w = CEGUI::WindowManager::getSingleton().getWindow("TankInterface");
+        w->enable();
+    }
+}
+void HostGameState::UnitImagesS3(PlanetCell &cell)
+{
+    CEGUI::Window* w;
+    if(buildingImages != 9)
+    {
+        w = CEGUI::WindowManager::getSingleton().getWindow("ScudInterface");
+        w->setVisible( true );    
+        w->enable();
+        HostGameState::DeButton();
+        buildingImages = 9;
+    }
+    else
+    {
+        w = CEGUI::WindowManager::getSingleton().getWindow("ScudInterface");
+        w->enable();
+    }
+}
+void HostGameState::UnitImagesSM4(PlanetCell &cell)
+{
+    CEGUI::Window* w;
+    if(buildingImages != 10)
+    {
+        w = CEGUI::WindowManager::getSingleton().getWindow("SubmarineInterface");
+        w->setVisible( true );    
+        w->enable();
+        HostGameState::DeButton();
+        buildingImages = 10;
+    }
+    else
+    {
+        w = CEGUI::WindowManager::getSingleton().getWindow("SubmarineInterface");
+        w->enable();
+    }
+}
+void HostGameState::UnitImagesD5(PlanetCell &cell)
+{
+    CEGUI::Window* w;
+    if(buildingImages != 11)
+    {
+        w = CEGUI::WindowManager::getSingleton().getWindow("DestroyerInterface");
+        w->setVisible( true );    
+        w->enable();
+        HostGameState::DeButton();
+        buildingImages = 11;
+    }
+    else
+    {
+        w = CEGUI::WindowManager::getSingleton().getWindow("DestroyerInterface");
+        w->enable();
+    }
+}
+void HostGameState::UnitImagesB6(PlanetCell &cell)
+{
+    CEGUI::Window* w;
+    if(buildingImages != 12)
+    {
+        w = CEGUI::WindowManager::getSingleton().getWindow("BomberInterface");
+        w->setVisible( true );    
+        w->enable();
+        HostGameState::DeButton();
+        buildingImages = 12;
+    }
+    else
+    {
+        w = CEGUI::WindowManager::getSingleton().getWindow("BomberInterface");
+        w->enable();
+    }
+}
+void HostGameState::UnitImagesF7(PlanetCell &cell)
+{
+    CEGUI::Window* w;
+    if(buildingImages != 13)
+    {
+        w = CEGUI::WindowManager::getSingleton().getWindow("FighterInterface");
+        w->setVisible( true );    
+        w->enable();
+        HostGameState::DeButton();
+        buildingImages = 13;
+    }
+    else
+    {
+        w = CEGUI::WindowManager::getSingleton().getWindow("FighterInterface");  
+        w->enable();
+    }
+}
+
+void HostGameState::BuildButtons(void)
+{
+    if(currentCell == NULL)
+        BuildingImages0();
+    else if(currentCell->myUnit == Unit_EMPTY)
+        BuildingImages1(*currentCell);
+    else if(currentCell->myUnit == Unit_COMMANDBASE)
+        BuildingImagesCB2(*currentCell);
+    else if(currentCell->myUnit == Unit_ARMYBASE)
+        BuildingImagesA3(*currentCell);
+    else if(currentCell->myUnit == Unit_NAVYBASE)
+        BuildingImagesN4(*currentCell);
+    else if(currentCell->myUnit == Unit_AIRFORCEBASE)
+        BuildingImagesAF5(*currentCell);
+    else if(currentCell->myUnit == Unit_NUCLEARPLANT)
+        BuildingImagesNP6(*currentCell);
+    else if(currentCell->myUnit == Unit_ICBMSILO)
+        BuildingImagesICBMS7(*currentCell);
+    else if(currentCell->myUnit == Unit_INFANTRY)
+        UnitImagesI1(*currentCell);
+    else if(currentCell->myUnit == Unit_TANK)
+        UnitImagesT2(*currentCell);
+    else if(currentCell->myUnit == Unit_SCUD)
+        UnitImagesS3(*currentCell);
+    else if(currentCell->myUnit == Unit_SUBMARINE)
+        UnitImagesSM4(*currentCell);
+    else if(currentCell->myUnit == Unit_DESTROYER)
+        UnitImagesD5(*currentCell);
+    else if(currentCell->myUnit == Unit_BOMBER)
+        UnitImagesB6(*currentCell);
+    else if(currentCell->myUnit == Unit_FIGHTER)
+        UnitImagesF7(*currentCell);
+    else
+        BuildingImages1(*currentCell);
+}
+
+bool HostGameState::issueProduceOrder(PlanetCell& origin, PlanetCell& goal){
+    for(int i=0;i<lastCell->neighbors.size();i++){
+        if(goal.id == acceptNeighbors[i]){
+            /*
+            Arrow& tempArrow = units[origin.myUnitId].myArrow;
+            tempArrow = Arrow(myOwner, earth.vertices[origin.id], earth.vertices[goal.id]);
+            tempArrow.createObject(m_pSceneMgr);
+            tempArrow.setVisibility(true);
+            */
+            goal.myUnit_pending = unitBuilding;
+            if(unitBuilding == Unit_INFANTRY) origin.timer = BuildTime_INFANTRY;
+            else if(unitBuilding == Unit_TANK) origin.timer = BuildTime_TANK;
+            else if(unitBuilding == Unit_ARTILLERY) origin.timer = BuildTime_ARTILLERY;
+            else if(unitBuilding == Unit_SCUD) origin.timer = BuildTime_SCUD;
+            else if(unitBuilding == Unit_ENGINEER) origin.timer = BuildTime_ENGINEER;
+            else if(unitBuilding == Unit_SUBMARINE) origin.timer = BuildTime_SUBMARINE;
+            else if(unitBuilding == Unit_DESTROYER) origin.timer = BuildTime_DESTROYER;
+            else if(unitBuilding == Unit_CARRIER) origin.timer = BuildTime_CARRIER;
+            else if(unitBuilding == Unit_CRUISER) origin.timer = BuildTime_CRUISER;
+            else if(unitBuilding == Unit_BOMBER) origin.timer = BuildTime_BOMBER;
+            else if(unitBuilding == Unit_FIGHTER) origin.timer = BuildTime_FIGHTER;
+            else if(unitBuilding == Unit_SPYPLANE) origin.timer = BuildTime_SPYPLANE;
+            processResources(-unitMoney,-unitPlutonium);
+            btVector3 a = earth.vertices[origin.id];
+            btVector3 g = earth.vertices[goal.id];
+            btVector3 b = g - a;
+            btVector3 c = a.cross(b);
+            btVector3 d = c.cross(a);
+            goal.myUnitDirection = d;
+            unitBuilding = 0;
+            origin.goalId = goal.id;
+            illuminate(origin);
+            origin.unitbuilding = true;
+
+            std::time(&currentTime);
+            origin.timeNeeded = currentTime+origin.timer;
+            Times temp(currentTime+origin.timer , origin.id);
+            eventQueue.push(temp);
+            return true;
+        }
+    }
+    origin.unitbuilding = false;
+    origin.goalId = -1;
+    unitBuilding = 0;
+    illuminate(origin);
+    return true;
+}
+
+bool HostGameState::createUnit(PlanetCell& goal){
+    if(goal.myUnit == 0)
+    {
+        sound.PlaySound(musicBuildComplete);
+        goal.myUnit = goal.myUnit_pending;
+        goal.occupier = myOwner;
+        goal.myUnit_pending = 0;
+        Unit newUnit(myOwner, goal.myUnit);
+        if(goal.myUnit == Unit_SCUD){
+            newUnit.createSymbolObject(m_pSceneMgr);
+            //newUnit.createObject(m_pSceneMgr, "missile.mesh", "MyMaterials/Blue");
+        }
+        else if(goal.myUnit == Unit_FIGHTER){
+            newUnit.createObject(m_pSceneMgr, "fighter.mesh", "MyMaterials/Blue");
+        }
+        else if(goal.myUnit == Unit_TANK){
+            newUnit.createSymbolObject(m_pSceneMgr);
+            //newUnit.createObject(m_pSceneMgr, "tank.mesh", "MyMaterials/Blue");
+        }
+        else if(goal.myUnit == Unit_INFANTRY){
+            newUnit.createSymbolObject(m_pSceneMgr);
+            //newUnit.createObject(m_pSceneMgr, "soldier.mesh", "MyMaterials/Blue");
+        }
+        else if(goal.myUnit == Unit_DESTROYER){
+            newUnit.createObject(m_pSceneMgr, "destroyer.mesh", "MyMaterials/Blue");
+        }
+        else if(goal.myUnit == Unit_BOMBER){
+            newUnit.createObject(m_pSceneMgr, "bomber.mesh", "MyMaterials/Blue");
+        }
+        else if(goal.myUnit == Unit_SUBMARINE){
+            newUnit.createObject(m_pSceneMgr, "sub.mesh", "MyMaterials/Blue");
+        }
+        else{
+            newUnit.createManualObject(m_pSceneMgr);
+        }
+        newUnit.relocate(earth.vertices[goal.id]);
+        //newUnit.setDirection(goal.myUnitDirection);
+        units.push_back(newUnit);
+        goal.myUnitId = newUnit.id;
+        illuminate(goal);
+        attack(goal);
+        BuildButtons();
+    }
+}
+
+bool HostGameState::issueMoveOrder(Unit& unit, PlanetCell& origin, PlanetCell& goal){
+    for(int i=0;i<origin.neighbors.size();i++){
+        if(goal.id == acceptNeighbors[i]){
+            if(origin.myUnit == Unit_INFANTRY) origin.timer = MoveTime_INFANTRY;
+            else if(origin.myUnit == Unit_TANK) origin.timer = MoveTime_TANK;
+            else if(origin.myUnit == Unit_ARTILLERY) origin.timer = MoveTime_ARTILLERY;
+            else if(origin.myUnit == Unit_SCUD) origin.timer = MoveTime_SCUD;
+            else if(origin.myUnit == Unit_ENGINEER) origin.timer = MoveTime_ENGINEER;
+            else if(origin.myUnit == Unit_SUBMARINE) origin.timer = MoveTime_SUBMARINE;
+            else if(origin.myUnit == Unit_DESTROYER) origin.timer = MoveTime_DESTROYER;
+            else if(origin.myUnit == Unit_CARRIER) origin.timer = MoveTime_CARRIER;
+            else if(origin.myUnit == Unit_CRUISER) origin.timer = MoveTime_CRUISER;
+            else if(origin.myUnit == Unit_BOMBER) origin.timer = MoveTime_BOMBER;
+            else if(origin.myUnit == Unit_FIGHTER) origin.timer = MoveTime_FIGHTER;
+            else if(origin.myUnit == Unit_SPYPLANE) origin.timer = MoveTime_SPYPLANE;
+            btVector3 a = earth.vertices[origin.id];
+            btVector3 g = earth.vertices[goal.id];
+            btVector3 b = g - a;
+            btVector3 c = a.cross(b);
+            btVector3 d = c.cross(a);
+            goal.myUnitDirection = d;
+            
+            origin.moving = true;
+            origin.capturing = false;
+            origin.goalId = goal.id;
+            illuminate(origin);
+            unitMoving = 0;
+
+            std::time(&currentTime);
+            origin.timeNeeded = currentTime+origin.timer;
+            Times temp(currentTime+origin.timer , origin.id);
+            eventQueue.push(temp);
+
+            return true;
+        }
+    }
+    origin.moving = false;
+    origin.goalId = -1;
+    illuminate(origin);
+    unitMoving = 0;
+    return false;
+}
+
+bool HostGameState::moveUnit(Unit& unit, PlanetCell& origin, PlanetCell& goal){
+    origin.moving = false;
+    origin.goalId = -1;
+    if(goal.myUnit == Unit_EMPTY){
+	    sound.PlaySound(musicMoveComplete);
+        unit.relocate(earth.vertices[goal.id]);
+        //unit.setDirection(goal.myUnitDirection);
+        origin.myUnit = 0;
+        origin.occupier = Owner_NEUTRAL;
+        origin.myUnitId = -1;
+        goal.myUnit = unit.myType;
+        origin.occupier = myOwner;
+        goal.myUnitId = unit.id;
+        deluminate(origin);
+        illuminate(goal);
+        attack(goal);
+        BuildButtons();
+        return true;
+    }
+    /*
+    else if(goal.occupier != Owner_NEUTRAL && goal.occupier != myOwner){ // bumping into an enemy unit
+        if(unit.myType == goal.myUnit){ // Likes kill likes.
+            nuke(goal);
+            unit.relocate(earth.vertices[goal.id]);
+            origin.myUnit = 0;
+            origin.occupier = Owner_NEUTRAL;
+            origin.myUnitId = -1;
+            goal.myUnit = unit.myType;
+            origin.occupier = myOwner;
+            goal.myUnitId = unit.id;
+            deluminate(origin);
+            illuminate(goal);
+            attack(goal);
+            BuildButtons();
+            return true;
+        }
+        //else return false;
+        else{
+            nuke(goal);
+            unit.relocate(earth.vertices[goal.id]);
+            origin.myUnit = 0;
+            origin.occupier = Owner_NEUTRAL;
+            origin.myUnitId = -1;
+            goal.myUnit = unit.myType;
+            origin.occupier = myOwner;
+            goal.myUnitId = unit.id;
+            deluminate(origin);
+            illuminate(goal);
+            attack(goal);
+            BuildButtons();
+            return true;
+        }
+    }
+    */
+
+    return false;
+}
+
+void HostGameState::illuminate(PlanetCell& goal){
+    goal.baseMaterial = "MyMaterials/earth_day";
+    earth.changeMaterial(m_pSceneMgr, goal, "MyMaterials/earth_day");
+    for(int i=0;i<goal.neighbors.size();i++){
+        earth.cells[goal.neighbors[i]].baseMaterial = "MyMaterials/earth_day";
+        earth.changeMaterial(m_pSceneMgr, earth.cells[goal.neighbors[i]], "MyMaterials/earth_day");
+    }
+}
+
+void HostGameState::deluminate(PlanetCell& goal){
+    bool unseen_neighbor = true;
+    bool unseen_self = true;
+    for(int i=0;i<goal.neighbors.size();i++){
+        PlanetCell& temp1 = earth.cells[goal.neighbors[i]];
+        if(temp1.owner == myOwner || temp1.myUnit != 0){
+            unseen_self = false;
+        }
+        for(int j=0;j<temp1.neighbors.size();j++){
+            PlanetCell& temp2 = earth.cells[temp1.neighbors[j]];
+            if(temp2.id != goal.id){
+                if(temp2.owner == myOwner || temp2.myUnit != 0){
+                    unseen_neighbor = false;
+                }
+            }
+        }
+        if(unseen_neighbor){
+            temp1.baseMaterial = "MyMaterials/earth_day_bw";
+            earth.changeMaterial(m_pSceneMgr, temp1, "MyMaterials/earth_day_bw");
+        }
+        else{
+            temp1.baseMaterial = "MyMaterials/earth_day";
+            earth.changeMaterial(m_pSceneMgr, temp1, "MyMaterials/earth_day");
+        }
+        unseen_neighbor = true;
+    }
+    if(unseen_self){
+        goal.baseMaterial = "MyMaterials/earth_day_bw";
+        earth.changeMaterial(m_pSceneMgr, goal, "MyMaterials/earth_day_bw");
+    }
+    else{
+        goal.baseMaterial = "MyMaterials/earth_day";
+        earth.changeMaterial(m_pSceneMgr, goal, "MyMaterials/earth_day");
+    }
+}
+
+float HostGameState::y(float x, float v, float theta){
+    float k = v * cos(theta);
+    return x * tan(theta) - ( (9.8*x*x)/(2*k*k) );
+}
+
+void HostGameState::fireMissile(PlanetCell& origin, PlanetCell& goal){
+    Missile newMissile(myOwner, earth.vertices[origin.id], earth.vertices[goal.id]);
+    newMissile.createObject(m_pSceneMgr);
+    newMissile.relocate(earth.vertices[origin.id]);
+    float theta = newMissile.start.angle(newMissile.end);
+    float distance = theta * 6371;
+    float v = 10;
+    float angle_of_reach = 0.5 * asin(9.8 * distance / v);
+    float time = distance / (v*cos(theta));
+    
+    missiles.push_back(newMissile);
+}
+
+void HostGameState::retireUnit(PlanetCell& targetCell){
+    // No refund! No shit!
+    if(targetCell.myUnit == Unit_COMMANDBASE){
+        sound.PlaySound(musicCommandKilled);
+        commandBaseChange(false, false);
+    }
+    else
+        sound.PlaySound(musicUnitKilled);
+    units[targetCell.myUnitId].destroy(m_pSceneMgr);
+    deluminate(targetCell);
+    targetCell.myUnit = 0;
+    targetCell.myUnitId = -1;
+    targetCell.occupier = Owner_NEUTRAL;
+    BuildButtons();
+}
+
+void HostGameState::killEnemyUnit(PlanetCell& targetCell){
+    if(targetCell.myUnit == Unit_COMMANDBASE){
+        sound.PlaySound(musicEnemyCommandKilled);
+        commandBaseChange(false, true);
+    }
+    else
+        sound.PlaySound(musicEnemyUnitKilled);
+    units[targetCell.myUnitId].destroy(m_pSceneMgr);
+    targetCell.myUnit = 0;
+    targetCell.myUnitId = -1;
+    targetCell.occupier = Owner_NEUTRAL;
+    BuildButtons();
+}
+
+void HostGameState::nuke(PlanetCell& targetCell){
+    units[targetCell.myUnitId].destroy(m_pSceneMgr);
+    deluminate(targetCell);
+    targetCell.myUnit = 0;
+    targetCell.myUnitId = -1;
+    targetCell.occupier = Owner_NEUTRAL;
+    BuildButtons();
+}
+
+void HostGameState::processEvents(void){
+    
+    std::time(&currentTime);
+    int stay = 1;
+    while(stay)
+    {
+        stay = 0;
+        if(!eventQueue.empty())
+        {
+            cout << "Oh Shit I'm In" << endl;
+            Times top = eventQueue.top();
+            cout << "Wasn't Top!" << endl;
+            if(top.time <= currentTime){
+                cout << "Wasn't if" << endl;
+                PlanetCell& tempCell = earth.cells[top.cellID];
+                cout << "tempCell good" << endl;
+                if(tempCell.moving){
+                    moveUnit(units[tempCell.myUnitId], tempCell, earth.cells[tempCell.goalId]); 
+                    cout << "NotMove" << endl;
+                }
+                else if(tempCell.capturing){
+                    capture(tempCell);
+                }
+                else if(tempCell.myUnit_pending){
+                    cout << "inHere?" << endl;
+                    if(tempCell.myUnit_pending >= 13 && tempCell.myUnit_pending <= 19 && tempCell.myUnitId != -1){
+                        tempCell.myUnit = tempCell.myUnit_pending;
+                        tempCell.myUnit_pending = 0;
+                    }
+                }
+                else if(tempCell.unitbuilding){
+                    tempCell.unitbuilding = false;
+                    createUnit(earth.cells[tempCell.goalId]);
+                }
+                cout << "Freedom!" << endl;
+                tempCell.timeNeeded = 0;
+                tempCell.growsCompleted = 0;
+                eventQueue.pop();
+                cout << "Hurray!!!!" << endl;
+                BuildButtons();
+                stay = 1;
+            }
+            else{
+                cout << "It's in else!" << endl;
+                std::priority_queue<Times, std::vector<Times>, CompareTimes> tempEventQueue;
+                int eventSize = eventQueue.size();
+                for(int i=0; i<eventSize; i++){
+                    Times tempTime = eventQueue.top();
+                    PlanetCell& tempCell = earth.cells[tempTime.cellID];
+                    if(tempCell.myUnit_pending >= 13 && tempCell.myUnit_pending <= 19 && tempCell.myUnitId != -1){
+                        cout << "Well I got to here..." << endl;
+                        if((tempCell.timer-(tempTime.time-currentTime) >= tempCell.growsCompleted) &&
+                        (tempCell.growsCompleted < tempCell.timer) ){
+                            units[tempCell.myUnitId].grow();
+                            tempCell.growsCompleted++;
+                            cout << "I Build Something!" << endl;
+                        }
+                    }
+                    eventQueue.pop();
+                    tempEventQueue.push(tempTime);
+                }
+                eventQueue = tempEventQueue;
+            }
+        }
+    }
+
+}
+
+void HostGameState::DeButton(void)
+{
+    CEGUI::Window* w;
+    if(buildingImages == 1)
+    {
+        w = CEGUI::WindowManager::getSingleton().getWindow("CommandBase");
+        w->setVisible( false );
+        w = CEGUI::WindowManager::getSingleton().getWindow("ArmyBase");
+        w->setVisible( false );
+        w = CEGUI::WindowManager::getSingleton().getWindow("NavyBase");
+        w->setVisible( false );
+        w = CEGUI::WindowManager::getSingleton().getWindow("AirForceBase");
+        w->setVisible( false );
+        w = CEGUI::WindowManager::getSingleton().getWindow("NuclearPlant");
+        w->setVisible( false );
+        w = CEGUI::WindowManager::getSingleton().getWindow("ICBMSilo");
+        w->setVisible( false );
+    }
+    else if(buildingImages == 2)
+    {
+        w = CEGUI::WindowManager::getSingleton().getWindow("Infantry");
+        w->setVisible( false );
+    }
+    else if(buildingImages == 3)
+    {
+        w = CEGUI::WindowManager::getSingleton().getWindow("Tank");
+        w->setVisible( false );
+        w = CEGUI::WindowManager::getSingleton().getWindow("Scud");
+        w->setVisible( false );
+    }
+    else if(buildingImages == 4)
+    {
+        w = CEGUI::WindowManager::getSingleton().getWindow("Submarine");
+        w->setVisible( false );
+        w = CEGUI::WindowManager::getSingleton().getWindow("Destroyer");
+        w->setVisible( false );
+    }
+    else if(buildingImages == 5)
+    {
+        w = CEGUI::WindowManager::getSingleton().getWindow("Bomber");
+        w->setVisible( false );
+        w = CEGUI::WindowManager::getSingleton().getWindow("Fighter");
+        w->setVisible( false );
+    }
+    else if(buildingImages == 6)
+    {
+        w = CEGUI::WindowManager::getSingleton().getWindow("NuclearPlantInterface");
+        w->setVisible( false );
+    }
+    else if(buildingImages == 7)
+    {
+        w = CEGUI::WindowManager::getSingleton().getWindow("Capture");
+        w->setVisible( false );
+        w = CEGUI::WindowManager::getSingleton().getWindow("InfantryInterface");
+        w->setVisible( false );
+    }
+    else if(buildingImages == 8)
+    {
+        w = CEGUI::WindowManager::getSingleton().getWindow("TankInterface");
+        w->setVisible( false );
+    }
+    else if(buildingImages == 9)
+    {
+        w = CEGUI::WindowManager::getSingleton().getWindow("ScudInterface");
+        w->setVisible( false );
+    }
+    else if(buildingImages == 10)
+    {
+        w = CEGUI::WindowManager::getSingleton().getWindow("SubmarineInterface");
+        w->setVisible( false );
+    }
+    else if(buildingImages == 11)
+    {
+        w = CEGUI::WindowManager::getSingleton().getWindow("DestroyerInterface");
+        w->setVisible( false );
+    }
+    else if(buildingImages == 12)
+    {
+        w = CEGUI::WindowManager::getSingleton().getWindow("BomberInterface");
+        w->setVisible( false );
+    }
+    else if(buildingImages == 13)
+    {
+        w = CEGUI::WindowManager::getSingleton().getWindow("FighterInterface");
+        w->setVisible( false );
+    }
+    else if(buildingImages == 14)
+    {
+        w = CEGUI::WindowManager::getSingleton().getWindow("Launch");
+        w->setVisible( false );
+    }
+}
+
+void HostGameState::processResources(int inputmoney, int inputplut)
+{
+    money += inputmoney;
+    plutonium += inputplut;
+    CEGUI::Window* counter = CEGUI::WindowManager::getSingleton().getWindow("Counter");
+    std::string tempmoney;
+    std::string tempplut;
+    std::stringstream out;
+    out << money;
+    tempmoney = out.str();
+    out.str( std::string() );
+    out.clear();
+    out << plutonium;
+    tempplut = out.str();
+    out.str( std::string() );
+    out.clear();
+    counter->setText("        Resources\nMoney: $"+tempmoney+"\nPlutonium: "+tempplut+"kg");
+    BuildButtons();
+}
+
+void HostGameState::processTimer(void)
+{
+    std::time(&currentTime);
+    if(currentCell!=NULL && currentCell->timeNeeded > 0)
+    {
+        CEGUI::Window* counter = CEGUI::WindowManager::getSingleton().getWindow("CountDown");
+        time_t count = currentCell->timeNeeded - currentTime;
+        std::string temptime;
+        std::stringstream out;
+        out << count;
+        temptime = out.str();
+        out.str( std::string() );
+        out.clear();
+        if(currentCell->moving)
+            counter->setText("Time until move:\n"+temptime+"s");
+        else if(currentCell->capturing)
+            counter->setText("Time until capture:\n"+temptime+"s");
+        else
+            counter->setText("Time until build:\n"+temptime+"s");
+        if(!timerup)
+        {
+            timerup = true;
+            counter->setVisible( true );
+        }
+        
+    }
+    else if(timerup)
+    {
+        CEGUI::Window* counter = CEGUI::WindowManager::getSingleton().getWindow("CountDown");
+        counter->setVisible( false );
+        timerup = false;
+    }
+}
+
+void HostGameState::capture(PlanetCell& targetCell)
+{
+    sound.PlaySound(musicCaptureComplete);
+    targetCell.capturing = false;
+    targetCell.owner = myOwner;
+    earth.own(m_pSceneMgr, targetCell);
+    earth.updateBorderSegments(m_pSceneMgr);
+}
+
+
+void HostGameState::attack(PlanetCell& targetCell)
+{
+    for (int i=0;i<targetCell.neighbors.size();i++){
+        PlanetCell& temp = earth.cells[targetCell.neighbors[i]];
+        if(temp.occupier == myEnemy && temp.myUnit > 0){
+            combat(targetCell,temp);
+            if(targetCell.occupier == Owner_NEUTRAL)
+                break;
+        }
+    }
+}
+
+void HostGameState::combat(PlanetCell& yourCell,PlanetCell& enemyCell)
+{
+    int yourUnit = yourCell.myUnit;
+    int enemyUnit = enemyCell.myUnit;
+    if(yourUnit == enemyUnit && yourUnit != Unit_BOMBER){
+        //Do Vector Battle TODO
+    }
+    else if(yourUnit == Unit_INFANTRY){
+        retireUnit(yourCell);
+    }
+    else if(enemyUnit == Unit_INFANTRY){
+        killEnemyUnit(enemyCell);
+    }
+    else if(yourUnit == Unit_TANK){
+        if(enemyUnit == Unit_SCUD || enemyUnit == Unit_DESTROYER)
+            killEnemyUnit(enemyCell);
+        else if(enemyUnit == Unit_BOMBER || enemyUnit == Unit_SUBMARINE)
+            retireUnit(yourCell);
+    }
+    else if(yourUnit == Unit_SCUD){
+        if((enemyUnit >= 13 && enemyUnit <= 18) || enemyUnit == Unit_DESTROYER|| enemyUnit == Unit_FIGHTER)
+            killEnemyUnit(enemyCell);
+        else if(enemyUnit == Unit_TANK || enemyUnit == Unit_BOMBER)
+            retireUnit(yourCell);
+    }
+    else if(yourUnit == Unit_SUBMARINE){
+        if(enemyUnit >= 13 && enemyUnit <= 18 || enemyUnit == Unit_TANK || enemyUnit == Unit_BOMBER)
+            killEnemyUnit(enemyCell);
+        else if(enemyUnit == Unit_DESTROYER || enemyUnit == Unit_FIGHTER)
+            retireUnit(yourCell);
+    }
+    else if(yourUnit == Unit_DESTROYER){
+        if(enemyUnit == Unit_FIGHTER || enemyUnit == Unit_SUBMARINE)
+            killEnemyUnit(enemyCell);
+        else if(enemyUnit == Unit_SCUD || enemyUnit == Unit_DESTROYER)
+            retireUnit(yourCell);
+    }
+    else if(yourUnit == Unit_BOMBER){
+        if((enemyUnit >= 13 && enemyUnit <= 18) || enemyUnit == Unit_TANK || enemyUnit == Unit_SCUD)
+            killEnemyUnit(enemyCell);
+        else if(enemyUnit == Unit_FIGHTER || enemyUnit == Unit_SUBMARINE)
+            retireUnit(yourCell);
+    }
+    else if(yourUnit == Unit_FIGHTER){
+        if(enemyUnit == Unit_BOMBER || enemyUnit == Unit_SUBMARINE)
+            killEnemyUnit(enemyCell);
+        else if(enemyUnit == Unit_DESTROYER || enemyUnit == Unit_SCUD)
+            retireUnit(yourCell);
+    }
+    else if(yourUnit >= 13 && yourUnit <= 18){
+        if(enemyUnit == Unit_SCUD || enemyUnit == Unit_BOMBER || enemyUnit == Unit_SUBMARINE)
+            retireUnit(yourCell);
+    }
+}
+
+void HostGameState::commandBaseChange(bool built, bool enemy)
+{
+    if(built)
+    {
+        commandBaseTotal++;
+        myCommandBase++;
+    }
+    else if(enemy)
+    {
+        enemyCommandBase--;
+    }
+    else{
+        myCommandBase--;
+    }
+    std::string commandMy;
+    std::string commandEnemy;
+    std::string commandTotal;
+    std::string commandMax;
+    std::stringstream out;
+    out << commandBaseTotal;
+    commandTotal = out.str();
+    out.str( std::string() );
+    out.clear();
+    out << myCommandBase;
+    commandMy = out.str();
+    out.str( std::string() );
+    out.clear();
+    out << enemyCommandBase;
+    commandEnemy = out.str();
+    out.str( std::string() );
+    out.clear();   
+    out << commandBaseMax;
+    commandMax = out.str();
+    out.str( std::string() );
+    out.clear(); 
+    CEGUI::Window *resultWindow = CEGUI::WindowManager::getSingleton().getWindow("ProgressText1");
+    if(myOwner == Owner_BLUE)
+        resultWindow->setText("[colour='FF0000FF']Player Command Bases Remaining: "+commandMy+"/"+commandTotal+"");
+    else
+        resultWindow->setText("[colour='FFFF0000']Player Command Bases Remaining: "+commandMy+"/"+commandTotal+"");
+
+    resultWindow = CEGUI::WindowManager::getSingleton().getWindow("ProgressText2");
+
+    if(myOwner == Owner_BLUE)
+        resultWindow->setText("[colour='FFFF0000']Enemy Command Bases Remaining: "+commandEnemy+"/"+commandMax+"");
+    else
+        resultWindow->setText("[colour='FF0000FF']Enemy Command Bases Remaining: "+commandEnemy+"/"+commandMax+"");
+    if(commandBaseTotal == commandBaseMax && enemyCommandBase == 0){
+        sound.PlaySound(musicVictory);
+        //YouWin
+    }
+    if(commandBaseTotal == commandBaseMax && myCommandBase == 0){
+        sound.PlaySound(musicDefeat);
+        //YouLose
+    }
+}
+
+void HostGameState::initNetwork(void)
+{
+    // Initialize SDL & SDL_net
+    if (SDL_Init(0) == -1){
+        //cout << "SDL_Init: " << SDL_GetError() << "\n";
+        //exit(1);
+    }
+
+    if (SDLNet_Init() == -1){
+        //cout << "SDLNet_Init: " << SDLNet_GetError() << "\n";
+        //exit(2);
+    }
+
+    // Create the socket set
+    socketset = SDLNet_AllocSocketSet(MAXSOCKET);
+    if (socketset == NULL){
+        //cout << "SDLNet_AllocSocketSet: " << SDLNet_GetError() << "\n";
+        //exit(3);
+    }
+    else{
+        //cout << "Max number of clients: " << MAXSOCKET << "\n";
+    }
+
+    // Initialize client sockets
+    for (i = 0; i < MAXSOCKET; i++){
+        client[i] = NULL;
+    }
+
+    // Try to resolve the host
+    if (SDLNet_ResolveHost(&ipaddress, NULL, PORT) == -1){
+        //cout << "SDLNet_ResolveHost: " << SDLNet_GetError() << "\nContinuing...\n";
+    }
+
+    // Try to resolve the IP
+    if ((host = SDLNet_ResolveIP(&ipaddress)) == NULL){
+        //cout << "SDLNet_ResolveIP: " << SDLNet_GetError() << "\nContinuing...\n";
+    }
+    else{
+        //cout << "Local name: " << host << "\n";
+    }
+
+    // State which port we are listening on
+    //cout << "Port: " << PORT << "\n";
+
+    // Try to open the server socket
+    tcpsock = SDLNet_TCP_Open(&ipaddress);
+    
+    if (!tcpsock){
+        //cout << "SDLNet_TCP_Open: " << SDLNet_GetError() << "\n";
+        //exit(4);
+    }
+
+    // Add the server to the socket set
+    SDLNet_TCP_AddSocket(socketset, tcpsock);
+    
+    //cout << "Awaiting clients...\n";
+}
+
+void HostGameState::updateNetwork(void)
+{
+    if (SDLNet_SocketReady(tcpsock)){
+        // Accept the connection, add it to our array and the socket set
+        //cout << "Client connected.\n";
+        new_tcpsock = SDLNet_TCP_Accept(tcpsock);
+        client[j] = new_tcpsock;
+        SDLNet_TCP_AddSocket(socketset, client[j]);
+        j++;
+    }
+    // Check client sockets for activity
+    for (i = 0; i < MAXSOCKET; i++){
+        if (SDLNet_SocketReady(client[i])){
+            if(!isPlayer){
+                CEGUI::Window *resultWindow = CEGUI::WindowManager::getSingleton().getWindow("NetworkWaiting");
+                resultWindow->setVisible( false );
+                resultWindow = CEGUI::WindowManager::getSingleton().getWindow("FriendlyReminder");
+                    resultWindow->setVisible( true );
+                resultWindow = CEGUI::WindowManager::getSingleton().getWindow("FriendlyReminderText1");
+                resultWindow->setVisible( true );
+                resultWindow->activate();
+                isPlayer = true;
+            }
+            // There is an incoming message
+            result = SDLNet_TCP_Recv(client[i], data, BUFFER);
+            if (result == 0){
+                //cout << "Client " << i << " disconnected.\n";
+                client[i] = NULL;
+            }
+            else if (result == -1){
+                //cout << "Error.\n";
+                client[i] = NULL;
+            }
+            else{
+            char count[1];
+            PlanetCell *temp1 = NULL;
+            PlanetCell *temp2 = NULL;
+            PlanetCell *temp3 = NULL;
+            PlanetCell *temp4 = NULL;
+            PlanetCell *temp5 = NULL;
+            PlanetCell *temp6 = NULL;
+            PlanetCell *temp7 = NULL;
+
+            memcpy(count, data,  1);
+            memcpy(&temp1 ,data+1, sizeof(PlanetCell));
+            memcpy(&temp2 ,data+1+(sizeof(PlanetCell)), sizeof(PlanetCell));
+            memcpy(&temp3 ,data+1+(2*sizeof(PlanetCell)), sizeof(PlanetCell));
+            memcpy(&temp4 ,data+1+(3*sizeof(PlanetCell)), sizeof(PlanetCell));
+            memcpy(&temp5 ,data+1+(4*sizeof(PlanetCell)), sizeof(PlanetCell));
+            memcpy(&temp6 ,data+1+(5*sizeof(PlanetCell)), sizeof(PlanetCell));
+            memcpy(&temp7 ,data+1+(6*sizeof(PlanetCell)), sizeof(PlanetCell));
+            }
+        }
+    }
+}
+
+void HostGameState::updateSend(PlanetCell &cell1,PlanetCell &cell2,PlanetCell &cell3,PlanetCell &cell4,PlanetCell &cell5,PlanetCell &cell6,PlanetCell &cell7)
+{
+    // Send message
+    //strcpy(data, "Hello Client!");
+    std::string commandMy;
+    std::string commandMax;
+    std::stringstream out;
+    out << myCommandBase;
+    commandMy = out.str();
+    out.str( std::string() );
+    out.clear();
+    out << commandBaseMax;
+    commandMax = out.str();
+    out.str( std::string() );
+    out.clear();
+    char count[1];
+    if(commandBaseTotal == commandBaseMax)
+        count[1] = commandMy[0];
+    else
+        count[1] = commandMax[0];
+    memcpy(data, count, 1);
+    memcpy(data+1, &cell1, sizeof(PlanetCell));
+    memcpy(data+1+(sizeof(PlanetCell)), &cell2, sizeof(PlanetCell));
+    memcpy(data+1+(2*sizeof(PlanetCell)), &cell3, sizeof(PlanetCell));
+    memcpy(data+1+(3*sizeof(PlanetCell)), &cell4, sizeof(PlanetCell));
+    memcpy(data+1+(4*sizeof(PlanetCell)), &cell5, sizeof(PlanetCell));
+    memcpy(data+1+(5*sizeof(PlanetCell)), &cell6, sizeof(PlanetCell));
+    memcpy(data+1+(6*sizeof(PlanetCell)), &cell7, sizeof(PlanetCell));
+
+    // Check client sockets for activity
+    for (i = 0; i < MAXSOCKET; i++){
+        // There is an incoming message
+        if(client[i] != NULL){
+            result = SDLNet_TCP_Send(client[i], data, BUFFER);
+            if (result == 0){
+                //cout << "Client " << i << " disconnected.\n";
+                client[i] = NULL;
+            }
+            else if (result == -1){
+                //cout << "Error.\n";
+                client[i] = NULL;
+            }
+            else{
+                //cout << "Sent: " << data << endl;
+            }
+        }
+    }
+}

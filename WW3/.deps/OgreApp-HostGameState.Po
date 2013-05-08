@@ -1116,8 +1116,10 @@ OgreApp-HostGameState.o: HostGameState.cpp HostGameState.hpp AppState.hpp \
  /usr/include/SDL/SDL_mouse.h /usr/include/SDL/SDL_video.h \
  /usr/include/SDL/SDL_joystick.h /usr/include/SDL/SDL_quit.h \
  /usr/include/SDL/SDL_loadso.h /usr/include/SDL/SDL_timer.h \
- /usr/include/SDL/SDL_version.h /usr/include/SDL/SDL_audio.h \
- /usr/include/SDL/SDL_net.h /usr/include/SDL/SDL.h
+ /usr/include/SDL/SDL_version.h /usr/include/SDL/SDL_audio.h Planet.h \
+ Times.h Unit.h /usr/include/SDL/SDL_net.h /usr/include/SDL/SDL.h \
+ /usr/include/X11/Xlib.h /usr/include/X11/X.h \
+ /usr/include/X11/Xfuncproto.h /usr/include/X11/Xosdefs.h
 
 HostGameState.hpp:
 
@@ -3685,6 +3687,20 @@ SoundManager.h:
 
 /usr/include/SDL/SDL_audio.h:
 
+Planet.h:
+
+Times.h:
+
+Unit.h:
+
 /usr/include/SDL/SDL_net.h:
 
 /usr/include/SDL/SDL.h:
+
+/usr/include/X11/Xlib.h:
+
+/usr/include/X11/X.h:
+
+/usr/include/X11/Xfuncproto.h:
+
+/usr/include/X11/Xosdefs.h:
