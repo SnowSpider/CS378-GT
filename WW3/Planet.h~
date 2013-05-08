@@ -266,9 +266,9 @@ class PlanetCell{
         visible = false;
         selected = false;
         moving = false;
+        building = false;
         myUnit = 0;
         myUnit_pending = 0;
-        building = false;
         myUnitId = -1;
         goalId = -1;
         baseMaterial = "MyMaterials/earth_day_bw";
@@ -289,6 +289,7 @@ class PlanetCell{
         visible = false;
         selected = false;
         moving = false;
+        building = false;
         myUnit = 0;
         myUnit_pending = 0;
         myUnitId = -1;
@@ -313,6 +314,7 @@ class PlanetCell{
         visible = false;
         selected = false;
         moving = false;
+        building = false;
         myUnit = 0;
         myUnit_pending = 0;
         myUnitId = -1;
@@ -337,6 +339,7 @@ class PlanetCell{
         visible = false;
         selected = false;
         moving = false;
+        building = false;
         myUnit = 0;
         myUnit_pending = 0;
         myUnitId = -1;
@@ -361,6 +364,7 @@ class PlanetCell{
         visible = false;
         selected = false;
         moving = false;
+        building = false;
         myUnit = 0;
         myUnit_pending = 0;
         myUnitId = -1;
