@@ -19,6 +19,7 @@
 #include <vector>
 #include "Planet.h"
 #include <btBulletCollisionCommon.h>
+#include <Times.h>
 
 #include <iostream>
 #include <sstream>
@@ -95,6 +96,8 @@ public:
     void deluminate(PlanetCell& targetCell);
     
     void fireMissile();
+    void processEvents();
+
     
 private:
     Ogre::SceneNode*        m_pOgreHeadNode;
@@ -151,6 +154,8 @@ private:
     int unitMoney;
     int unitPlutonium;
     int unitTimer;
+    time_t  currentTime;
+    std::priority_queue<Times, std::vector<Times>, Times> eventQueue;
     
     PlanetCell* currentCell;
     PlanetCell* lastCell;
@@ -172,7 +177,6 @@ private:
     
     std::vector<Unit> units;
 };
- 
 //|||||||||||||||||||||||||||||||||||||||||||||||
  
 #endif

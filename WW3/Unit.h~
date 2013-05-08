@@ -207,7 +207,7 @@ class Unit {
     }
     
     void createObject(Ogre::SceneManager* scnMgr, char* mesh, char* mat);
-    void createSymbolObject(Ogre::SceneManager* scnMgr)
+    void createSymbolObject(Ogre::SceneManager* scnMgr);
     void createManualObject(Ogre::SceneManager* scnMgr);
     //void applyTexture(char* mat);
     void extendArrow(btVector3& dest);

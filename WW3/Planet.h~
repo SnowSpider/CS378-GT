@@ -249,6 +249,8 @@ class PlanetCell{
     bool moving;
     bool building;
     int timer;
+    int timeNeeded;
+    int growsCompleted;
     
     btVector3 myUnitDirection;
     string baseMaterial;

@@ -249,6 +249,8 @@ class PlanetCell{
     bool moving;
     bool building;
     int timer;
+    int timeNeeded;
+    int growsCompleted;
     
     btVector3 myUnitDirection;
     string baseMaterial;
@@ -271,6 +273,7 @@ class PlanetCell{
         myUnit_pending = 0;
         myUnitId = -1;
         goalId = -1;
+        growsCompleted = 0;
         baseMaterial = "MyMaterials/earth_day_bw";
     }
     
@@ -294,6 +297,7 @@ class PlanetCell{
         myUnit_pending = 0;
         myUnitId = -1;
         goalId = -1;
+        growsCompleted = 0;
         baseMaterial = "MyMaterials/earth_day_bw";
     }
     
@@ -319,6 +323,7 @@ class PlanetCell{
         myUnit_pending = 0;
         myUnitId = -1;
         goalId = -1;
+        growsCompleted = 0;
         baseMaterial = "MyMaterials/earth_day_bw";
     }
         
@@ -344,6 +349,7 @@ class PlanetCell{
         myUnit_pending = 0;
         myUnitId = -1;
         goalId = -1;
+        growsCompleted = 0;
         baseMaterial = "MyMaterials/earth_day_bw";
     }
     
@@ -369,6 +375,7 @@ class PlanetCell{
         myUnit_pending = 0;
         myUnitId = -1;
         goalId = -1;
+        growsCompleted = 0;
         baseMaterial = "MyMaterials/earth_day_bw";
     }
     

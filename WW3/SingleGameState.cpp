@@ -61,6 +61,7 @@ SingleGameState::SingleGameState()
     unitTimer = 0;
     currentCell = NULL;
     lastCell = NULL;
+    std::time(&currentTime);
 }
  
 //|||||||||||||||||||||||||||||||||||||||||||||||
@@ -579,11 +580,13 @@ void SingleGameState::deselect(){
             earth.changeMaterial(m_pSceneMgr, temp, temp.baseMaterial);
         }
     }
+    if(currentCell != NULL){
+        BuildingImages1(*currentCell);
+    }
     m_pCurrentObject = NULL;
     m_pCurrentEntity = NULL;
     currentCell = NULL;
     lastCell = NULL;
-    BuildingImages1(*currentCell);
 }
 
 void SingleGameState::onLeftPressed(const OIS::MouseEvent &evt)
@@ -625,15 +628,20 @@ void SingleGameState::onLeftPressed(const OIS::MouseEvent &evt)
                 currentCell = &(earth.cells[intId]); 
                 
                 if(unitBuilding){
-                    issueProduceOrder(*lastCell, *currentCell);
-                    //createUnit(*currentCell);
+                    if(lastCell != NULL && currentCell->myUnit == Unit_EMPTY && currentCell->building == false){
+                        issueProduceOrder(*lastCell, *currentCell);
+                    }   
+                    else{
+                        unitBuilding = false;
+                    }             
                 }
-                else if(unitMoving && currentCell->myUnit == Unit_EMPTY){
-                    string name = m_pCurrentEntity->getName();
-                    string idNumber = name.substr(5, name.length()-1);
-                    istringstream(idNumber) >> intId;
-                    PlanetCell& origin = earth.cells[intId]; 
-                    issueMoveOrder(units[lastCell->myUnitId], *lastCell, *currentCell);
+                else if(unitMoving){
+                    if(lastCell != NULL && currentCell->myUnit == Unit_EMPTY && currentCell->building == false){
+                        issueMoveOrder(units[lastCell->myUnitId], *lastCell, *currentCell);
+                    }
+                    else{
+                        unitMoving = false;
+                    }
                 }
                 
                 if(currentCell->myUnit == Unit_EMPTY)
@@ -814,27 +822,7 @@ void SingleGameState::update(double timeSinceLastFrame)
     getInput();
     moveCamera();
     
-    
-    for(int i=0;i<earth.cells.size(); i++){ //TODO: this will cause HUGE lag
-        if(earth.cells[i].timer > 0){
-            earth.cells[i].timer --;
-            if(earth.cells[i].myUnit_pending >= 13 && earth.cells[i].myUnit_pending <= 19){
-                units[earth.cells[i].myUnitId].grow();
-            }
-        }
-        else{
-            if(earth.cells[i].moving) moveUnit(units[earth.cells[i].myUnitId], earth.cells[i], earth.cells[earth.cells[i].goalId]); 
-            else if(earth.cells[i].myUnit_pending){
-                if(earth.cells[i].myUnit_pending >= 13 && earth.cells[i].myUnit_pending <= 19){
-                    earth.cells[i].myUnit = earth.cells[i].myUnit_pending;
-                    earth.cells[i].myUnit_pending = 0;
-                }
-                else{
-                    createUnit(earth.cells[i]); 
-                }
-            }
-        }
-    }
+    processEvents();
     
     
     /*
@@ -958,6 +946,12 @@ bool SingleGameState::CommandBaseButton(const CEGUI::EventArgs &e)
     units.push_back(newUnit);
     currentCell->myUnitId = newUnit.id;
     BuildingImages1(*currentCell); 
+
+    std::time(&currentTime);
+    currentCell->timeNeeded = currentTime+currentCell->timer;
+    Times temp(currentTime+currentCell->timer , currentCell->id);
+    eventQueue.push(temp);
+
     onButton = true;
     return true;
 }
@@ -976,6 +970,12 @@ bool SingleGameState::ArmyBaseButton(const CEGUI::EventArgs &e)
     units.push_back(newUnit);
     currentCell->myUnitId = newUnit.id;
     BuildingImages1(*currentCell);
+
+    std::time(&currentTime);
+    currentCell->timeNeeded = currentTime+currentCell->timer;
+    Times temp(currentTime+currentCell->timer , currentCell->id);
+    eventQueue.push(temp);
+
     onButton = true;
     return true;
 }
@@ -994,6 +994,12 @@ bool SingleGameState::NavyBaseButton(const CEGUI::EventArgs &e)
     units.push_back(newUnit);
     currentCell->myUnitId = newUnit.id;
     BuildingImages1(*currentCell);
+
+    std::time(&currentTime);
+    currentCell->timeNeeded = currentTime+currentCell->timer;
+    Times temp(currentTime+currentCell->timer , currentCell->id);
+    eventQueue.push(temp);
+
     onButton = true;
     return true;
 }
@@ -1012,6 +1018,12 @@ bool SingleGameState::AirForceBaseButton(const CEGUI::EventArgs &e)
     units.push_back(newUnit);
     currentCell->myUnitId = newUnit.id;
     BuildingImages1(*currentCell);
+
+    std::time(&currentTime);
+    currentCell->timeNeeded = currentTime+currentCell->timer;
+    Times temp(currentTime+currentCell->timer , currentCell->id);
+    eventQueue.push(temp);
+
     onButton = true;
     return true;
 }
@@ -1030,6 +1042,12 @@ bool SingleGameState::NuclearPlantButton(const CEGUI::EventArgs &e)
     units.push_back(newUnit);
     currentCell->myUnitId = newUnit.id;
     BuildingImages1(*currentCell);
+
+    std::time(&currentTime);
+    currentCell->timeNeeded = currentTime+currentCell->timer;
+    Times temp(currentTime+currentCell->timer , currentCell->id);
+    eventQueue.push(temp);
+
     onButton = true;
     return true;
 }
@@ -1048,6 +1066,12 @@ bool SingleGameState::ICBMSiloButton(const CEGUI::EventArgs &e)
     units.push_back(newUnit);
     currentCell->myUnitId = newUnit.id;
     BuildingImages1(*currentCell);
+
+    std::time(&currentTime);
+    currentCell->timeNeeded = currentTime+currentCell->timer;
+    Times temp(currentTime+currentCell->timer , currentCell->id);
+    eventQueue.push(temp);
+
     onButton = true;
     return true;
 }
@@ -1601,6 +1625,13 @@ bool SingleGameState::issueProduceOrder(PlanetCell& origin, PlanetCell& goal){
             btVector3 d = c.cross(a);
             goal.myUnitDirection = d;
             unitBuilding = 0;
+            illuminate(origin);
+
+            std::time(&currentTime);
+            goal.timeNeeded = currentTime+goal.timer;
+            Times temp(currentTime+goal.timer , goal.id);
+            eventQueue.push(temp);
+
             return true;
         }
     }
@@ -1640,7 +1671,6 @@ bool SingleGameState::createUnit(PlanetCell& goal){
     newUnit.setDirection(goal.myUnitDirection);
     units.push_back(newUnit);
     goal.myUnitId = newUnit.id;
-    earth.own(m_pSceneMgr, *lastCell);
     illuminate(goal);
 }
 
@@ -1663,6 +1693,12 @@ bool SingleGameState::issueMoveOrder(Unit& unit, PlanetCell& origin, PlanetCell&
             origin.goalId = goal.id;
             illuminate(origin);
             unitMoving = 0;
+
+            std::time(&currentTime);
+            origin.timeNeeded = currentTime+origin.timer;
+            Times temp(currentTime+origin.timer , origin.id);
+            eventQueue.push(temp);
+
             return true;
         }
     }
@@ -1736,4 +1772,54 @@ void SingleGameState::deluminate(PlanetCell& goal){
 
 void SingleGameState::fireMissile(){
     
+}
+
+void SingleGameState::processEvents(){
+    
+    std::time(&currentTime);
+    if(!eventQueue.empty())
+    {
+        cout << "Oh Shit I'm In" << endl;
+        Times top = eventQueue.top();
+        if(top.time <= currentTime){
+            PlanetCell& tempCell = earth.cells[top.cellID];
+            if(tempCell.moving)
+                moveUnit(units[tempCell.myUnitId], tempCell, earth.cells[tempCell.goalId]); 
+            else if(tempCell.myUnit_pending){
+                if(tempCell.myUnit_pending >= 13 && tempCell.myUnit_pending <= 19 && tempCell.myUnitId != -1){
+                    tempCell.myUnit = tempCell.myUnit_pending;
+                    tempCell.myUnit_pending = 0;
+                }
+                else{
+                    createUnit(tempCell); 
+                }
+            }
+            tempCell.growsCompleted = 0;
+            eventQueue.pop();
+            processEvents();
+            cout << "Hurray!!!!" << endl;
+        }
+
+        else{
+            std::priority_queue<Times, std::vector<Times>, Times> tempEventQueue;
+            int eventSize = eventQueue.size();
+            for(int i=0; i<eventSize; i++){
+                Times tempTime = eventQueue.top();
+                PlanetCell& tempCell = earth.cells[tempTime.cellID];
+                if(tempCell.myUnit_pending >= 13 && tempCell.myUnit_pending <= 19 && tempCell.myUnitId != -1){
+                    cout << "Well I got to here..." << endl;
+                    if((tempCell.timer-(tempTime.time-currentTime) >= tempCell.growsCompleted) &&
+                    (tempCell.growsCompleted < tempCell.timer) ){
+                        units[tempCell.myUnitId].grow();
+                        tempCell.growsCompleted++;
+                        cout << "I Build Something!" << endl;
+                    }
+                }
+                eventQueue.pop();
+                tempEventQueue.push(tempTime);
+            }
+            eventQueue = tempEventQueue;
+        }
+    }
+
 }

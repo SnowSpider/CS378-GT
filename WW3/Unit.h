@@ -97,41 +97,41 @@ enum unitType{
 };
 
 enum buildTime{
-    BuildTime_INFANTRY = 15,
-    BuildTime_TANK = 30,
-    BuildTime_ARTILLERY = 30,
-    BuildTime_SCUD = 60,
-    BuildTime_ENGINEER = 15,
+    BuildTime_INFANTRY = 5,
+    BuildTime_TANK = 5,
+    BuildTime_ARTILLERY = 5,
+    BuildTime_SCUD = 5,
+    BuildTime_ENGINEER = 5,
     
-    BuildTime_SUBMARINE = 60,
-    BuildTime_DESTROYER = 60,
-    BuildTime_CARRIER = 300,
-    BuildTime_CRUISER = 60,
+    BuildTime_SUBMARINE = 5,
+    BuildTime_DESTROYER = 5,
+    BuildTime_CARRIER = 5,
+    BuildTime_CRUISER = 5,
     
-    BuildTime_BOMBER = 30,
-    BuildTime_FIGHTER = 30,
-    BuildTime_SPYPLANE = 30,
+    BuildTime_BOMBER = 5,
+    BuildTime_FIGHTER = 5,
+    BuildTime_SPYPLANE = 5,
     
-    BuildTime_COMMANDBASE = 60,
-    BuildTime_ARMYBASE = 60,
-    BuildTime_NAVYBASE = 60,
-    BuildTime_AIRFORCEBASE = 60,
-    BuildTime_NUCLEARPLANT = 300,
-    BuildTime_ICBMSILO = 60,
-    BuildTime_SAMSITE = 30
+    BuildTime_COMMANDBASE = 5,
+    BuildTime_ARMYBASE = 5,
+    BuildTime_NAVYBASE = 5,
+    BuildTime_AIRFORCEBASE = 5,
+    BuildTime_NUCLEARPLANT = 5,
+    BuildTime_ICBMSILO = 5,
+    BuildTime_SAMSITE = 5
 };
 
 enum moveTime{
-    MoveTime_INFANTRY = 25,
-    MoveTime_TANK = 20,
-    MoveTime_ARTILLERY = 25,
-    MoveTime_SCUD = 25,
-    MoveTime_ENGINEER = 25,
+    MoveTime_INFANTRY = 5,
+    MoveTime_TANK = 5,
+    MoveTime_ARTILLERY = 5,
+    MoveTime_SCUD = 5,
+    MoveTime_ENGINEER = 5,
     
-    MoveTime_SUBMARINE = 25,
-    MoveTime_DESTROYER = 20,
-    MoveTime_CARRIER = 30,
-    MoveTime_CRUISER = 20,
+    MoveTime_SUBMARINE = 5,
+    MoveTime_DESTROYER = 5,
+    MoveTime_CARRIER = 5,
+    MoveTime_CRUISER = 5,
     
     MoveTime_BOMBER = 5,
     MoveTime_FIGHTER = 5,
