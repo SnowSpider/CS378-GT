@@ -81,6 +81,8 @@ HostGameState::HostGameState()
     musicDefeat = NULL;
     socketset = NULL;
     isPlayer = false;
+    updateBypass = false;
+    attackBypass = false;
 }
  
 //|||||||||||||||||||||||||||||||||||||||||||||||
@@ -2236,7 +2238,10 @@ bool HostGameState::createUnit(PlanetCell& goal){
         units.push_back(newUnit);
         goal.myUnitId = newUnit.id;
         illuminate(goal);
+        attackBypass = false;
         attack(goal);
+        if(!attackBypass)
+            updateSend('4',goal);
         BuildButtons();
     }
 }
@@ -2299,7 +2304,11 @@ bool HostGameState::moveUnit(Unit& unit, PlanetCell& origin, PlanetCell& goal){
         goal.myUnitId = unit.id;
         deluminate(origin);
         illuminate(goal);
+        attackBypass = false;
         attack(goal);
+        updateSend('3',origin);
+        if(!attackBypass)
+            updateSend('3',goal);
         BuildButtons();
         return true;
     }
@@ -2418,6 +2427,9 @@ void HostGameState::retireUnit(PlanetCell& targetCell){
     targetCell.myUnit = 0;
     targetCell.myUnitId = -1;
     targetCell.occupier = Owner_NEUTRAL;
+    attackBypass = true;
+    if(!updateBypass)
+        updateSend('2',targetCell);
     BuildButtons();
 }
 
@@ -2432,6 +2444,8 @@ void HostGameState::killEnemyUnit(PlanetCell& targetCell){
     targetCell.myUnit = 0;
     targetCell.myUnitId = -1;
     targetCell.occupier = Owner_NEUTRAL;
+    if(!updateBypass)
+        updateSend('2',targetCell);
     BuildButtons();
 }
 
@@ -2441,6 +2455,8 @@ void HostGameState::nuke(PlanetCell& targetCell){
     targetCell.myUnit = 0;
     targetCell.myUnitId = -1;
     targetCell.occupier = Owner_NEUTRAL;
+    if(!updateBypass)
+        updateSend('2',targetCell);
     BuildButtons();
 }
 
@@ -2666,6 +2682,7 @@ void HostGameState::capture(PlanetCell& targetCell)
     targetCell.owner = myOwner;
     earth.own(m_pSceneMgr, targetCell);
     earth.updateBorderSegments(m_pSceneMgr);
+    updateSend('1',targetCell);
 }
 
 
@@ -2885,56 +2902,25 @@ void HostGameState::updateNetwork(void)
                 client[i] = NULL;
             }
             else{
-            char count[1];
-            PlanetCell *temp1 = NULL;
-            PlanetCell *temp2 = NULL;
-            PlanetCell *temp3 = NULL;
-            PlanetCell *temp4 = NULL;
-            PlanetCell *temp5 = NULL;
-            PlanetCell *temp6 = NULL;
-            PlanetCell *temp7 = NULL;
 
-            memcpy(count, data,  1);
-            memcpy(&temp1 ,data+1, sizeof(PlanetCell));
-            memcpy(&temp2 ,data+1+(sizeof(PlanetCell)), sizeof(PlanetCell));
-            memcpy(&temp3 ,data+1+(2*sizeof(PlanetCell)), sizeof(PlanetCell));
-            memcpy(&temp4 ,data+1+(3*sizeof(PlanetCell)), sizeof(PlanetCell));
-            memcpy(&temp5 ,data+1+(4*sizeof(PlanetCell)), sizeof(PlanetCell));
-            memcpy(&temp6 ,data+1+(5*sizeof(PlanetCell)), sizeof(PlanetCell));
-            memcpy(&temp7 ,data+1+(6*sizeof(PlanetCell)), sizeof(PlanetCell));
+            char indicator = 'p';
+            PlanetCell &temp = earth.cells[currentCell->id];;
+
+            memcpy(&indicator, data,  1);
+            memcpy(&temp ,data+1, sizeof(PlanetCell));
+            
+            processUpdate(indicator, temp);
             }
         }
     }
 }
 
-void HostGameState::updateSend(PlanetCell &cell1,PlanetCell &cell2,PlanetCell &cell3,PlanetCell &cell4,PlanetCell &cell5,PlanetCell &cell6,PlanetCell &cell7)
+void HostGameState::updateSend(char indicator, PlanetCell &cell)
 {
     // Send message
     //strcpy(data, "Hello Client!");
-    std::string commandMy;
-    std::string commandMax;
-    std::stringstream out;
-    out << myCommandBase;
-    commandMy = out.str();
-    out.str( std::string() );
-    out.clear();
-    out << commandBaseMax;
-    commandMax = out.str();
-    out.str( std::string() );
-    out.clear();
-    char count[1];
-    if(commandBaseTotal == commandBaseMax)
-        count[1] = commandMy[0];
-    else
-        count[1] = commandMax[0];
-    memcpy(data, count, 1);
-    memcpy(data+1, &cell1, sizeof(PlanetCell));
-    memcpy(data+1+(sizeof(PlanetCell)), &cell2, sizeof(PlanetCell));
-    memcpy(data+1+(2*sizeof(PlanetCell)), &cell3, sizeof(PlanetCell));
-    memcpy(data+1+(3*sizeof(PlanetCell)), &cell4, sizeof(PlanetCell));
-    memcpy(data+1+(4*sizeof(PlanetCell)), &cell5, sizeof(PlanetCell));
-    memcpy(data+1+(5*sizeof(PlanetCell)), &cell6, sizeof(PlanetCell));
-    memcpy(data+1+(6*sizeof(PlanetCell)), &cell7, sizeof(PlanetCell));
+    memcpy(data, &indicator, 1);
+    memcpy(data+1, &cell, sizeof(PlanetCell));
 
     // Check client sockets for activity
     for (i = 0; i < MAXSOCKET; i++){
@@ -2953,5 +2939,79 @@ void HostGameState::updateSend(PlanetCell &cell1,PlanetCell &cell2,PlanetCell &c
                 //cout << "Sent: " << data << endl;
             }
         }
+    }
+}
+
+void HostGameState::processUpdate(char &indicator, PlanetCell& targetCell)
+{
+    PlanetCell& temp = earth.cells[targetCell.id];
+    //Captured
+    if(indicator == '1'){
+        if(temp.owner == myOwner)
+            earth.disown(m_pSceneMgr, temp);
+        temp.owner = targetCell.owner;
+        earth.updateBorderSegments(m_pSceneMgr);
+        //ChangeWithActual
+    }
+    //Someone Died
+    if(indicator == '2'){
+        updateBypass = true;
+        if(temp.occupier == myOwner)
+            retireUnit(temp);
+        else
+            killEnemyUnit(temp);
+        updateBypass = false;
+    }
+    //Someone Moved
+    if(indicator == '3'){
+        if(targetCell.myUnitId == -1){
+            temp.myUnit = targetCell.myUnit;
+            temp.occupier = targetCell.occupier;
+            temp.myUnitId = targetCell.myUnitId;
+        }
+        else{
+            temp.myUnit = targetCell.myUnit;
+            temp.occupier = targetCell.occupier;
+            temp.myUnitId = targetCell.myUnitId;
+            units[temp.myUnitId].relocate(earth.vertices[temp.id]);
+        }
+    }
+    //Someone was Made
+    if(indicator == '4'){
+        temp.myUnit = targetCell.myUnit_pending;
+        temp.occupier = targetCell.myUnit_pending;
+        temp.myUnit_pending = targetCell.myUnit_pending;
+        Unit newUnit(targetCell.owner, targetCell.myUnit);
+        if(temp.myUnit == Unit_SCUD){
+            newUnit.createSymbolObject(m_pSceneMgr);
+            //newUnit.createObject(m_pSceneMgr, "missile.mesh", "MyMaterials/Blue");
+        }
+        else if(temp.myUnit == Unit_FIGHTER){
+            newUnit.createObject(m_pSceneMgr, "fighter.mesh", "MyMaterials/Blue");
+        }
+        else if(temp.myUnit == Unit_TANK){
+            newUnit.createSymbolObject(m_pSceneMgr);
+            //newUnit.createObject(m_pSceneMgr, "tank.mesh", "MyMaterials/Blue");
+        }
+        else if(temp.myUnit == Unit_INFANTRY){
+            newUnit.createSymbolObject(m_pSceneMgr);
+            //newUnit.createObject(m_pSceneMgr, "soldier.mesh", "MyMaterials/Blue");
+        }
+        else if(temp.myUnit == Unit_DESTROYER){
+            newUnit.createObject(m_pSceneMgr, "destroyer.mesh", "MyMaterials/Blue");
+        }
+        else if(temp.myUnit == Unit_BOMBER){
+            newUnit.createObject(m_pSceneMgr, "bomber.mesh", "MyMaterials/Blue");
+        }
+        else if(temp.myUnit == Unit_SUBMARINE){
+            newUnit.createObject(m_pSceneMgr, "sub.mesh", "MyMaterials/Blue");
+        }
+        else{
+            newUnit.createManualObject(m_pSceneMgr);
+        }
+        newUnit.relocate(earth.vertices[temp.id]);
+        //newUnit.setDirection(goal.myUnitDirection);
+        units.push_back(newUnit);
+        temp.myUnitId = newUnit.id;
     }
 }

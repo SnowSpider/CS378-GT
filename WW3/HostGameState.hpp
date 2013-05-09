@@ -132,8 +132,9 @@ public:
     void commandBaseChange(bool, bool);
     void initNetwork();
     void updateNetwork();
-    void updateSend(PlanetCell &cell1,PlanetCell &cell2,PlanetCell &cell3,PlanetCell &cell4,PlanetCell &cell5,PlanetCell &cell6,PlanetCell &cell7);
+    void updateSend(char, PlanetCell &cell);
     float y(float, float, float);
+    void processUpdate(char &indicator, PlanetCell& targetCell);
     
 private:
     Ogre::SceneNode*        m_pOgreHeadNode;
@@ -208,6 +209,8 @@ private:
     char* musicCommandKilled;
     char* musicVictory;
     char* musicDefeat;
+    bool updateBypass;
+    bool attackBypass;
     
     PlanetCell* currentCell;
     PlanetCell* lastCell;
