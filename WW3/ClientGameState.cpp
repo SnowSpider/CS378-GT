@@ -120,8 +120,11 @@ void ClientGameState::enter()
  
     buildGUI();
  
+    cout << "IM GOING INTO CREATE SCENE" << endl;
     createScene();
+    cout << "IM GOING OUT  CREATE SCENE" << endl;
     m_pCamera->setAutoTracking(true, cameraNode);
+
 }
 
 bool ClientGameState::pause()
@@ -824,6 +827,22 @@ void ClientGameState::createScene()
     float r1 = (rand() % 100);
     float r2 = (rand() % 100);
     float r3 = (rand() % 100);
+
+    PlanetCell& temp = earth.cells[128];
+    temp.myUnit_pending = Unit_COMMANDBASE;
+    temp.timer = BuildTime_COMMANDBASE;
+    processResources(-Au_COMMANDBASE,-Pt_COMMANDBASE);
+    
+    Unit newUnit(myOwner, Unit_COMMANDBASE);
+    commandBaseChange(true, false);
+    newUnit.createManualObject(m_pSceneMgr);
+    newUnit.relocate(earth.vertices[temp.id]);
+    newUnit.translate(0,150,0);
+    units.push_back(newUnit);
+    temp.myUnitId = newUnit.id;
+    for(int i=0; i < temp.timer; i++)
+        units[temp.myUnitId].grow();
+    createUnit(temp);
     
 }
 
@@ -1190,6 +1209,7 @@ void ClientGameState::getInput()
 
 void ClientGameState::update(double timeSinceLastFrame)
 {
+    ClientGameState::updateNetwork();
     m_FrameEvent.timeSinceLastFrame = timeSinceLastFrame / 1000.0;
     OgreFramework::getSingletonPtr()->m_pTrayMgr->frameRenderingQueued(m_FrameEvent);
  
@@ -1198,8 +1218,7 @@ void ClientGameState::update(double timeSinceLastFrame)
         popAppState();
         return;
     }
- 
-    ClientGameState::updateNetwork();
+
     m_MoveScale = m_MoveSpeed   * timeSinceLastFrame;
     m_RotScale  = m_RotateSpeed * timeSinceLastFrame;
  
@@ -1219,7 +1238,8 @@ void ClientGameState::update(double timeSinceLastFrame)
     if(mShutDown)
         return false;
     */
-    
+    PlanetCell& temp = earth.cells[128];
+    updateSend('0',temp);
     //Need to capture/update each device
     OgreFramework::getSingletonPtr()->m_pKeyboard->capture();
 }
@@ -2455,22 +2475,22 @@ void ClientGameState::processEvents(void){
         stay = 0;
         if(!eventQueue.empty())
         {
-            cout << "Oh Shit I'm In" << endl;
+            //cout << "Oh Shit I'm In" << endl;
             Times top = eventQueue.top();
-            cout << "Wasn't Top!" << endl;
+            //cout << "Wasn't Top!" << endl;
             if(top.time <= currentTime){
-                cout << "Wasn't if" << endl;
+                //cout << "Wasn't if" << endl;
                 PlanetCell& tempCell = earth.cells[top.cellID];
-                cout << "tempCell good" << endl;
+                //cout << "tempCell good" << endl;
                 if(tempCell.moving){
                     moveUnit(units[tempCell.myUnitId], tempCell, earth.cells[tempCell.goalId]); 
-                    cout << "NotMove" << endl;
+                    //cout << "NotMove" << endl;
                 }
                 else if(tempCell.capturing){
                     capture(tempCell);
                 }
                 else if(tempCell.myUnit_pending){
-                    cout << "inHere?" << endl;
+                    //cout << "inHere?" << endl;
                     if(tempCell.myUnit_pending >= 13 && tempCell.myUnit_pending <= 19 && tempCell.myUnitId != -1){
                         tempCell.myUnit = tempCell.myUnit_pending;
                         tempCell.myUnit_pending = 0;
@@ -2480,28 +2500,28 @@ void ClientGameState::processEvents(void){
                     tempCell.unitbuilding = false;
                     createUnit(earth.cells[tempCell.goalId]);
                 }
-                cout << "Freedom!" << endl;
+                //cout << "Freedom!" << endl;
                 tempCell.timeNeeded = 0;
                 tempCell.growsCompleted = 0;
                 eventQueue.pop();
-                cout << "Hurray!!!!" << endl;
+                //cout << "Hurray!!!!" << endl;
                 BuildButtons();
                 stay = 1;
             }
             else{
-                cout << "It's in else!" << endl;
+                //cout << "It's in else!" << endl;
                 std::priority_queue<Times, std::vector<Times>, CompareTimes> tempEventQueue;
                 int eventSize = eventQueue.size();
                 for(int i=0; i<eventSize; i++){
                     Times tempTime = eventQueue.top();
                     PlanetCell& tempCell = earth.cells[tempTime.cellID];
                     if(tempCell.myUnit_pending >= 13 && tempCell.myUnit_pending <= 19 && tempCell.myUnitId != -1){
-                        cout << "Well I got to here..." << endl;
+                        //cout << "Well I got to here..." << endl;
                         if((tempCell.timer-(tempTime.time-currentTime) >= tempCell.growsCompleted) &&
                         (tempCell.growsCompleted < tempCell.timer) ){
                             units[tempCell.myUnitId].grow();
                             tempCell.growsCompleted++;
-                            cout << "I Build Something!" << endl;
+                            //cout << "I Build Something!" << endl;
                         }
                     }
                     eventQueue.pop();
@@ -2800,12 +2820,12 @@ void ClientGameState::initNetwork(void)
 {
     // Initialize SDL & SDL_net
     if (SDL_Init(0) == -1){
-        //cout << "SDL_Init: " << SDL_GetError() << "\n";
+        cout << "SDL_Init: " << SDL_GetError() << "\n";
         //exit(1);
     }
 
     if (SDLNet_Init() == -1){
-        //cout << "SDLNet_Init: " << SDLNet_GetError() << "\n";
+        cout << "SDLNet_Init: " << SDLNet_GetError() << "\n";
         //exit(2);
     }
     
@@ -2813,28 +2833,28 @@ void ClientGameState::initNetwork(void)
     if (myfile.is_open()) {
         while ( myfile.good() ) {
             getline (myfile,targetAddress);
-            //cout << targetAddress << endl;
+            cout << targetAddress << endl;
         }
         myfile.close();
     }
-    else //cout << "Unable to open file";
+    else cout << "Unable to open file";
     
     
     // Get the server name
-    //cout << "Server Name: " + targetAddress << endl;
-    //cout << "Port: " << PORT << "\n";
+    cout << "Server Name: " + targetAddress << endl;
+    cout << "Port: " << PORT << "\n";
 
     // Try to resolve the host
     if (SDLNet_ResolveHost(&ipaddress, targetAddress.c_str(), PORT) == -1){
-        //cout << "SDLNet_ResolveHost: " << SDLNet_GetError() << "\nContinuing...\n";
+        cout << "SDLNet_ResolveHost: " << SDLNet_GetError() << "\nContinuing...\n";
     }
 
     // Try to resolve the IP
     if ((host = SDLNet_ResolveIP(&ipaddress)) == NULL){
-        //cout << "SDLNet_ResolveIP: " << SDLNet_GetError() << "\nContinuing...\n";
+        cout << "SDLNet_ResolveIP: " << SDLNet_GetError() << "\nContinuing...\n";
     }
     else{
-        //cout << "Connected to host: " << host << "\n";
+        cout << "Connected to host: " << host << "\n";
     }
 
     // Try to open the socket
@@ -2852,11 +2872,11 @@ void ClientGameState::updateNetwork(void)
     {
         result = SDLNet_TCP_Recv(tcpsock, data, BUFFER);
         if (result == 0){
-            //cout << "Host disconnected.\n";
+            cout << "Host disconnected.\n";
             tcpsock = NULL;
         }
         else if (result == -1){
-            //cout << "Error.\n";
+            cout << "Error.\n";
             tcpsock = NULL;
         }
         else{
@@ -2874,7 +2894,6 @@ void ClientGameState::updateNetwork(void)
 
 void ClientGameState::updateSend(char indicator, PlanetCell &cell)
 {
-
     // Send message
     //strcpy(data, "Hello Client!");
     memcpy(data, &indicator, 1);
@@ -2883,13 +2902,13 @@ void ClientGameState::updateSend(char indicator, PlanetCell &cell)
     if(tcpsock != NULL){
         result = SDLNet_TCP_Send(tcpsock, data, BUFFER);
         if (result == 0){
-            //cout << "connection closed by peer" << endl;
+            cout << "connection closed by peer" << endl;
         }
         else if (result == -1){
-            //cout << "error bitch!" << endl;
+            cout << "error bitch!" << endl;
         }
         else{
-            //cout << "sent :" << data << endl;
+            cout << "sent :" << data << endl;
         }
     }
 }
@@ -2897,8 +2916,10 @@ void ClientGameState::updateSend(char indicator, PlanetCell &cell)
 void ClientGameState::processUpdate(char &indicator, PlanetCell& targetCell)
 {
     PlanetCell& temp = earth.cells[targetCell.id];
+    if(indicator == '0'){
+    }
     //Captured
-    if(indicator == '1'){
+    else if(indicator == '1'){
         if(temp.owner == myOwner)
             earth.disown(m_pSceneMgr, temp);
         temp.owner = targetCell.owner;
@@ -2906,7 +2927,7 @@ void ClientGameState::processUpdate(char &indicator, PlanetCell& targetCell)
         //ChangeWithActual
     }
     //Someone Died
-    if(indicator == '2'){
+    else if(indicator == '2'){
         updateBypass = true;
         if(temp.occupier == myOwner)
             retireUnit(temp);
@@ -2915,7 +2936,7 @@ void ClientGameState::processUpdate(char &indicator, PlanetCell& targetCell)
         updateBypass = false;
     }
     //Someone Moved
-    if(indicator == '3'){
+    else if(indicator == '3'){
         if(targetCell.myUnitId == -1){
             temp.myUnit = targetCell.myUnit;
             temp.occupier = targetCell.occupier;
@@ -2929,7 +2950,7 @@ void ClientGameState::processUpdate(char &indicator, PlanetCell& targetCell)
         }
     }
     //Someone was Made
-    if(indicator == '4'){
+    else if(indicator == '4'){
         temp.myUnit = targetCell.myUnit_pending;
         temp.occupier = targetCell.myUnit_pending;
         temp.myUnit_pending = targetCell.myUnit_pending;

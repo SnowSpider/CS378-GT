@@ -1204,6 +1204,8 @@ void HostGameState::getInput()
 
 void HostGameState::update(double timeSinceLastFrame)
 {
+    cout << "UpdatingLikeABoss" << endl;
+    HostGameState::updateNetwork();
     m_FrameEvent.timeSinceLastFrame = timeSinceLastFrame / 1000.0;
     OgreFramework::getSingletonPtr()->m_pTrayMgr->frameRenderingQueued(m_FrameEvent);
  
@@ -1213,7 +1215,6 @@ void HostGameState::update(double timeSinceLastFrame)
         return;
     }
  
-    HostGameState::updateNetwork();
     m_MoveScale = m_MoveSpeed   * timeSinceLastFrame;
     m_RotScale  = m_RotateSpeed * timeSinceLastFrame;
  
@@ -1233,7 +1234,9 @@ void HostGameState::update(double timeSinceLastFrame)
     if(mShutDown)
         return false;
     */
-    
+
+    PlanetCell& temp = earth.cells[128];
+    updateSend('0',temp);
     //Need to capture/update each device
     OgreFramework::getSingletonPtr()->m_pKeyboard->capture();
 }
@@ -2469,22 +2472,22 @@ void HostGameState::processEvents(void){
         stay = 0;
         if(!eventQueue.empty())
         {
-            cout << "Oh Shit I'm In" << endl;
+            //cout << "Oh Shit I'm In" << endl;
             Times top = eventQueue.top();
-            cout << "Wasn't Top!" << endl;
+            //cout << "Wasn't Top!" << endl;
             if(top.time <= currentTime){
-                cout << "Wasn't if" << endl;
+                //cout << "Wasn't if" << endl;
                 PlanetCell& tempCell = earth.cells[top.cellID];
-                cout << "tempCell good" << endl;
+                //cout << "tempCell good" << endl;
                 if(tempCell.moving){
                     moveUnit(units[tempCell.myUnitId], tempCell, earth.cells[tempCell.goalId]); 
-                    cout << "NotMove" << endl;
+                    //cout << "NotMove" << endl;
                 }
                 else if(tempCell.capturing){
                     capture(tempCell);
                 }
                 else if(tempCell.myUnit_pending){
-                    cout << "inHere?" << endl;
+                    //cout << "inHere?" << endl;
                     if(tempCell.myUnit_pending >= 13 && tempCell.myUnit_pending <= 19 && tempCell.myUnitId != -1){
                         tempCell.myUnit = tempCell.myUnit_pending;
                         tempCell.myUnit_pending = 0;
@@ -2494,28 +2497,28 @@ void HostGameState::processEvents(void){
                     tempCell.unitbuilding = false;
                     createUnit(earth.cells[tempCell.goalId]);
                 }
-                cout << "Freedom!" << endl;
+                //cout << "Freedom!" << endl;
                 tempCell.timeNeeded = 0;
                 tempCell.growsCompleted = 0;
                 eventQueue.pop();
-                cout << "Hurray!!!!" << endl;
+                //cout << "Hurray!!!!" << endl;
                 BuildButtons();
                 stay = 1;
             }
             else{
-                cout << "It's in else!" << endl;
+                //cout << "It's in else!" << endl;
                 std::priority_queue<Times, std::vector<Times>, CompareTimes> tempEventQueue;
                 int eventSize = eventQueue.size();
                 for(int i=0; i<eventSize; i++){
                     Times tempTime = eventQueue.top();
                     PlanetCell& tempCell = earth.cells[tempTime.cellID];
                     if(tempCell.myUnit_pending >= 13 && tempCell.myUnit_pending <= 19 && tempCell.myUnitId != -1){
-                        cout << "Well I got to here..." << endl;
+                        //cout << "Well I got to here..." << endl;
                         if((tempCell.timer-(tempTime.time-currentTime) >= tempCell.growsCompleted) &&
                         (tempCell.growsCompleted < tempCell.timer) ){
                             units[tempCell.myUnitId].grow();
                             tempCell.growsCompleted++;
-                            cout << "I Build Something!" << endl;
+                            //cout << "I Build Something!" << endl;
                         }
                     }
                     eventQueue.pop();
@@ -2814,23 +2817,23 @@ void HostGameState::initNetwork(void)
 {
     // Initialize SDL & SDL_net
     if (SDL_Init(0) == -1){
-        //cout << "SDL_Init: " << SDL_GetError() << "\n";
+        cout << "SDL_Init: " << SDL_GetError() << "\n";
         //exit(1);
     }
 
     if (SDLNet_Init() == -1){
-        //cout << "SDLNet_Init: " << SDLNet_GetError() << "\n";
+        cout << "SDLNet_Init: " << SDLNet_GetError() << "\n";
         //exit(2);
     }
 
     // Create the socket set
     socketset = SDLNet_AllocSocketSet(MAXSOCKET);
     if (socketset == NULL){
-        //cout << "SDLNet_AllocSocketSet: " << SDLNet_GetError() << "\n";
+        cout << "SDLNet_AllocSocketSet: " << SDLNet_GetError() << "\n";
         //exit(3);
     }
     else{
-        //cout << "Max number of clients: " << MAXSOCKET << "\n";
+        cout << "Max number of clients: " << MAXSOCKET << "\n";
     }
 
     // Initialize client sockets
@@ -2840,43 +2843,44 @@ void HostGameState::initNetwork(void)
 
     // Try to resolve the host
     if (SDLNet_ResolveHost(&ipaddress, NULL, PORT) == -1){
-        //cout << "SDLNet_ResolveHost: " << SDLNet_GetError() << "\nContinuing...\n";
+        cout << "SDLNet_ResolveHost: " << SDLNet_GetError() << "\nContinuing...\n";
     }
 
     // Try to resolve the IP
     if ((host = SDLNet_ResolveIP(&ipaddress)) == NULL){
-        //cout << "SDLNet_ResolveIP: " << SDLNet_GetError() << "\nContinuing...\n";
+        cout << "SDLNet_ResolveIP: " << SDLNet_GetError() << "\nContinuing...\n";
     }
     else{
-        //cout << "Local name: " << host << "\n";
+        cout << "Local name: " << host << "\n";
     }
 
     // State which port we are listening on
-    //cout << "Port: " << PORT << "\n";
+    cout << "Port: " << PORT << "\n";
 
     // Try to open the server socket
     tcpsock = SDLNet_TCP_Open(&ipaddress);
     
     if (!tcpsock){
-        //cout << "SDLNet_TCP_Open: " << SDLNet_GetError() << "\n";
+        cout << "SDLNet_TCP_Open: " << SDLNet_GetError() << "\n";
         //exit(4);
     }
 
     // Add the server to the socket set
     SDLNet_TCP_AddSocket(socketset, tcpsock);
     
-    //cout << "Awaiting clients...\n";
+    cout << "Awaiting clients...\n";
 }
 
 void HostGameState::updateNetwork(void)
 {
     if (SDLNet_SocketReady(tcpsock)){
         // Accept the connection, add it to our array and the socket set
-        //cout << "Client connected.\n";
+        cout << "Client connected.\n";
         new_tcpsock = SDLNet_TCP_Accept(tcpsock);
         client[j] = new_tcpsock;
         SDLNet_TCP_AddSocket(socketset, client[j]);
         j++;
+        cout << "GOTAMOTHERFUCKINGCLIENTTTTTTTTTTTTTTTTTTTTTTTT" << endl;
     }
     // Check client sockets for activity
     for (i = 0; i < MAXSOCKET; i++){
@@ -2890,15 +2894,35 @@ void HostGameState::updateNetwork(void)
                 resultWindow->setVisible( true );
                 resultWindow->activate();
                 isPlayer = true;
+
+                PlanetCell& temp = earth.cells[1465];
+                temp.myUnit_pending = Unit_COMMANDBASE;
+                temp.timer = BuildTime_COMMANDBASE;
+                temp.building = true;
+                processResources(-Au_COMMANDBASE,-Pt_COMMANDBASE);
+                
+                Unit newUnit(myOwner, Unit_COMMANDBASE);
+                commandBaseChange(true, false);
+                newUnit.createManualObject(m_pSceneMgr);
+                newUnit.relocate(earth.vertices[temp.id]);
+                newUnit.translate(0,150,0);
+                units.push_back(newUnit);
+                temp.myUnitId = newUnit.id;
+
+                std::time(&currentTime);
+                temp.timeNeeded = currentTime+temp.timer;
+                Times tempt(currentTime+temp.timer , temp.id);
+                eventQueue.push(tempt);
+
             }
             // There is an incoming message
             result = SDLNet_TCP_Recv(client[i], data, BUFFER);
             if (result == 0){
-                //cout << "Client " << i << " disconnected.\n";
+                cout << "Client " << i << " disconnected.\n";
                 client[i] = NULL;
             }
             else if (result == -1){
-                //cout << "Error.\n";
+                cout << "Error.\n";
                 client[i] = NULL;
             }
             else{
@@ -2928,15 +2952,15 @@ void HostGameState::updateSend(char indicator, PlanetCell &cell)
         if(client[i] != NULL){
             result = SDLNet_TCP_Send(client[i], data, BUFFER);
             if (result == 0){
-                //cout << "Client " << i << " disconnected.\n";
+                cout << "Client " << i << " disconnected.\n";
                 client[i] = NULL;
             }
             else if (result == -1){
-                //cout << "Error.\n";
+                cout << "Error.\n";
                 client[i] = NULL;
             }
             else{
-                //cout << "Sent: " << data << endl;
+                cout << "Sent: " << data << endl;
             }
         }
     }
@@ -2945,8 +2969,10 @@ void HostGameState::updateSend(char indicator, PlanetCell &cell)
 void HostGameState::processUpdate(char &indicator, PlanetCell& targetCell)
 {
     PlanetCell& temp = earth.cells[targetCell.id];
+    if(indicator == '0'){
+    }
     //Captured
-    if(indicator == '1'){
+    else if(indicator == '1'){
         if(temp.owner == myOwner)
             earth.disown(m_pSceneMgr, temp);
         temp.owner = targetCell.owner;
@@ -2954,7 +2980,7 @@ void HostGameState::processUpdate(char &indicator, PlanetCell& targetCell)
         //ChangeWithActual
     }
     //Someone Died
-    if(indicator == '2'){
+    else if(indicator == '2'){
         updateBypass = true;
         if(temp.occupier == myOwner)
             retireUnit(temp);
@@ -2963,7 +2989,7 @@ void HostGameState::processUpdate(char &indicator, PlanetCell& targetCell)
         updateBypass = false;
     }
     //Someone Moved
-    if(indicator == '3'){
+    else if(indicator == '3'){
         if(targetCell.myUnitId == -1){
             temp.myUnit = targetCell.myUnit;
             temp.occupier = targetCell.occupier;
@@ -2977,7 +3003,7 @@ void HostGameState::processUpdate(char &indicator, PlanetCell& targetCell)
         }
     }
     //Someone was Made
-    if(indicator == '4'){
+    else if(indicator == '4'){
         temp.myUnit = targetCell.myUnit_pending;
         temp.occupier = targetCell.myUnit_pending;
         temp.myUnit_pending = targetCell.myUnit_pending;
