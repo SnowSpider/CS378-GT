@@ -1327,9 +1327,8 @@ bool SingleGameState::CommandBaseButton(const CEGUI::EventArgs &e)
     
     Unit newUnit(myOwner, Unit_COMMANDBASE);
     commandBaseChange(true, false);
-    newUnit.createManualObject(m_pSceneMgr);
+    newUnit.createCommandObject(m_pSceneMgr);
     newUnit.relocate(earth.vertices[currentCell->id]);
-    newUnit.translate(0,0,150);
     units.push_back(newUnit);
     currentCell->myUnitId = newUnit.id;
 
@@ -1351,7 +1350,7 @@ bool SingleGameState::ArmyBaseButton(const CEGUI::EventArgs &e)
     Unit newUnit(myOwner, Unit_ARMYBASE);
     newUnit.createManualObject(m_pSceneMgr);
     newUnit.relocate(earth.vertices[currentCell->id]); 
-    newUnit.translate(0,0,150);
+    newUnit.translate(0,0,newUnit.height);
     units.push_back(newUnit);
     currentCell->myUnitId = newUnit.id;
 
@@ -1373,7 +1372,7 @@ bool SingleGameState::NavyBaseButton(const CEGUI::EventArgs &e)
     Unit newUnit(myOwner, Unit_NAVYBASE);
     newUnit.createManualObject(m_pSceneMgr);
     newUnit.relocate(earth.vertices[currentCell->id]);
-    newUnit.translate(0,0,150);
+    newUnit.translate(0,0,newUnit.height);
     units.push_back(newUnit);
     currentCell->myUnitId = newUnit.id;
 
@@ -1395,7 +1394,7 @@ bool SingleGameState::AirForceBaseButton(const CEGUI::EventArgs &e)
     Unit newUnit(myOwner, Unit_AIRFORCEBASE);
     newUnit.createManualObject(m_pSceneMgr);
     newUnit.relocate(earth.vertices[currentCell->id]); 
-    newUnit.translate(0,0,150);
+    newUnit.translate(0,0,newUnit.height);
     units.push_back(newUnit);
     currentCell->myUnitId = newUnit.id;
 
@@ -1417,7 +1416,7 @@ bool SingleGameState::NuclearPlantButton(const CEGUI::EventArgs &e)
     Unit newUnit(myOwner, Unit_NUCLEARPLANT);
     newUnit.createManualObject(m_pSceneMgr);
     newUnit.relocate(earth.vertices[currentCell->id]); 
-    newUnit.translate(0,0,150);
+    newUnit.translate(0,0,newUnit.height);
     units.push_back(newUnit);
     currentCell->myUnitId = newUnit.id;
 
@@ -1439,7 +1438,7 @@ bool SingleGameState::ICBMSiloButton(const CEGUI::EventArgs &e)
     Unit newUnit(myOwner, Unit_ICBMSILO);
     newUnit.createManualObject(m_pSceneMgr);
     newUnit.relocate(earth.vertices[currentCell->id]);
-    newUnit.translate(0,0,150);
+    newUnit.translate(0,0,newUnit.height);
     units.push_back(newUnit);
     currentCell->myUnitId = newUnit.id;
 
@@ -2197,7 +2196,8 @@ bool SingleGameState::createUnit(PlanetCell& goal){
             //newUnit.createObject(m_pSceneMgr, "missile.mesh", "MyMaterials/Blue");
         }
         else if(goal.myUnit == Unit_FIGHTER){
-            newUnit.createObject(m_pSceneMgr, "fighter.mesh", "MyMaterials/Blue");
+            newUnit.createFighterObject(m_pSceneMgr);
+            //newUnit.createObject(m_pSceneMgr, "fighter.mesh", "MyMaterials/Blue");
         }
         else if(goal.myUnit == Unit_TANK){
             newUnit.createSymbolObject(m_pSceneMgr);
@@ -2212,7 +2212,8 @@ bool SingleGameState::createUnit(PlanetCell& goal){
             //newUnit.createObject(m_pSceneMgr, "destroyer.mesh", "MyMaterials/Blue");
         }
         else if(goal.myUnit == Unit_BOMBER){
-            newUnit.createObject(m_pSceneMgr, "bomber.mesh", "MyMaterials/Blue");
+            newUnit.createBomberObject(m_pSceneMgr);
+            //newUnit.createObject(m_pSceneMgr, "bomber.mesh", "MyMaterials/Blue");
         }
         else if(goal.myUnit == Unit_SUBMARINE){
             newUnit.createNavyObject(m_pSceneMgr);

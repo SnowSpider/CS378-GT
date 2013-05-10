@@ -1,3 +1,273 @@
+material MyMaterials/runway_blue
+{
+   technique
+   {
+      pass
+      {
+         texture_unit
+         {
+            texture skin_runway_blue.png 2d
+            scale 1 1
+         }
+      }
+   }
+}
+
+material MyMaterials/slio_blue
+{
+   technique
+   {
+      pass
+      {
+         texture_unit
+         {
+            texture skin_slio_blue.png 2d
+            scale 1 1
+         }
+      }
+   }
+}
+
+material MyMaterials/slio_red
+{
+   technique
+   {
+      pass
+      {
+         texture_unit
+         {
+            texture skin_slio_red.png 2d
+            scale 1 1
+         }
+      }
+   }
+}
+
+material MyMaterials/plant_blue
+{
+   technique
+   {
+      pass
+      {
+         texture_unit
+         {
+            texture skin_plant_blue.png 2d
+            scale 1 1
+         }
+      }
+   }
+}
+
+material MyMaterials/plant_red
+{
+   technique
+   {
+      pass
+      {
+         texture_unit
+         {
+            texture skin_plant_red.png 2d
+            scale 1 1
+         }
+      }
+   }
+}
+
+material MyMaterials/armybase_blue
+{
+   technique
+   {
+      pass
+      {
+         texture_unit
+         {
+            texture skin_army_blue.png 2d
+            scale 1 1
+         }
+      }
+   }
+}
+
+material MyMaterials/armybase_red
+{
+   technique
+   {
+      pass
+      {
+         texture_unit
+         {
+            texture skin_army_red.png 2d
+            scale 1 1
+         }
+      }
+   }
+}
+
+material MyMaterials/dock_blue
+{
+   technique
+   {
+      pass
+      {
+         texture_unit
+         {
+            texture skin_dock_blue.png 2d
+            scale 1 1
+         }
+      }
+   }
+}
+
+material MyMaterials/dock_red
+{
+   technique
+   {
+      pass
+      {
+         texture_unit
+         {
+            texture skin_dock_red.png 2d
+            scale 1 1
+         }
+      }
+   }
+}
+
+material MyMaterials/airbase_blue
+{
+   technique
+   {
+      pass
+      {
+         texture_unit
+         {
+            texture skin_airbase_blue.png 2d
+            scale 1 1
+         }
+      }
+   }
+}
+
+material MyMaterials/airbase_red
+{
+   technique
+   {
+      pass
+      {
+         texture_unit
+         {
+            texture skin_airbase_red.png 2d
+            scale 1 1
+         }
+      }
+   }
+}
+
+material MyMaterials/fighter_blue
+{
+   technique
+   {
+      pass
+      {
+         texture_unit
+         {
+            texture skin_fighter_blue.png 2d
+            scale 1 1
+         }
+      }
+   }
+}
+
+material MyMaterials/fighter_red
+{
+   technique
+   {
+      pass
+      {
+         texture_unit
+         {
+            texture skin_fighter_red.png 2d
+            scale 1 1
+         }
+      }
+   }
+}
+
+material MyMaterials/wing_blue
+{
+   technique
+   {
+      pass
+      {
+         texture_unit
+         {
+            texture skin_wing_blue.png 2d
+            scale 1 1
+         }
+      }
+   }
+}
+
+material MyMaterials/wing_red
+{
+   technique
+   {
+      pass
+      {
+         texture_unit
+         {
+            texture skin_wing_red.png 2d
+            scale 1 1
+         }
+      }
+   }
+}
+
+material MyMaterials/bomber
+{
+   technique
+   {
+      pass
+      {
+         texture_unit
+         {
+            texture skin_bomber.png 2d
+            scale 1 1
+         }
+      }
+   }
+}
+
+material MyMaterials/carrier_blue
+{
+   technique
+   {
+      pass
+      {
+         texture_unit
+         {
+            texture symbol_carrier_blue.png 2d
+            scale 1 1
+         }
+      }
+   }
+}
+
+material MyMaterials/carrier_red
+{
+   technique
+   {
+      pass
+      {
+         texture_unit
+         {
+            texture symbol_carrier_red.png 2d
+            scale 1 1
+         }
+      }
+   }
+}
+
 material MyMaterials/destroyer_blue
 {
    technique
@@ -219,6 +489,36 @@ material MyMaterials/scud_red
          texture_unit
          {
             texture symbol_scud_red.png 2d
+            scale 1 1
+         }
+      }
+   }
+}
+
+material MyMaterials/command_blue
+{
+   technique
+   {
+      pass
+      {
+         texture_unit
+         {
+            texture skin_command_blue.png 2d
+            scale 1 1
+         }
+      }
+   }
+}
+
+material MyMaterials/command_red
+{
+   technique
+   {
+      pass
+      {
+         texture_unit
+         {
+            texture skin_command_red.png 2d
             scale 1 1
          }
       }
