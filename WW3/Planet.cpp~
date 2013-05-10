@@ -953,7 +953,11 @@ void Planet::createBorderSegments(Ogre::SceneManager* scnMgr, float k){
             segCounter ++;
             name_manobj = s.append(ss.str()); // Be careful not to append indefinitely.
             ManualObject* manual = scnMgr->createManualObject(name_manobj);
-            manual->begin("BaseWhiteNoLighting", RenderOperation::OT_TRIANGLE_FAN);
+            
+            if(cells[i].owner==Owner_RED) manual->begin("MyMaterials/Red", RenderOperation::OT_TRIANGLE_FAN);
+            else if(cells[i].owner==Owner_BLUE) manual->begin("MyMaterials/Cyan", RenderOperation::OT_TRIANGLE_FAN);
+            else manual->begin("MyMaterials/White", RenderOperation::OT_TRIANGLE_FAN);
+            
             
             if(j==0){ 
                 thickness_left = vertices[p[j+2]] - vertices[p[j+1]];
@@ -1000,23 +1004,23 @@ void Planet::createBorderSegments(Ogre::SceneManager* scnMgr, float k){
 
             manual->position( inside_right.x(), inside_right.y(), inside_right.z() );
             manual->normal( inside_right.x(), inside_right.y(), inside_right.z() );
-            if(cells[i].owner==Owner_RED) manual->colour( 1, 0, 0);
-            else if(cells[i].owner==Owner_BLUE) manual->colour( 0, 1, 1);
+            //if(cells[i].owner==Owner_RED) manual->colour( 1, 0, 0);
+            //else if(cells[i].owner==Owner_BLUE) manual->colour( 0, 1, 1);
             
             manual->position( outside_right.x(), outside_right.y(), outside_right.z() );
             manual->normal( outside_right.x(), outside_right.y(), outside_right.z() );
-            if(cells[i].owner==Owner_RED) manual->colour( 1, 0, 0);
-            else if(cells[i].owner==Owner_BLUE) manual->colour( 0, 1, 1);
+            //if(cells[i].owner==Owner_RED) manual->colour( 1, 0, 0);
+            //else if(cells[i].owner==Owner_BLUE) manual->colour( 0, 1, 1);
             
             manual->position( outside_left.x(), outside_left.y(), outside_left.z() );
             manual->normal( outside_left.x(), outside_left.y(), outside_left.z() );
-            if(cells[i].owner==Owner_RED) manual->colour( 1, 0, 0);
-            else if(cells[i].owner==Owner_BLUE) manual->colour( 0, 1, 1);
+            //if(cells[i].owner==Owner_RED) manual->colour( 1, 0, 0);
+            //else if(cells[i].owner==Owner_BLUE) manual->colour( 0, 1, 1);
             
             manual->position( inside_left.x(), inside_left.y(), inside_left.z() );
             manual->normal( inside_left.x(), inside_left.y(), inside_left.z() );
-            if(cells[i].owner==Owner_RED) manual->colour( 1, 0, 0);
-            else if(cells[i].owner==Owner_BLUE) manual->colour( 0, 1, 1);
+            //if(cells[i].owner==Owner_RED) manual->colour( 1, 0, 0);
+            //else if(cells[i].owner==Owner_BLUE) manual->colour( 0, 1, 1);
             
             manual->end();
             Ogre::SceneNode* segmentNode = scnMgr->getRootSceneNode()->createChildSceneNode(name_manobj);
@@ -1037,7 +1041,7 @@ void Planet::updateBorderSegments(Ogre::SceneManager* scnMgr){ // Ugly.
         std::vector<size_t> p = cells[i].paramVerts;
         for(int j=0;j<n.size();j++){
             if (cells[i].owner != cells[n[j]].owner) {
-                if(cells[i].owner == Owner_RED || cells[i].owner == Owner_BLUE){
+                if(cells[i].owner == Owner_BLUE){
                     for(int k=0;k<p.size();k+=2){ //critical
                         for(int l=0;l<cells[n[j]].paramVerts.size();l++){
                             if((btVector3)vertices[p[k]] == (btVector3)vertices[cells[n[j]].paramVerts[l]]){
@@ -1048,11 +1052,43 @@ void Planet::updateBorderSegments(Ogre::SceneManager* scnMgr){ // Ugly.
                                 ss << id;
                                 name = s.append(ss.str()); 
                                 scnMgr->getEntity(name)->setVisible(true);
+                                scnMgr->getEntity(name)->setMaterialName("MyMaterials/Cyan");
+                            }
+                        }
+                    }
+                }
+                else if(cells[i].owner == Owner_RED){
+                    for(int k=0;k<p.size();k+=2){ //critical
+                        for(int l=0;l<cells[n[j]].paramVerts.size();l++){
+                            if((btVector3)vertices[p[k]] == (btVector3)vertices[cells[n[j]].paramVerts[l]]){
+                                int id = cells[i].borderSegments[k/2];
+                                string s = "BorderSegment_";
+                                stringstream ss;
+                                Ogre::String name;
+                                ss << id;
+                                name = s.append(ss.str()); 
+                                scnMgr->getEntity(name)->setVisible(true);
+                                scnMgr->getEntity(name)->setMaterialName("MyMaterials/Red");
                             }
                         }
                     }
                 }
             }
+            else{
+                    for(int k=0;k<p.size();k+=2){ //critical
+                        for(int l=0;l<cells[n[j]].paramVerts.size();l++){
+                            if((btVector3)vertices[p[k]] == (btVector3)vertices[cells[n[j]].paramVerts[l]]){
+                                int id = cells[i].borderSegments[k/2];
+                                string s = "BorderSegment_";
+                                stringstream ss;
+                                Ogre::String name;
+                                ss << id;
+                                name = s.append(ss.str()); 
+                                scnMgr->getEntity(name)->setVisible(false);
+                            }
+                        }
+                    }
+                }
         }
     }
 }

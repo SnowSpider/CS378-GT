@@ -144,13 +144,29 @@ void Unit::createSymbolObject(Ogre::SceneManager* scnMgr){
     manual->setDynamic(true);
     
     string mat;
-    if(myType == Unit_INFANTRY) mat = "MyMaterials/infantry";
-    else if(myType == Unit_TANK) mat = "MyMaterials/tank";
-    else if(myType == Unit_SCUD) mat = "MyMaterials/scud";
-    else mat = "MyMaterials/Blue";
+    if(myType == Unit_INFANTRY){
+        if(owner == Owner_BLUE) mat = "MyMaterials/infantry_blue";
+        else if(owner == Owner_RED) mat = "MyMaterials/infantry_red";
+        else mat = "MyMaterials/infantry";
+    }
+    else if(myType == Unit_TANK){
+        if(owner == Owner_BLUE) mat = "MyMaterials/tank_blue";
+        else if(owner == Owner_RED) mat = "MyMaterials/tank_red";
+        else mat = "MyMaterials/tank";
+    } 
+    else if(myType == Unit_SCUD){
+        if(owner == Owner_BLUE) mat = "MyMaterials/scud_blue";
+        else if(owner == Owner_RED) mat = "MyMaterials/scud_red";
+        else mat = "MyMaterials/scud";
+    } 
+    else{
+        if(owner == Owner_BLUE) mat = "MyMaterials/Blue";
+        else if(owner == Owner_RED) mat = "MyMaterials/Red";
+        else mat = "MyMaterials/White";
+    }
     
     // top
-    manual->begin("MyMaterials/Blue", RenderOperation::OT_TRIANGLE_FAN);
+    manual->begin("MyMaterials/White", RenderOperation::OT_TRIANGLE_FAN);
     manual->position(1, 1, -1); manual->normal(0,1,0); manual->textureCoord(1,1);
     manual->position(-1, 1, -1); manual->normal(0,1,0); manual->textureCoord(0,1);
     manual->position(-1, 1, 1); manual->normal(0,1,0); manual->textureCoord(0,0);
@@ -166,7 +182,7 @@ void Unit::createSymbolObject(Ogre::SceneManager* scnMgr){
     manual->end();
     
     // front
-    manual->begin("MyMaterials/Blue", RenderOperation::OT_TRIANGLE_FAN);
+    manual->begin("MyMaterials/White", RenderOperation::OT_TRIANGLE_FAN);
     manual->position(1, 1, 1); manual->normal(0,0,1); manual->textureCoord(1,1);
     manual->position(-1, 1, 1); manual->normal(0,0,1); manual->textureCoord(0,1);
     manual->position(-1, -1, 1); manual->normal(0,0,1); manual->textureCoord(0,0);
@@ -174,7 +190,7 @@ void Unit::createSymbolObject(Ogre::SceneManager* scnMgr){
     manual->end();
     
     // back
-    manual->begin("MyMaterials/Blue", RenderOperation::OT_TRIANGLE_FAN);
+    manual->begin("MyMaterials/White", RenderOperation::OT_TRIANGLE_FAN);
     manual->position(1, 1, -1); manual->normal(0,0,-1); manual->textureCoord(1,1);
     manual->position(1, -1, -1); manual->normal(0,0,-1); manual->textureCoord(0,1);
     manual->position(-1, -1, -1); manual->normal(0,0,-1); manual->textureCoord(0,0);
@@ -182,7 +198,7 @@ void Unit::createSymbolObject(Ogre::SceneManager* scnMgr){
     manual->end();
     
     // left
-    manual->begin("MyMaterials/Blue", RenderOperation::OT_TRIANGLE_FAN);
+    manual->begin("MyMaterials/White", RenderOperation::OT_TRIANGLE_FAN);
     manual->position(-1, 1, 1); manual->normal(-1,0,0); manual->textureCoord(1,1);
     manual->position(-1, 1, -1); manual->normal(-1,0,0); manual->textureCoord(0,1);
     manual->position(-1, -1, -1); manual->normal(-1,0,0); manual->textureCoord(0,0);
@@ -190,7 +206,7 @@ void Unit::createSymbolObject(Ogre::SceneManager* scnMgr){
     manual->end();
     
     // right
-    manual->begin("MyMaterials/Blue", RenderOperation::OT_TRIANGLE_FAN);
+    manual->begin("MyMaterials/White", RenderOperation::OT_TRIANGLE_FAN);
     manual->position(1, 1, -1); manual->normal(1,0,0); manual->textureCoord(1,1);
     manual->position(1, 1, 1); manual->normal(1,0,0); manual->textureCoord(0,1);
     manual->position(1, -1, 1); manual->normal(1,0,0); manual->textureCoord(0,0);

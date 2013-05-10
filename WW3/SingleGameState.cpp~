@@ -69,16 +69,16 @@ SingleGameState::SingleGameState()
     timerup = false;
     tutorial = 0;
     std::time(&currentTime);
-    musicBackground;
-	musicBuildComplete;
-	musicMoveComplete;
-	musicCaptureComplete;
-	musicEnemyUnitKilled;
-    musicUnitKilled;
-    musicEnemyCommandKilled;
-    musicCommandKilled;
-    musicVictory;
-    musicDefeat;
+    musicBackground = NULL;
+	musicBuildComplete = NULL;
+	musicMoveComplete = NULL;
+	musicCaptureComplete = NULL;
+	musicEnemyUnitKilled = NULL;
+    musicUnitKilled = NULL;
+    musicEnemyCommandKilled = NULL;
+    musicCommandKilled = NULL;
+    musicVictory = NULL;
+    musicDefeat = NULL;
 }
  
 //|||||||||||||||||||||||||||||||||||||||||||||||

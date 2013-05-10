@@ -836,6 +836,8 @@ bool SingleGameState::keyPressed(const OIS::KeyEvent &keyEventRef)
     }
     if(keyEventRef.key == OIS::KC_R) //retire the unit on the current cell
     {
+        // needs repair
+        /*
         if(currentCell->myUnit != Unit_EMPTY && currentCell->occupier == myOwner){
             currentCell->myUnit = 0;
             currentCell->myUnitId = -1;
@@ -843,6 +845,7 @@ bool SingleGameState::keyPressed(const OIS::KeyEvent &keyEventRef)
             units[currentCell->myUnitId].destroy(m_pSceneMgr);
             BuildButtons();
         }
+        */
         return true;
     }
     if(keyEventRef.key == OIS::KC_X)
