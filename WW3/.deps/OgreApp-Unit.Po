@@ -1,22 +1,31 @@
-OgreApp-Unit.o: Unit.cpp Unit.h /usr/include/OGRE/OgreSubEntity.h \
- /usr/include/OGRE/OgrePrerequisites.h /usr/include/OGRE/OgrePlatform.h \
- /usr/include/OGRE/OgreConfig.h /usr/include/OGRE/OgreBuildSettings.h \
- /usr/include/c++/4.6/string \
- /usr/include/c++/4.6/x86_64-linux-gnu/./bits/c++config.h \
- /usr/include/c++/4.6/x86_64-linux-gnu/./bits/os_defines.h \
- /usr/include/features.h /usr/include/x86_64-linux-gnu/bits/predefs.h \
+OgreApp-Unit.o: Unit.cpp /usr/include/math.h /usr/include/features.h \
+ /usr/include/x86_64-linux-gnu/bits/predefs.h \
  /usr/include/x86_64-linux-gnu/sys/cdefs.h \
  /usr/include/x86_64-linux-gnu/bits/wordsize.h \
  /usr/include/x86_64-linux-gnu/gnu/stubs.h \
  /usr/include/x86_64-linux-gnu/gnu/stubs-64.h \
+ /usr/include/x86_64-linux-gnu/bits/huge_val.h \
+ /usr/include/x86_64-linux-gnu/bits/huge_valf.h \
+ /usr/include/x86_64-linux-gnu/bits/huge_vall.h \
+ /usr/include/x86_64-linux-gnu/bits/inf.h \
+ /usr/include/x86_64-linux-gnu/bits/nan.h \
+ /usr/include/x86_64-linux-gnu/bits/mathdef.h \
+ /usr/include/x86_64-linux-gnu/bits/mathcalls.h \
+ /usr/include/x86_64-linux-gnu/bits/mathinline.h \
+ /usr/include/c++/4.6/cmath \
+ /usr/include/c++/4.6/x86_64-linux-gnu/./bits/c++config.h \
+ /usr/include/c++/4.6/x86_64-linux-gnu/./bits/os_defines.h \
  /usr/include/c++/4.6/x86_64-linux-gnu/./bits/cpu_defines.h \
+ /usr/include/c++/4.6/bits/cpp_type_traits.h \
+ /usr/include/c++/4.6/ext/type_traits.h Unit.h \
+ /usr/include/OGRE/OgreSubEntity.h /usr/include/OGRE/OgrePrerequisites.h \
+ /usr/include/OGRE/OgrePlatform.h /usr/include/OGRE/OgreConfig.h \
+ /usr/include/OGRE/OgreBuildSettings.h /usr/include/c++/4.6/string \
  /usr/include/c++/4.6/bits/stringfwd.h \
  /usr/include/c++/4.6/bits/char_traits.h \
  /usr/include/c++/4.6/bits/stl_algobase.h \
  /usr/include/c++/4.6/bits/functexcept.h \
  /usr/include/c++/4.6/bits/exception_defines.h \
- /usr/include/c++/4.6/bits/cpp_type_traits.h \
- /usr/include/c++/4.6/ext/type_traits.h \
  /usr/include/c++/4.6/ext/numeric_traits.h \
  /usr/include/c++/4.6/bits/stl_pair.h /usr/include/c++/4.6/bits/move.h \
  /usr/include/c++/4.6/bits/concept_check.h \
@@ -82,16 +91,8 @@ OgreApp-Unit.o: Unit.cpp Unit.h /usr/include/OGRE/OgreSubEntity.h \
  /usr/include/x86_64-linux-gnu/bits/stdlib.h /usr/include/c++/4.6/ctime \
  /usr/include/c++/4.6/cstring /usr/include/string.h \
  /usr/include/x86_64-linux-gnu/bits/string3.h \
- /usr/include/c++/4.6/cstdarg /usr/include/c++/4.6/cmath \
- /usr/include/math.h /usr/include/x86_64-linux-gnu/bits/huge_val.h \
- /usr/include/x86_64-linux-gnu/bits/huge_valf.h \
- /usr/include/x86_64-linux-gnu/bits/huge_vall.h \
- /usr/include/x86_64-linux-gnu/bits/inf.h \
- /usr/include/x86_64-linux-gnu/bits/nan.h \
- /usr/include/x86_64-linux-gnu/bits/mathdef.h \
- /usr/include/x86_64-linux-gnu/bits/mathcalls.h \
- /usr/include/x86_64-linux-gnu/bits/mathinline.h \
- /usr/include/c++/4.6/vector /usr/include/c++/4.6/bits/stl_construct.h \
+ /usr/include/c++/4.6/cstdarg /usr/include/c++/4.6/vector \
+ /usr/include/c++/4.6/bits/stl_construct.h \
  /usr/include/c++/4.6/bits/stl_uninitialized.h \
  /usr/include/c++/4.6/bits/stl_vector.h \
  /usr/include/c++/4.6/bits/stl_bvector.h \
@@ -817,6 +818,48 @@ OgreApp-Unit.o: Unit.cpp Unit.h /usr/include/OGRE/OgreSubEntity.h \
  /usr/include/OGRE/OgreShadowCameraSetupPlaneOptimal.h \
  /usr/include/OGRE/OgreShadowCameraSetupPSSM.h Planet.h imageloader.h
 
+/usr/include/math.h:
+
+/usr/include/features.h:
+
+/usr/include/x86_64-linux-gnu/bits/predefs.h:
+
+/usr/include/x86_64-linux-gnu/sys/cdefs.h:
+
+/usr/include/x86_64-linux-gnu/bits/wordsize.h:
+
+/usr/include/x86_64-linux-gnu/gnu/stubs.h:
+
+/usr/include/x86_64-linux-gnu/gnu/stubs-64.h:
+
+/usr/include/x86_64-linux-gnu/bits/huge_val.h:
+
+/usr/include/x86_64-linux-gnu/bits/huge_valf.h:
+
+/usr/include/x86_64-linux-gnu/bits/huge_vall.h:
+
+/usr/include/x86_64-linux-gnu/bits/inf.h:
+
+/usr/include/x86_64-linux-gnu/bits/nan.h:
+
+/usr/include/x86_64-linux-gnu/bits/mathdef.h:
+
+/usr/include/x86_64-linux-gnu/bits/mathcalls.h:
+
+/usr/include/x86_64-linux-gnu/bits/mathinline.h:
+
+/usr/include/c++/4.6/cmath:
+
+/usr/include/c++/4.6/x86_64-linux-gnu/./bits/c++config.h:
+
+/usr/include/c++/4.6/x86_64-linux-gnu/./bits/os_defines.h:
+
+/usr/include/c++/4.6/x86_64-linux-gnu/./bits/cpu_defines.h:
+
+/usr/include/c++/4.6/bits/cpp_type_traits.h:
+
+/usr/include/c++/4.6/ext/type_traits.h:
+
 Unit.h:
 
 /usr/include/OGRE/OgreSubEntity.h:
@@ -831,24 +874,6 @@ Unit.h:
 
 /usr/include/c++/4.6/string:
 
-/usr/include/c++/4.6/x86_64-linux-gnu/./bits/c++config.h:
-
-/usr/include/c++/4.6/x86_64-linux-gnu/./bits/os_defines.h:
-
-/usr/include/features.h:
-
-/usr/include/x86_64-linux-gnu/bits/predefs.h:
-
-/usr/include/x86_64-linux-gnu/sys/cdefs.h:
-
-/usr/include/x86_64-linux-gnu/bits/wordsize.h:
-
-/usr/include/x86_64-linux-gnu/gnu/stubs.h:
-
-/usr/include/x86_64-linux-gnu/gnu/stubs-64.h:
-
-/usr/include/c++/4.6/x86_64-linux-gnu/./bits/cpu_defines.h:
-
 /usr/include/c++/4.6/bits/stringfwd.h:
 
 /usr/include/c++/4.6/bits/char_traits.h:
@@ -858,10 +883,6 @@ Unit.h:
 /usr/include/c++/4.6/bits/functexcept.h:
 
 /usr/include/c++/4.6/bits/exception_defines.h:
-
-/usr/include/c++/4.6/bits/cpp_type_traits.h:
-
-/usr/include/c++/4.6/ext/type_traits.h:
 
 /usr/include/c++/4.6/ext/numeric_traits.h:
 
@@ -1042,26 +1063,6 @@ Unit.h:
 /usr/include/x86_64-linux-gnu/bits/string3.h:
 
 /usr/include/c++/4.6/cstdarg:
-
-/usr/include/c++/4.6/cmath:
-
-/usr/include/math.h:
-
-/usr/include/x86_64-linux-gnu/bits/huge_val.h:
-
-/usr/include/x86_64-linux-gnu/bits/huge_valf.h:
-
-/usr/include/x86_64-linux-gnu/bits/huge_vall.h:
-
-/usr/include/x86_64-linux-gnu/bits/inf.h:
-
-/usr/include/x86_64-linux-gnu/bits/nan.h:
-
-/usr/include/x86_64-linux-gnu/bits/mathdef.h:
-
-/usr/include/x86_64-linux-gnu/bits/mathcalls.h:
-
-/usr/include/x86_64-linux-gnu/bits/mathinline.h:
 
 /usr/include/c++/4.6/vector:
 

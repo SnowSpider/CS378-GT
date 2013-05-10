@@ -1,3 +1,5 @@
+#include <math.h>
+#include <cmath>
 #include "Unit.h"
 #include "imageloader.h"
 
@@ -134,6 +136,92 @@ void Unit::createObject(Ogre::SceneManager* scnMgr, char* mesh, char* mat){
     rootNode->scale(0.5, 0.5, 0.5);
 }
 
+void Unit::createNavyObject(Ogre::SceneManager* scnMgr){
+    string s = "Unit_";
+    id = unitId;
+    name = s.append(intToStr(unitId));
+    unitId += 1;
+    
+    ManualObject* manual = scnMgr->createManualObject(name);
+    manual->setDynamic(true);
+    
+    string mat;
+    if(myType == Unit_SUBMARINE){
+        if(owner == Owner_BLUE) mat = "MyMaterials/submarine_blue";
+        else if(owner == Owner_RED) mat = "MyMaterials/submarine_red";
+        else mat = "MyMaterials/White";
+    }
+    else if(myType == Unit_DESTROYER){
+        if(owner == Owner_BLUE) mat = "MyMaterials/destroyer_blue";
+        else if(owner == Owner_RED) mat = "MyMaterials/destroyer_red";
+        else mat = "MyMaterials/White";
+    } 
+    else if(myType == Unit_CARRIER){
+        if(owner == Owner_BLUE) mat = "MyMaterials/carrier_blue";
+        else if(owner == Owner_RED) mat = "MyMaterials/carrier_red";
+        else mat = "MyMaterials/White";
+    } 
+    else{
+        if(owner == Owner_BLUE) mat = "MyMaterials/Blue";
+        else if(owner == Owner_RED) mat = "MyMaterials/Red";
+        else mat = "MyMaterials/White";
+    }
+    
+    float twoPi = 6.28318530718;
+    int numEdge = 24;
+    float dtheta = twoPi / numEdge;
+    float r = 1.0;
+    float theta = 0;
+    
+    float x, y;
+    
+    
+    // front 
+    manual->begin("MyMaterials/White", RenderOperation::OT_TRIANGLE_FAN);
+    for(int i=0;i<numEdge;i++){
+        theta = i * dtheta; 
+        x = r*cos(theta);
+        y = r*sin(theta);
+        manual->position(x, y, 1); manual->normal(0,0,1); 
+    } 
+    manual->position(0, 0, 1); manual->normal(0,0,1); 
+    manual->end();
+    
+    // back
+    manual->begin(mat, RenderOperation::OT_TRIANGLE_FAN);
+    for(int i=numEdge;i>0;i--){
+        theta = i * dtheta; 
+        x = r*cos(theta);
+        y = r*sin(theta);
+        manual->position(x, y, -1); manual->normal(0,0,-1); manual->textureCoord((x+1)*0.5, (y+1)*0.5);
+    } 
+    manual->position(0, 0, -1); manual->normal(0,0,-1); manual->textureCoord((x+1)*0.5, (y+1)*0.5);
+    manual->end();
+    
+    // sides
+    float x_next, y_next;
+    for(int i=0;i<numEdge;i++){
+        theta = i * dtheta; 
+        x = r*cos(theta);
+        y = r*sin(theta);
+        x_next = r*cos(theta + dtheta);
+        y_next = r*sin(theta + dtheta);
+        manual->begin("MyMaterials/White", RenderOperation::OT_TRIANGLE_FAN);
+        manual->position(x, y, -1); manual->normal(0,0,-1); 
+        manual->position(x_next, y_next, -1); manual->normal(0,0,-1); 
+        manual->position(x_next, y_next, 1); manual->normal(0,0,1); 
+        manual->position(x, y, 1); manual->normal(0,0,1); 
+        manual->position(x, y, -1); manual->normal(0,0,-1); 
+        manual->end();
+    }
+    
+    rootNode = scnMgr->getRootSceneNode()->createChildSceneNode(name);
+    Ogre::MeshPtr newMesh = manual->convertToMesh(name);
+    myEntity = scnMgr->createEntity(name, name);
+    rootNode->attachObject(myEntity);
+    rootNode->scale(150, 150, 30);
+}
+
 void Unit::createSymbolObject(Ogre::SceneManager* scnMgr){
     string s = "Unit_";
     id = unitId;
@@ -174,7 +262,7 @@ void Unit::createSymbolObject(Ogre::SceneManager* scnMgr){
     manual->end();
     
     // bottom
-    manual->begin(mat, RenderOperation::OT_TRIANGLE_FAN);
+    manual->begin("MyMaterials/White", RenderOperation::OT_TRIANGLE_FAN);
     manual->position(1, -1, 1); manual->normal(0,-1,0); manual->textureCoord(1,1);
     manual->position(-1, -1, 1); manual->normal(0,-1,0); manual->textureCoord(0,1);
     manual->position(-1, -1, -1); manual->normal(0,-1,0); manual->textureCoord(0,0);
@@ -190,7 +278,7 @@ void Unit::createSymbolObject(Ogre::SceneManager* scnMgr){
     manual->end();
     
     // back
-    manual->begin("MyMaterials/White", RenderOperation::OT_TRIANGLE_FAN);
+    manual->begin(mat, RenderOperation::OT_TRIANGLE_FAN);
     manual->position(1, 1, -1); manual->normal(0,0,-1); manual->textureCoord(1,1);
     manual->position(1, -1, -1); manual->normal(0,0,-1); manual->textureCoord(0,1);
     manual->position(-1, -1, -1); manual->normal(0,0,-1); manual->textureCoord(0,0);
@@ -217,7 +305,7 @@ void Unit::createSymbolObject(Ogre::SceneManager* scnMgr){
     Ogre::MeshPtr newMesh = manual->convertToMesh(name);
     myEntity = scnMgr->createEntity(name, name);
     rootNode->attachObject(myEntity);
-    rootNode->scale(150, 20, 100);
+    rootNode->scale(150, 100, 30);
 }
 
 void Unit::createManualObject(Ogre::SceneManager* scnMgr){
@@ -296,7 +384,6 @@ void Unit::relocate(btVector3& dest){
     position = dest;
     rootNode->setPosition(Ogre::Vector3(dest.x(), dest.y(), dest.z()));
     rootNode->setDirection(Ogre::Vector3(dest.x(), dest.y(), dest.z()), Node::TS_PARENT);
-    rootNode->setDirection(Ogre::Vector3(0,1,0), Node::TS_LOCAL);
 }
 
 void Unit::translate(float x, float y, float z){
@@ -309,7 +396,7 @@ void Unit::setDirection(btVector3& d){ //need repair
 }
 
 void Unit::grow(){
-    rootNode->translate(0, -buildInterval, 0, Node::TS_LOCAL);
+    rootNode->translate(0, 0, -buildInterval, Node::TS_LOCAL);
 }
 
 void Unit::destroy(Ogre::SceneManager* scnMgr){

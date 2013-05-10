@@ -1,3 +1,63 @@
+material MyMaterials/destroyer_blue
+{
+   technique
+   {
+      pass
+      {
+         texture_unit
+         {
+            texture symbol_dest_blue.png 2d
+            scale 1 1
+         }
+      }
+   }
+}
+
+material MyMaterials/destroyer_red
+{
+   technique
+   {
+      pass
+      {
+         texture_unit
+         {
+            texture symbol_dest_red.png 2d
+            scale 1 1
+         }
+      }
+   }
+}
+
+material MyMaterials/submarine_blue
+{
+   technique
+   {
+      pass
+      {
+         texture_unit
+         {
+            texture symbol_sub_blue.png 2d
+            scale 1 1
+         }
+      }
+   }
+}
+
+material MyMaterials/submarine_red
+{
+   technique
+   {
+      pass
+      {
+         texture_unit
+         {
+            texture symbol_sub_red.png 2d
+            scale 1 1
+         }
+      }
+   }
+}
+
 material MyMaterials/arrow_blue
 {
    technique
@@ -60,6 +120,21 @@ material MyMaterials/infantry_blue
    }
 }
 
+material MyMaterials/infantry_red
+{
+   technique
+   {
+      pass
+      {
+         texture_unit
+         {
+            texture symbol_infantry_red.png 2d
+            scale 1 1
+         }
+      }
+   }
+}
+
 material MyMaterials/tank
 {
    technique
@@ -90,6 +165,21 @@ material MyMaterials/tank_blue
    }
 }
 
+material MyMaterials/tank_red
+{
+   technique
+   {
+      pass
+      {
+         texture_unit
+         {
+            texture symbol_tank_red.png 2d
+            scale 1 1
+         }
+      }
+   }
+}
+
 material MyMaterials/scud
 {
    technique
@@ -114,6 +204,21 @@ material MyMaterials/scud_blue
          texture_unit
          {
             texture symbol_scud_blue.png 2d
+            scale 1 1
+         }
+      }
+   }
+}
+
+material MyMaterials/scud_red
+{
+   technique
+   {
+      pass
+      {
+         texture_unit
+         {
+            texture symbol_scud_red.png 2d
             scale 1 1
          }
       }

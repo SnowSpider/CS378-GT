@@ -241,6 +241,7 @@ class Unit {
     }
     
     void createObject(Ogre::SceneManager* scnMgr, char* mesh, char* mat);
+    void createNavyObject(Ogre::SceneManager* scnMgr);
     void createSymbolObject(Ogre::SceneManager* scnMgr);
     void createManualObject(Ogre::SceneManager* scnMgr);
     //void applyTexture(char* mat);

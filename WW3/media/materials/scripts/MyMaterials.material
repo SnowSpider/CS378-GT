@@ -1,3 +1,93 @@
+material MyMaterials/carrier_blue
+{
+   technique
+   {
+      pass
+      {
+         texture_unit
+         {
+            texture symbol_carrier_blue.png 2d
+            scale 1 1
+         }
+      }
+   }
+}
+
+material MyMaterials/carrier_red
+{
+   technique
+   {
+      pass
+      {
+         texture_unit
+         {
+            texture symbol_carrier_red.png 2d
+            scale 1 1
+         }
+      }
+   }
+}
+
+material MyMaterials/destroyer_blue
+{
+   technique
+   {
+      pass
+      {
+         texture_unit
+         {
+            texture symbol_dest_blue.png 2d
+            scale 1 1
+         }
+      }
+   }
+}
+
+material MyMaterials/destroyer_red
+{
+   technique
+   {
+      pass
+      {
+         texture_unit
+         {
+            texture symbol_dest_red.png 2d
+            scale 1 1
+         }
+      }
+   }
+}
+
+material MyMaterials/submarine_blue
+{
+   technique
+   {
+      pass
+      {
+         texture_unit
+         {
+            texture symbol_sub_blue.png 2d
+            scale 1 1
+         }
+      }
+   }
+}
+
+material MyMaterials/submarine_red
+{
+   technique
+   {
+      pass
+      {
+         texture_unit
+         {
+            texture symbol_sub_red.png 2d
+            scale 1 1
+         }
+      }
+   }
+}
+
 material MyMaterials/arrow_blue
 {
    technique
