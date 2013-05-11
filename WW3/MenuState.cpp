@@ -24,12 +24,16 @@ void MenuState::enter()
     m_pSceneMgr->setAmbientLight(Ogre::ColourValue(0.7f, 0.7f, 0.7f));
  
     m_pCamera = m_pSceneMgr->createCamera("MenuCam");
-    m_pCamera->setPosition(Vector3(0, 25, -50));
+    m_pCamera->setPosition(Vector3(0, 0, 100));
     m_pCamera->lookAt(Vector3(0, 0, 0));
+    
+    // Orthographic projection
+    m_pCamera->setProjectionType(Ogre::PT_ORTHOGRAPHIC);
+    Ogre::Real aspect = (Ogre::Real)OgreFramework::getSingletonPtr()->m_pViewport->getActualWidth() / (Ogre::Real)OgreFramework::getSingletonPtr()->m_pViewport->getActualHeight();
+    m_pCamera->setAspectRatio(aspect);
     m_pCamera->setNearClipDistance(1);
- 
-    m_pCamera->setAspectRatio(Real(OgreFramework::getSingletonPtr()->m_pViewport->getActualWidth()) /
-        Real(OgreFramework::getSingletonPtr()->m_pViewport->getActualHeight()));
+    m_pCamera->setOrthoWindow(aspect * 2, 2);
+    // Orthographic projection
  
     OgreFramework::getSingletonPtr()->m_pViewport->setCamera(m_pCamera);
  
@@ -47,6 +51,17 @@ void MenuState::enter()
 
 void MenuState::createScene()
 {
+    Ogre::Plane plane_z_neg_in(Ogre::Vector3::UNIT_Z, -200);
+    
+    Ogre::Real aspect = (Ogre::Real)OgreFramework::getSingletonPtr()->m_pViewport->getActualWidth() / (Ogre::Real)OgreFramework::getSingletonPtr()->m_pViewport->getActualHeight();
+    
+    // plane_z_neg_in
+    Ogre::MeshManager::getSingleton().createPlane("plane_z_neg_in", Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME, plane_z_neg_in, aspect * 2, 2, 1, 1, true, 1, 1.0f, 1.0f, Ogre::Vector3::UNIT_Y);
+    Ogre::Entity* plane6 = m_pSceneMgr->createEntity("ent_plane_z_neg_in", "plane_z_neg_in");
+    plane6->setMaterialName("MyMaterials/title");
+    plane6->setCastShadows(false);
+    m_pSceneMgr->getRootSceneNode()->createChildSceneNode()->attachObject(plane6);
+    
 }
  
 //|||||||||||||||||||||||||||||||||||||||||||||||

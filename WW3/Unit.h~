@@ -164,6 +164,7 @@ class Missile {
     float speed;
     float linearDistance;
     
+    PlanetVertex v;
     btVector3 btPos;
     
     Missile(){
@@ -190,6 +191,30 @@ class Missile {
     void relocate(btVector3& dest);
     void updateAltitude();
     void fly(Ogre::SceneManager* scnMgr);
+};
+
+class Bomber : public Missile {
+    public:
+    Bomber(){
+        owner = Owner_NEUTRAL;
+    }
+    Bomber(size_t myOwner, btVector3 s, btVector3 e){
+        owner = myOwner;
+        start = s;
+        end = e;
+        rotAxis = start.cross(end);
+        rotAxis.normalize();
+        angle = start.angle(end);
+        //linearDistance = angle * 6371;
+        deltaTheta = 0.01; // angle per tick
+        progress = 0;
+        altitude = 0;
+        angle_of_reach = 0; // 0 to 2 * pi
+        offset = deltaTheta * 3.14159265359 / angle;
+        speed = deltaTheta * 6371;
+        linearDistance = angle * 6371;
+    }
+    void createObject(Ogre::SceneManager* scnMgr);
 };
 
 class Arrow {

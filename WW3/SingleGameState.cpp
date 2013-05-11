@@ -62,6 +62,7 @@ SingleGameState::SingleGameState()
     unitBuilding = 0;
     unitMoving = 0;
     launching = false;
+    bombing = false;
     unitMoney = 0;
     unitPlutonium = 0; 
     unitTimer = 0;
@@ -1044,7 +1045,10 @@ void SingleGameState::onLeftPressed(const OIS::MouseEvent &evt)
                 }
                 else if(launching){
                     fireMissile(*lastCell, *currentCell);
-                    cout << "origin = " << lastCell->id << ", goal = " << currentCell->id << endl;
+                    //cout << "origin = " << lastCell->id << ", goal = " << currentCell->id << endl;
+                }
+                else if(bombing){
+                    sendBomber(*lastCell, *currentCell);
                 }
                 
                 BuildButtons();
@@ -1220,7 +1224,9 @@ void SingleGameState::update(double timeSinceLastFrame)
         //missiles[i].updateAltitude();
         missiles[i].fly(m_pSceneMgr);
     }
-    
+    for(int i=0;i<bombers.size();i++){
+        bombers[i].fly(m_pSceneMgr);
+    }
     /*
     if(mWindow->isClosed())
         return false;
@@ -1571,6 +1577,17 @@ bool SingleGameState::DestroyerButton(const CEGUI::EventArgs &e)
 }
 bool SingleGameState::BomberButton(const CEGUI::EventArgs &e)
 {
+    /*
+    processResources(-Au_LAUNCH,-Pt_LAUNCH);
+    onButton = true;
+    bombing = true;
+    unitMoving = false;
+    if(currentCell != NULL){
+        illuminate(*currentCell);
+    }
+    return true;
+    */
+    
     for(int i=0;i<currentCell->neighbors.size();i++){
         PlanetCell& temp = earth.cells[currentCell->neighbors[i]];
         if(temp.myUnit == Unit_EMPTY)
@@ -1590,6 +1607,7 @@ bool SingleGameState::BomberButton(const CEGUI::EventArgs &e)
     unitTimer = BuildTime_INFANTRY;
     onButton = true;
     return true;
+   
 }
 bool SingleGameState::FighterButton(const CEGUI::EventArgs &e)
 {
@@ -2397,6 +2415,22 @@ void SingleGameState::deluminate(PlanetCell& goal){
 float y(float x, float v, float theta){
     float k = v * cos(theta);
     return x * tan(theta) - ( (9.8*x*x)/(2*k*k) );
+}
+
+void SingleGameState::sendBomber(PlanetCell& origin, PlanetCell& goal){
+    Bomber newBomber(myOwner, earth.vertices[origin.id], earth.vertices[goal.id]);
+    newBomber.createObject(m_pSceneMgr);
+    newBomber.relocate(earth.vertices[origin.id]);
+    
+    /*
+    float theta = newMissile.start.angle(newMissile.end);
+    float distance = theta * 6371;
+    float v = 10;
+    float angle_of_reach = 0.5 * asin(9.8 * distance / v);
+    float time = distance / (v*cos(theta));
+    */
+    bombers.push_back(newBomber);
+    bombing = false;
 }
 
 void SingleGameState::fireMissile(PlanetCell& origin, PlanetCell& goal){

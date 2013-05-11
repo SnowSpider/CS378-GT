@@ -1,3 +1,18 @@
+material MyMaterials/title
+{
+   technique
+   {
+      pass
+      {
+         texture_unit
+         {
+            texture NuclearWAR.png 2d
+            scale 1 1
+         }
+      }
+   }
+}
+
 material MyMaterials/runway_blue
 {
    technique
@@ -7,6 +22,21 @@ material MyMaterials/runway_blue
          texture_unit
          {
             texture skin_runway_blue.png 2d
+            scale 1 1
+         }
+      }
+   }
+}
+
+material MyMaterials/runway_red
+{
+   technique
+   {
+      pass
+      {
+         texture_unit
+         {
+            texture skin_runway_red.png 2d
             scale 1 1
          }
       }

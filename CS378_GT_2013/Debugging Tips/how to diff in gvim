@@ -1,4 +1,0 @@
-1. "Un-split" all of your windows, leaving only one, and then load file
-#1 in that window.
-2. Type the following command:
-    * :vert diffsplit path_to_file2 

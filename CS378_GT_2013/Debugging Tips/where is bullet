@@ -1,1 +1,0 @@
-It's /usr/local/include/bullet for the .h files, and /usr/local/lib for the library files. You can find this by looking at the generated Makefile, which has the paths that the magic process generated in it.

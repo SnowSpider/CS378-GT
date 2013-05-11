@@ -111,6 +111,7 @@ public:
     void deluminate(PlanetCell& targetCell);
     
     void fireMissile(PlanetCell& origin, PlanetCell& goal);
+    void sendBomber(PlanetCell& origin, PlanetCell& goal);
     void retireUnit(PlanetCell& targetCell);
     void killEnemyUnit(PlanetCell& targetCell);
     void nuke(PlanetCell& targetCell);
@@ -182,6 +183,7 @@ private:
     int unitBuilding;
     int unitMoving;
     bool launching;
+    bool bombing;
     int unitMoney;
     int unitPlutonium;
     int unitTimer;
@@ -220,6 +222,7 @@ private:
     
     std::vector<Unit> units;
     std::vector<Missile> missiles;
+    std::vector<Bomber> bombers;
 };
 //|||||||||||||||||||||||||||||||||||||||||||||||
  
