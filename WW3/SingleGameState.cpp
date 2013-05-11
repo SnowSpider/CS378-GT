@@ -61,6 +61,7 @@ SingleGameState::SingleGameState()
     acceptNeighbors[6] = {0};
     unitBuilding = 0;
     unitMoving = 0;
+    launching = false;
     unitMoney = 0;
     unitPlutonium = 0; 
     unitTimer = 0;
@@ -1041,6 +1042,10 @@ void SingleGameState::onLeftPressed(const OIS::MouseEvent &evt)
                         unitMoving = false;
                     }
                 }
+                else if(launching){
+                    fireMissile(*lastCell, *currentCell);
+                    cout << "origin = " << lastCell->id << ", goal = " << currentCell->id << endl;
+                }
                 
                 BuildButtons();
                 if(currentCell->myUnit >= 1 && currentCell->myUnit <= 5){ //land unit
@@ -1211,6 +1216,10 @@ void SingleGameState::update(double timeSinceLastFrame)
     processTimer();
     processEvents();
     
+    for(int i=0;i<missiles.size();i++){
+        //missiles[i].updateAltitude();
+        missiles[i].fly(m_pSceneMgr);
+    }
     
     /*
     if(mWindow->isClosed())
@@ -1622,6 +1631,13 @@ bool SingleGameState::CaptureButton(const CEGUI::EventArgs &e)
 
 bool SingleGameState::LaunchButton(const CEGUI::EventArgs &e)
 {
+    processResources(-Au_LAUNCH,-Pt_LAUNCH);
+    onButton = true;
+    launching = true;
+    unitMoving = false;
+    if(currentCell != NULL){
+        illuminate(*currentCell);
+    }
     return true;
 }
 
@@ -2387,13 +2403,16 @@ void SingleGameState::fireMissile(PlanetCell& origin, PlanetCell& goal){
     Missile newMissile(myOwner, earth.vertices[origin.id], earth.vertices[goal.id]);
     newMissile.createObject(m_pSceneMgr);
     newMissile.relocate(earth.vertices[origin.id]);
+    
+    /*
     float theta = newMissile.start.angle(newMissile.end);
     float distance = theta * 6371;
     float v = 10;
     float angle_of_reach = 0.5 * asin(9.8 * distance / v);
     float time = distance / (v*cos(theta));
-    
+    */
     missiles.push_back(newMissile);
+    launching = false;
 }
 
 void SingleGameState::retireUnit(PlanetCell& targetCell){

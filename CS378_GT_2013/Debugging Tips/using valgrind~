@@ -1,0 +1,2 @@
+valgrind --tool=memcheck program_name
+valgrind --log-file="valgrind.txt" program_name

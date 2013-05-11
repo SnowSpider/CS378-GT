@@ -1,0 +1,2 @@
+valgrind --tool=memcheck ./OgreApp
+valgrind --log-file="valgrind.txt" ./OgreApp

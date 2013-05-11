@@ -1,0 +1,774 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta charset="utf-8">
+  <title>
+  spacegaier / AdvancedOgreFramework 
+  / source  / License.txt
+ &mdash; Bitbucket
+</title>
+  <link rel="icon" type="image/png" href="https://d3oaxc4q5k2d6q.cloudfront.net/m/9e262ba34f96/img/favicon.png">
+  <meta id="bb-canon-url" name="bb-canon-url" content="https://bitbucket.org">
+  
+  
+<link rel="stylesheet" href="https://d3oaxc4q5k2d6q.cloudfront.net/m/9e262ba34f96/compressed/css/4dfbc6f0595b.css" type="text/css" />
+<link rel="stylesheet" href="https://d3oaxc4q5k2d6q.cloudfront.net/m/9e262ba34f96/compressed/css/f59a383aa1ea.css" type="text/css" />
+
+  <!--[if lt IE 9]><link rel="stylesheet" href="https://d3oaxc4q5k2d6q.cloudfront.net/m/9e262ba34f96/css/aui/aui-ie.css" media="all"><![endif]-->
+  <!--[if IE 9]><link rel="stylesheet" href="https://d3oaxc4q5k2d6q.cloudfront.net/m/9e262ba34f96/css/aui/aui-ie9.css" media="all"><![endif]-->
+  <!--[if IE]><link rel="stylesheet" href="https://d3oaxc4q5k2d6q.cloudfront.net/m/9e262ba34f96/css/aui-overrides-ie.css" media="all"><![endif]-->
+  <meta name="description" content=""/>
+  <link rel="search" type="application/opensearchdescription+xml" href="/opensearch.xml" title="Bitbucket" />
+  
+  <link href="/spacegaier/advancedogreframework/rss" rel="alternate nofollow" type="application/rss+xml" title="RSS feed for AdvancedOgreFramework" />
+
+<script type="text/javascript">var NREUMQ=NREUMQ||[];NREUMQ.push(["mark","firstbyte",new Date().getTime()]);</script></head>
+<body class="aui-layout production "
+      >
+<script type="text/javascript" src="https://d3oaxc4q5k2d6q.cloudfront.net/m/9e262ba34f96/compressed/js/e98deabf8a2e.js"></script>
+<div id="page">
+  <div id="wrapper">
+    
+    <header id="header" role="banner">
+      
+      <nav class="aui-header aui-dropdown2-trigger-group" role="navigation">
+        <div class="aui-header-inner">
+          <div class="aui-header-primary">
+            <h1 class="aui-header-logo aui-header-logo-bitbucket">
+              <a href="/" class="aui-nav-imagelink" id="logo-link">
+                <span class="aui-header-logo-device">Bitbucket</span>
+              </a>
+            </h1>
+            
+              <script id="repo-dropdown-template" type="text/html">
+  
+
+[[#hasViewed]]
+  <div class="aui-dropdown2-section">
+    <strong class="viewed">Recently viewed</strong>
+    <ul class="aui-list-truncate">
+      [[#viewed]]
+        <li class="[[#is_private]]private[[/is_private]][[^is_private]]public[[/is_private]] repository">
+          <a href="[[url]]" title="[[owner]]/[[name]]" class=" aui-icon-container">
+            <img class="repo-avatar size16" src="[[{avatar}]]" alt="[[owner]]/[[name]] avatar"/>
+            [[owner]] / [[name]]
+          </a>
+        </li>
+      [[/viewed]]
+    </ul>
+  </div>
+[[/hasViewed]]
+[[#hasUpdated]]
+<div class="aui-dropdown2-section">
+  <strong class="updated">Recently updated</strong>
+  <ul class="aui-list-truncate">
+    [[#updated]]
+    <li class="[[#is_private]]private[[/is_private]][[^is_private]]public[[/is_private]] repository">
+      <a href="[[url]]" title="[[owner]]/[[name]]" class=" aui-icon-container">
+        <img class="repo-avatar size16" src="[[{avatar}]]" alt="[[owner]]/[[name]] avatar"/>
+        [[owner]] / [[name]]
+      </a>
+    </li>
+    [[/updated]]
+  </ul>
+</div>
+[[/hasUpdated]]
+
+</script>
+              <ul role="menu" class="aui-nav">
+                
+                  <li>
+                    <a href="/plans">
+                      Pricing &amp; signup
+                    </a>
+                  </li>
+                  <li>
+                    <a href="/whats-new">
+                      What's new
+                    </a>
+                  </li>
+                
+              </ul>
+            
+          </div>
+          <div class="aui-header-secondary">
+            
+              <ul role="menu" class="aui-nav">
+                <li>
+                  <form action="/repo/all" method="get" class="aui-quicksearch">
+                    <label for="search-query" class="assistive">owner/repository</label>
+                    <input  id="search-query" class="search" type="text" placeholder="owner/repository" name="name">
+                  </form>
+                </li>
+                <li>
+                  <a class="aui-dropdown2-trigger"aria-controls="header-help-dropdown" aria-owns="header-help-dropdown"
+                    aria-haspopup="true" data-container="#header .aui-header-inner" href="#header-help-dropdown">
+                    <span class="aui-icon aui-icon-small aui-iconfont-help">Help</span><span class="aui-icon-dropdown"></span>
+                  </a>
+                  <nav id="header-help-dropdown" class="aui-dropdown2 aui-style-default aui-dropdown2-in-header" aria-hidden="true">
+                    <div class="aui-dropdown2-section">
+                      <ul>
+                        <li>
+                          <a href="/whats-new" id="features-link">
+                            What's new
+                          </a>
+                        </li>
+                      </ul>
+                    </div>
+                    <div class="aui-dropdown2-section">
+                      <ul>
+                        <li><a href="https://confluence.atlassian.com/display/BITBUCKET/bitbucket+Documentation+Home" target="_blank">Documentation</a></li>
+                        <li><a href="https://confluence.atlassian.com/display/BITBUCKET/bitbucket+101" target="_blank">Bitbucket 101</a></li>
+                        <li><a href="https://confluence.atlassian.com/display/BBKB/Bitbucket+Knowledge+Base+Home" target="_blank">Knowledge base</a></li>
+                      </ul>
+                    </div>
+                    <div class="aui-dropdown2-section">
+                      <ul>
+                        <li><a href="https://answers.atlassian.com/tags/bitbucket/" target="_blank">Bitbucket on Atlassian Answers</a></li>
+                        <li><a href="/support">Support</a></li>
+                      </ul>
+                    </div>
+                  </nav>
+                </li>
+                
+                
+                  <li>
+                    <a class="aui-button aui-button-primary aui-style" href="/account/signup/">
+                      Sign up
+                    </a>
+                  </li>
+                  <li id="user-options">
+                    <a href="/account/signin/?next=/spacegaier/advancedogreframework/src/d24a1662021a2ca899990513e45bc2477cbd9339/License.txt%3Fat%3Ddefault" class="aui-nav-link login-link">Log in</a>
+                  </li>
+                
+              </ul>
+            
+          </div>
+        </div>
+      </nav>
+    </header>
+      <header id="account-warning" role="banner"
+              class="aui-message-banner warning ">
+        <div class="center-content">
+          <span class="aui-icon aui-icon-warning"></span>
+          <span class="message">
+            
+          </span>
+        </div>
+      </header>
+    
+      <header id="aui-message-bar">
+        
+      </header>
+    
+    
+  <header id="repo-warning" role="banner" class="aui-message-banner warning">
+    <div class="center-content">
+      <span class="aui-icon aui-icon-warning"></span>
+      <span class="message">
+      </span>
+    </div>
+  </header>
+  <script id="repo-warning-template" type="text/html">
+  
+
+
+
+
+  This repository's ownership is pending transfer to <a href="/[[username]]">[[username]]</a>.
+  Visit the <a href="/spacegaier/advancedogreframework/admin/transfer">transfer repository page</a> to view more details.
+
+
+</script>
+  <header id="repo-header" class="subhead row">
+    <div class="center-content">
+      <div class="repo-summary">
+        <a class="repo-avatar-link" href="/spacegaier/advancedogreframework">
+          <span class="repo-avatar-container size64" title="spacegaier/AdvancedOgreFramework">
+  <img alt="spacegaier/AdvancedOgreFramework" src="https://d3oaxc4q5k2d6q.cloudfront.net/m/9e262ba34f96/img/language-avatars/c_plus_plus_64.png">
+</span>
+
+          
+        </a>
+        <h1><a class="repo-link" href="/spacegaier/advancedogreframework">AdvancedOgreFramework</a></h1>
+        <ul class="repo-metadata clearfix">
+          <li>
+            <a class="user" href="/spacegaier">
+              <span class="icon user">User icon</span>
+              <span>spacegaier</span>
+            </a>
+          </li>
+          
+          
+          <li class="social">
+            <a class="follow" id="repo-follow"
+               rel="nofollow"
+               href="/spacegaier/advancedogreframework/follow">
+              <span class="icon follow">Follow icon</span>
+              <span class="text">Follow</span>
+            </a>
+          </li>
+          
+        </ul>
+      </div>
+      <div id="repo-toolbar" class="bb-toolbar">
+        
+        <div class="aui-buttons">
+          <a id="repo-clone-button" class="aui-button aui-style" href="https://bitbucket.org/spacegaier/advancedogreframework">
+            <span class="icon clone">Clone icon</span>
+            <span>Clone</span>
+            <span class="aui-icon-dropdown"></span>
+          </a>
+          <a id="fork-button" class="aui-button aui-style"
+             href="/spacegaier/advancedogreframework/fork">
+            <span class="icon fork">Fork icon</span>
+            <span>Fork</span>
+          </a>
+        </div>
+        <div class="aui-buttons">
+          <a id="compare-button" class="aui-button aui-style"
+             href="/spacegaier/advancedogreframework/compare">
+            <span class="icon compare">Compare icon</span>
+            <span>Compare</span>
+          </a>
+          <a id="pull-request-button" class="aui-button aui-style"
+             href="/spacegaier/advancedogreframework/pull-request/new">
+            <span class="icon pull-request">Pull request icon</span>
+            <span>Pull request</span>
+          </a>
+        </div>
+        
+        
+
+<div id="repo-clone-dialog" class="clone-dialog hidden">
+  
+<div class="clone-url">
+  <div class="aui-buttons">
+    <a href="https://bitbucket.org/spacegaier/advancedogreframework"
+       class="aui-button aui-style aui-dropdown2-trigger" aria-haspopup="true"
+       aria-owns="clone-url-dropdown-header">
+      <span class="dropdown-text">HTTPS</span>
+    </a>
+    <div id="clone-url-dropdown-header" class="aui-dropdown2 aui-style-default">
+      <ul class="aui-list-truncate">
+        <li>
+          <a href="https://bitbucket.org/spacegaier/advancedogreframework"
+            
+              data-command="hg clone https://bitbucket.org/spacegaier/advancedogreframework"
+            
+            class="item-link https">HTTPS
+          </a>
+        </li>
+        <li>
+          <a href="ssh://hg@bitbucket.org/spacegaier/advancedogreframework"
+            
+              data-command="hg clone ssh://hg@bitbucket.org/spacegaier/advancedogreframework"
+            
+            class="item-link ssh">SSH
+          </a>
+        </li>
+      </ul>
+    </div>
+    <input type="text" readonly="readonly" value="hg clone https://bitbucket.org/spacegaier/advancedogreframework">
+  </div>
+  
+  <p>Need help cloning? Visit
+     <a href="https://confluence.atlassian.com/x/cgozDQ" target="_blank">Bitbucket 101</a>.</p>
+  
+</div>
+
+
+  
+  
+  
+
+<div class="clone-in-sourcetree"
+  data-https-url="https://bitbucket.org/spacegaier/advancedogreframework"
+  data-ssh-url="ssh://hg@bitbucket.org/spacegaier/advancedogreframework">
+  <p><button class="aui-button aui-style aui-button-primary">Clone in SourceTree</button></p>
+
+  <p>
+    
+      
+        <a href="http://www.sourcetreeapp.com" target="_blank">SourceTree</a>
+        is a free Mac client by Atlassian for Git, Mercurial, and Subversion.
+      
+    
+  </p>
+</div>
+
+  
+</div>
+
+      </div>
+    </div>
+    <div class="clearfix"></div>
+  </header>
+  <nav id="repo-tabs" class="aui-navgroup aui-navgroup-horizontal aui-navgroup-horizontal-roomy">
+    <div class="aui-navgroup-inner">
+      <div class="aui-navgroup-primary">
+        <ul class="aui-nav">
+          
+            <li>
+              <a href="/spacegaier/advancedogreframework/overview" id="repo-overview-link">Overview</a>
+            </li>
+          
+          
+            <li class="aui-nav-selected">
+              <a href="/spacegaier/advancedogreframework/src" id="repo-source-link">Source</a>
+            </li>
+          
+          
+            <li>
+              <a href="/spacegaier/advancedogreframework/commits" id="repo-commits-link">
+                Commits
+              </a>
+            </li>
+          
+          
+            <li>
+              <a href="/spacegaier/advancedogreframework/pull-requests" id="repo-pullrequests-link">
+                Pull requests
+                
+                  
+                
+              </a>
+            </li>
+          
+          
+            
+          
+            <li id="issues-tab" class="
+              
+                hidden
+              
+            ">
+              <a href="/spacegaier/advancedogreframework/issues?status=new&amp;status=open" id="repo-issues-link">
+                Issues
+                
+                  
+                
+              </a>
+            </li>
+            <li id="wiki-tab" class="
+                
+                  
+                    hidden
+                  
+                
+              ">
+              <a href="/spacegaier/advancedogreframework/wiki" id="repo-wiki-link">Wiki</a>
+            </li>
+          
+            <li>
+            <a href="/spacegaier/advancedogreframework/downloads" id="repo-downloads-link">
+              Downloads
+              
+                
+              
+            </a>
+            </li>
+          
+        </ul>
+      </div>
+      <div class="aui-navgroup-secondary">
+        <ul class="aui-nav">
+          
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+    <div id="content" role="main">
+      
+  <div id="repo-content">
+    
+  <div id="source-container">
+    
+
+
+
+<header id="source-path">
+  
+  <div class="labels labels-csv">
+    
+      <div class="aui-buttons">
+        <button data-branches-tags-url="/api/1.0/repositories/spacegaier/advancedogreframework/branches-tags"
+                class="aui-button aui-style branch-dialog-trigger" title="default">
+          
+            
+              <span class="branch icon">Branch</span>
+            
+            <span class="name">default</span>
+          
+          <span class="aui-icon-dropdown"></span>
+        </button>
+      </div>
+    
+  </div>
+  
+  
+    <div class="view-switcher">
+      <div class="aui-buttons">
+        
+          <a href="/spacegaier/advancedogreframework/src/d24a1662021a/License.txt?at=default"
+             class="aui-button aui-style pjax-trigger" aria-pressed="true">
+            Source
+          </a>
+          <a href="/spacegaier/advancedogreframework/diff/License.txt?diff2=d24a1662021a&at=default"
+             class="aui-button aui-style pjax-trigger"
+             title="Diff to previous change">
+            Diff
+          </a>
+          <a href="/spacegaier/advancedogreframework/history-node/d24a1662021a/License.txt?at=default"
+             class="aui-button aui-style pjax-trigger">
+            History
+          </a>
+        
+      </div>
+    </div>
+  
+  <h1>
+    <a href="/spacegaier/advancedogreframework/src/d24a1662021a?at=default"
+       class="pjax-trigger" title="[u&#39;License.txt&#39;]">AdvancedOgreFramework</a> /
+    
+      
+        
+          <span>License.txt</span>
+        
+      
+    
+  </h1>
+  
+    
+    
+  
+  <div class="clearfix"></div>
+</header>
+
+
+  
+    <div id="source-view">
+      <div class="toolbar">
+        <div class="primary">
+          <div class="aui-buttons">
+            
+              <button id="file-history-trigger" class="aui-button aui-style changeset-info"
+                      data-changeset="d24a1662021a2ca899990513e45bc2477cbd9339"
+                      data-path="License.txt"
+                      data-current="d24a1662021a2ca899990513e45bc2477cbd9339">
+                
+                   
+
+<img class="avatar avatar16" src="https://secure.gravatar.com/avatar/5fe8ca7a0588f2ebe5eacda338ee4d45?d=https%3A%2F%2Fd3oaxc4q5k2d6q.cloudfront.net%2Fm%2F9e262ba34f96%2Fimg%2Fdefault_avatar%2F16%2Fuser_blue.png&amp;s=16" alt="Philip Allgaier avatar" />
+<span class="changeset-hash">d24a166</span>
+<time datetime="2013-02-10T23:54:06+00:00" class="timestamp"></time>
+<span class="aui-icon-dropdown"></span>
+
+                
+              </button>
+            
+          </div>
+        </div>
+          <div class="secondary">
+            
+              <div class="aui-buttons">
+                <a href="/spacegaier/advancedogreframework/annotate/d24a1662021a2ca899990513e45bc2477cbd9339/License.txt?at=default"
+                   class="aui-button aui-style pjax-trigger">Blame</a>
+              </div>
+            
+            <div class="aui-buttons">
+              
+              <a href="/spacegaier/advancedogreframework/full-commit/d24a1662021a/License.txt" class="aui-button aui-style"
+                 title="View full commit d24a166">Full commit</a>
+              
+                
+                <a id="embed-link" href="https://bitbucket.org/spacegaier/advancedogreframework/src/d24a1662021a2ca899990513e45bc2477cbd9339/License.txt?embed=t"
+                   class="aui-button aui-style">Embed</a>
+              
+              <a href="/spacegaier/advancedogreframework/raw/d24a1662021a2ca899990513e45bc2477cbd9339/License.txt"
+                 class="aui-button aui-style">Raw</a>
+            </div>
+          </div>
+        <div class="clearfix"></div>
+      </div>
+    </div>
+
+    
+      
+        
+          <div class="file-source">
+            <table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><a href="#cl-1">1</a>
+<a href="#cl-2">2</a>
+<a href="#cl-3">3</a>
+<a href="#cl-4">4</a>
+<a href="#cl-5">5</a>
+<a href="#cl-6">6</a>
+<a href="#cl-7">7</a></pre></div></td><td class="code"><div class="highlight"><pre><a name="cl-1"></a>Copyright (c) 2012-2013 Philip Allgaier
+<a name="cl-2"></a>
+<a name="cl-3"></a>Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the &quot;Software&quot;), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+<a name="cl-4"></a>
+<a name="cl-5"></a>The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+<a name="cl-6"></a>
+<a name="cl-7"></a>THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+</pre></div>
+</td></tr></table>
+          </div>
+        
+      
+    
+  
+
+
+  <script id="source-changeset" type="text/html">
+  
+
+<a href="/spacegaier/advancedogreframework/src/[[raw_node]]/License.txt?at=default"
+   class="[[#selected]]highlight[[/selected]]"
+   data-hash="[[node]]">
+  [[#author.username]]
+    <img class="avatar avatar16" src="[[author.avatar]]"/>
+    <span class="author" title="[[raw_author]]">[[author.display_name]]</span>
+  [[/author.username]]
+  [[^author.username]]
+    <img class="avatar avatar16" src="https://d3oaxc4q5k2d6q.cloudfront.net/m/9e262ba34f96/img/default_avatar/16/user_blue.png"/>
+    <span class="author unmapped" title="[[raw_author]]">[[author]]</span>
+  [[/author.username]]
+  <time datetime="[[utctimestamp]]" data-title="true">[[utctimestamp]]</time>
+  <span class="message">[[message]]</span>
+</a>
+
+</script>
+  <script id="embed-template" type="text/html">
+  
+
+<form class="aui embed">
+  <label for="embed-code">Embed this source in another page:</label>
+  <input type="text" readonly="true" value="&lt;script src=&quot;[[url]]&quot;&gt;&lt;/script&gt;" id="embed-code">
+</form>
+
+</script>
+
+
+<div class="mask"></div>
+
+
+
+  <script id="branch-dialog-template" type="text/html">
+  
+
+<div class="tabbed-filter-widget branch-dialog">
+  <div class="tabbed-filter">
+    <input placeholder="Filter branches" class="filter-box" autosave="branch-dropdown-570991" type="text">
+    [[^ignoreTags]]
+      <div class="aui-tabs horizontal-tabs aui-tabs-disabled filter-tabs">
+        <ul class="tabs-menu">
+          <li class="menu-item active-tab"><a href="#branches">Branches</a></li>
+          <li class="menu-item"><a href="#tags">Tags</a></li>
+        </ul>
+      </div>
+    [[/ignoreTags]]
+  </div>
+  
+    <div class="tab-pane active-pane" id="branches" data-filter-placeholder="Filter branches">
+      <ol class="filter-list">
+        <li class="empty-msg">No matching branches</li>
+        [[#branches]]
+          [[#hasMultipleHeads]]
+            [[#heads]]
+              <li class="comprev filter-item">
+                <a href="/spacegaier/advancedogreframework/src/[[changeset]]/License.txt?at=[[safeName]]"
+                   title="[[name]]">
+                  [[name]] ([[shortChangeset]])
+                </a>
+              </li>
+            [[/heads]]
+          [[/hasMultipleHeads]]
+          [[^hasMultipleHeads]]
+            <li class="comprev filter-item">
+              <a href="/spacegaier/advancedogreframework/src/[[changeset]]/License.txt?at=[[safeName]]" title="[[name]]">
+                [[name]]
+              </a>
+            </li>
+          [[/hasMultipleHeads]]
+        [[/branches]]
+      </ol>
+    </div>
+    <div class="tab-pane" id="tags" data-filter-placeholder="Filter tags">
+      <ol class="filter-list">
+        <li class="empty-msg">No matching tags</li>
+        [[#tags]]
+          <li class="comprev filter-item">
+            <a href="/spacegaier/advancedogreframework/src/[[changeset]]/License.txt?at=[[safeName]]" title="[[name]]">
+              [[name]]
+            </a>
+          </li>
+        [[/tags]]
+      </ol>
+    </div>
+  
+</div>
+
+</script>
+
+
+
+  </div>
+
+  </div>
+  
+
+<form id="file-search-form" action="#"
+  
+  data-revision="d24a1662021a2ca899990513e45bc2477cbd9339"
+  data-branch="default">
+  <input type="text" id="file-search-query" class="loading">
+  <div id="filtered-files"></div>
+  <div class="tip"><em>Tip:</em> Filter by directory path e.g. <strong>/media app.js</strong> to search for public<strong>/media/app.js</strong>.</div>
+  <div class="tip"><em>Tip:</em> Use camelCasing e.g. <strong>ProjME</strong> to search for <strong>ProjectModifiedE</strong>vent.java.</div>
+  <div class="tip"><em>Tip:</em> Filter by extension type e.g. <strong>/repo .js</strong> to search for all <strong>.js</strong> files in the <strong>/repo</strong> directory.</div>
+  <div class="tip"><em>Tip:</em> Separate your search with spaces e.g. <strong>/ssh pom.xml</strong> to search for src<strong>/ssh/pom.xml</strong>.</div>
+  <div class="tip"><em>Tip:</em> Use ↑ and ↓ arrow keys to navigate and <strong>return</strong> to view the file.</div>
+  <div class="tip mod-osx"><em>Tip:</em> You can also navigate files with <strong>Ctrl+j</strong> <em>(next)</em> and <strong>Ctrl+k</strong> <em>(previous)</em> and view the file with <strong>Ctrl+o</strong>.</div>
+  <div class="tip mod-win"><em>Tip:</em> You can also navigate files with <strong>Alt+j</strong> <em>(next)</em> and <strong>Alt+k</strong> <em>(previous)</em> and view the file with <strong>Alt+o</strong>.</div>
+  <script id="filtered-files-template" type="text/html">
+  
+
+<table class="aui bb-list">
+  <thead>
+    <tr class="assistive">
+      <th class="name">Filename</th>
+    </tr>
+  </thead>
+  <tbody>
+    [[#files]]
+    <tr class="iterable-item">
+      <td class="name [[#isDirectory]]directory[[/isDirectory]]">
+        <a href="/spacegaier/advancedogreframework/src/[[node]]/[[name]][[#branch]]?at=[[branch]][[/branch]]"
+           title="[[name]]" class="execute" tabindex="-1">
+          [[&highlightedName]]
+        </a>
+      </td>
+    </tr>
+    [[/files]]
+  </tbody>
+</table>
+
+</script>
+</form>
+
+
+    </div>
+  </div>
+  <footer id="footer" role="contentinfo">
+    <section class="footer-body">
+      <ul>
+        <li><a href="http://blog.bitbucket.org">Blog</a></li>
+        <li><a href="//bitbucket.org/site/master/issues/new">Report a bug</a></li>
+        <li><a href="/support">Support</a></li>
+        <li><a href="http://confluence.atlassian.com/display/BITBUCKET">Documentation</a></li>
+        <li><a href="http://confluence.atlassian.com/x/IYBGDQ">API</a></li>
+        <li><a href="http://groups.google.com/group/bitbucket-users">Forum</a></li>
+        <li><a href="http://status.bitbucket.org/">Server status</a></li>
+        <li><a href="http://www.atlassian.com/hosted/terms.jsp">Terms of service</a></li>
+        <li><a href="http://www.atlassian.com/about/privacy.jsp">Privacy policy</a></li>
+      </ul>
+      <ul>
+        
+        <li><a href="http://git-scm.com/">Git 1.7.10.3</a></li>
+        <li><a href="http://mercurial.selenic.com/">Mercurial 2.2.2</a></li>
+        <li><a href="https://www.djangoproject.com/">Django 1.3.1</a></li>
+        <li><a href="http://www.python.org/">Python 2.7.3</a></li>
+        <li><a href="#">1a0ea496d75b / 9e262ba34f96 @ bitbucket23</a></li>
+      </ul>
+    </section>
+  </footer>
+</div>
+
+<script type="text/javascript" src="https://d3oaxc4q5k2d6q.cloudfront.net/m/9e262ba34f96/compressed/js/41c4c0a4ebcc.js"></script>
+
+<!-- This script exists purely for the benefit of our selenium tests -->
+<script>
+  setTimeout(function () {
+    BB.JsLoaded = true;
+  }, 3000);
+</script>
+
+
+
+<script>
+  (function (window) {
+    // Base URL to use for non-CNAME URLs.
+    BB.baseUrl = 'https://bitbucket.org';
+
+    BB.images = {
+      invitation: 'https://d3oaxc4q5k2d6q.cloudfront.net/m/9e262ba34f96/img/icons/fugue/card_address.png',
+      noAvatar: 'https://d3oaxc4q5k2d6q.cloudfront.net/m/9e262ba34f96/img/default_avatar/16/user_blue.png'
+    };
+    BB.user = {"isKbdShortcutsEnabled": true, "isSshEnabled": false, "isAuthenticated": false};
+    BB.repo || (BB.repo = {});
+    
+      BB.repo.id = 570991;
+      BB.repo.scm = 'hg';
+      BB.repo.readonly = false;
+      
+      
+        BB.repo.language = 'c++';
+        BB.repo.pygmentsLanguage = 'c++';
+      
+      
+        BB.repo.slug = 'advancedogreframework';
+      
+      
+        BB.repo.owner = {};
+        BB.repo.owner.username = 'spacegaier';
+        BB.repo.owner.is_team = false;
+      
+      
+      // Coerce `BB.repo` to a string to get
+      // "davidchambers/mango" or whatever.
+      BB.repo.toString = function () {
+        return BB.cname ? this.slug : '{owner.username}/{slug}'.format(this);
+      }
+      
+        BB.changeset = 'd24a1662021a2ca899990513e45bc2477cbd9339'
+      
+      
+    
+    window.setInterval(BB.localize, 60 * 1000);
+    $(document).on('ready pjax:end', function () { BB.localize(); });
+  })(window);
+</script>
+
+
+<script>
+    // Bitbucket Google Analytics
+    // NOTE: these will not fire in development. In debug mode it just logs them to console.
+    (function (window) {
+        // Track the main pageview to the Bitbucket GA account.
+        BB.gaqPush(['_trackPageview']);
+        // Track the main pageview to the Atlassian GA account.
+        BB.gaqPush(['atl._trackPageview']);
+
+        
+
+
+        
+
+        // Include GA commands from sub-templates
+        
+
+        (function () {
+            var ga = document.createElement('script');
+            ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+            ga.setAttribute('async', 'true');
+            document.documentElement.firstChild.appendChild(ga);
+        }());
+    })(window);
+</script>
+
+
+
+<script type="text/javascript">if(!NREUMQ.f){NREUMQ.f=function(){NREUMQ.push(["load",new Date().getTime()]);var e=document.createElement("script");e.type="text/javascript";e.src=(("http:"===document.location.protocol)?"http:":"https:")+"//"+"d1ros97qkrwjf5.cloudfront.net/42/eum/rum.js";document.body.appendChild(e);if(NREUMQ.a)NREUMQ.a();};NREUMQ.a=window.onload;window.onload=NREUMQ.f;};NREUMQ.push(["nrfj","beacon-1.newrelic.com","7d4a9813d0","295788","MgMDYhcHDUJVVEIKWAtJJ0MLBRdYW1kZAV4RBBRVDgMXH1VHRhAZFwMRWVdIFVhRQEVZUQwKBFQXCRRCUQ==",0,184,new Date().getTime(),"","","","",""]);</script></body>
+</html>

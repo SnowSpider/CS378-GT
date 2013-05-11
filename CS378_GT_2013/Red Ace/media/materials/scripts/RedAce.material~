@@ -1,0 +1,14 @@
+material RedAce/Newspaper
+{
+    technique
+    {
+        pass
+        {
+            texture_unit
+            {
+                texture binLadenNYT.png
+                scale 1 1 
+            }
+        }   
+    }
+}

@@ -1,0 +1,997 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta charset="utf-8">
+  <title>
+  spacegaier / AdvancedOgreFramework 
+  / source  / AdvancedOgreFramework / DotSceneLoader.hpp
+ &mdash; Bitbucket
+</title>
+  <link rel="icon" type="image/png" href="https://d3oaxc4q5k2d6q.cloudfront.net/m/9e262ba34f96/img/favicon.png">
+  <meta id="bb-canon-url" name="bb-canon-url" content="https://bitbucket.org">
+  
+  
+<link rel="stylesheet" href="https://d3oaxc4q5k2d6q.cloudfront.net/m/9e262ba34f96/compressed/css/4dfbc6f0595b.css" type="text/css" />
+<link rel="stylesheet" href="https://d3oaxc4q5k2d6q.cloudfront.net/m/9e262ba34f96/compressed/css/f59a383aa1ea.css" type="text/css" />
+
+  <!--[if lt IE 9]><link rel="stylesheet" href="https://d3oaxc4q5k2d6q.cloudfront.net/m/9e262ba34f96/css/aui/aui-ie.css" media="all"><![endif]-->
+  <!--[if IE 9]><link rel="stylesheet" href="https://d3oaxc4q5k2d6q.cloudfront.net/m/9e262ba34f96/css/aui/aui-ie9.css" media="all"><![endif]-->
+  <!--[if IE]><link rel="stylesheet" href="https://d3oaxc4q5k2d6q.cloudfront.net/m/9e262ba34f96/css/aui-overrides-ie.css" media="all"><![endif]-->
+  <meta name="description" content=""/>
+  <link rel="search" type="application/opensearchdescription+xml" href="/opensearch.xml" title="Bitbucket" />
+  
+  <link href="/spacegaier/advancedogreframework/rss" rel="alternate nofollow" type="application/rss+xml" title="RSS feed for AdvancedOgreFramework" />
+
+<script type="text/javascript">var NREUMQ=NREUMQ||[];NREUMQ.push(["mark","firstbyte",new Date().getTime()]);</script></head>
+<body class="aui-layout production "
+      >
+<script type="text/javascript" src="https://d3oaxc4q5k2d6q.cloudfront.net/m/9e262ba34f96/compressed/js/e98deabf8a2e.js"></script>
+<div id="page">
+  <div id="wrapper">
+    
+    <header id="header" role="banner">
+      
+      <nav class="aui-header aui-dropdown2-trigger-group" role="navigation">
+        <div class="aui-header-inner">
+          <div class="aui-header-primary">
+            <h1 class="aui-header-logo aui-header-logo-bitbucket">
+              <a href="/" class="aui-nav-imagelink" id="logo-link">
+                <span class="aui-header-logo-device">Bitbucket</span>
+              </a>
+            </h1>
+            
+              <script id="repo-dropdown-template" type="text/html">
+  
+
+[[#hasViewed]]
+  <div class="aui-dropdown2-section">
+    <strong class="viewed">Recently viewed</strong>
+    <ul class="aui-list-truncate">
+      [[#viewed]]
+        <li class="[[#is_private]]private[[/is_private]][[^is_private]]public[[/is_private]] repository">
+          <a href="[[url]]" title="[[owner]]/[[name]]" class=" aui-icon-container">
+            <img class="repo-avatar size16" src="[[{avatar}]]" alt="[[owner]]/[[name]] avatar"/>
+            [[owner]] / [[name]]
+          </a>
+        </li>
+      [[/viewed]]
+    </ul>
+  </div>
+[[/hasViewed]]
+[[#hasUpdated]]
+<div class="aui-dropdown2-section">
+  <strong class="updated">Recently updated</strong>
+  <ul class="aui-list-truncate">
+    [[#updated]]
+    <li class="[[#is_private]]private[[/is_private]][[^is_private]]public[[/is_private]] repository">
+      <a href="[[url]]" title="[[owner]]/[[name]]" class=" aui-icon-container">
+        <img class="repo-avatar size16" src="[[{avatar}]]" alt="[[owner]]/[[name]] avatar"/>
+        [[owner]] / [[name]]
+      </a>
+    </li>
+    [[/updated]]
+  </ul>
+</div>
+[[/hasUpdated]]
+
+</script>
+              <ul role="menu" class="aui-nav">
+                
+                  <li>
+                    <a href="/plans">
+                      Pricing &amp; signup
+                    </a>
+                  </li>
+                  <li>
+                    <a href="/whats-new">
+                      What's new
+                    </a>
+                  </li>
+                
+              </ul>
+            
+          </div>
+          <div class="aui-header-secondary">
+            
+              <ul role="menu" class="aui-nav">
+                <li>
+                  <form action="/repo/all" method="get" class="aui-quicksearch">
+                    <label for="search-query" class="assistive">owner/repository</label>
+                    <input  id="search-query" class="search" type="text" placeholder="owner/repository" name="name">
+                  </form>
+                </li>
+                <li>
+                  <a class="aui-dropdown2-trigger"aria-controls="header-help-dropdown" aria-owns="header-help-dropdown"
+                    aria-haspopup="true" data-container="#header .aui-header-inner" href="#header-help-dropdown">
+                    <span class="aui-icon aui-icon-small aui-iconfont-help">Help</span><span class="aui-icon-dropdown"></span>
+                  </a>
+                  <nav id="header-help-dropdown" class="aui-dropdown2 aui-style-default aui-dropdown2-in-header" aria-hidden="true">
+                    <div class="aui-dropdown2-section">
+                      <ul>
+                        <li>
+                          <a href="/whats-new" id="features-link">
+                            What's new
+                          </a>
+                        </li>
+                      </ul>
+                    </div>
+                    <div class="aui-dropdown2-section">
+                      <ul>
+                        <li><a href="https://confluence.atlassian.com/display/BITBUCKET/bitbucket+Documentation+Home" target="_blank">Documentation</a></li>
+                        <li><a href="https://confluence.atlassian.com/display/BITBUCKET/bitbucket+101" target="_blank">Bitbucket 101</a></li>
+                        <li><a href="https://confluence.atlassian.com/display/BBKB/Bitbucket+Knowledge+Base+Home" target="_blank">Knowledge base</a></li>
+                      </ul>
+                    </div>
+                    <div class="aui-dropdown2-section">
+                      <ul>
+                        <li><a href="https://answers.atlassian.com/tags/bitbucket/" target="_blank">Bitbucket on Atlassian Answers</a></li>
+                        <li><a href="/support">Support</a></li>
+                      </ul>
+                    </div>
+                  </nav>
+                </li>
+                
+                
+                  <li>
+                    <a class="aui-button aui-button-primary aui-style" href="/account/signup/">
+                      Sign up
+                    </a>
+                  </li>
+                  <li id="user-options">
+                    <a href="/account/signin/?next=/spacegaier/advancedogreframework/src/d24a1662021a2ca899990513e45bc2477cbd9339/AdvancedOgreFramework/DotSceneLoader.hpp%3Fat%3Ddefault" class="aui-nav-link login-link">Log in</a>
+                  </li>
+                
+              </ul>
+            
+          </div>
+        </div>
+      </nav>
+    </header>
+      <header id="account-warning" role="banner"
+              class="aui-message-banner warning ">
+        <div class="center-content">
+          <span class="aui-icon aui-icon-warning"></span>
+          <span class="message">
+            
+          </span>
+        </div>
+      </header>
+    
+      <header id="aui-message-bar">
+        
+      </header>
+    
+    
+  <header id="repo-warning" role="banner" class="aui-message-banner warning">
+    <div class="center-content">
+      <span class="aui-icon aui-icon-warning"></span>
+      <span class="message">
+      </span>
+    </div>
+  </header>
+  <script id="repo-warning-template" type="text/html">
+  
+
+
+
+
+  This repository's ownership is pending transfer to <a href="/[[username]]">[[username]]</a>.
+  Visit the <a href="/spacegaier/advancedogreframework/admin/transfer">transfer repository page</a> to view more details.
+
+
+</script>
+  <header id="repo-header" class="subhead row">
+    <div class="center-content">
+      <div class="repo-summary">
+        <a class="repo-avatar-link" href="/spacegaier/advancedogreframework">
+          <span class="repo-avatar-container size64" title="spacegaier/AdvancedOgreFramework">
+  <img alt="spacegaier/AdvancedOgreFramework" src="https://d3oaxc4q5k2d6q.cloudfront.net/m/9e262ba34f96/img/language-avatars/c_plus_plus_64.png">
+</span>
+
+          
+        </a>
+        <h1><a class="repo-link" href="/spacegaier/advancedogreframework">AdvancedOgreFramework</a></h1>
+        <ul class="repo-metadata clearfix">
+          <li>
+            <a class="user" href="/spacegaier">
+              <span class="icon user">User icon</span>
+              <span>spacegaier</span>
+            </a>
+          </li>
+          
+          
+          <li class="social">
+            <a class="follow" id="repo-follow"
+               rel="nofollow"
+               href="/spacegaier/advancedogreframework/follow">
+              <span class="icon follow">Follow icon</span>
+              <span class="text">Follow</span>
+            </a>
+          </li>
+          
+        </ul>
+      </div>
+      <div id="repo-toolbar" class="bb-toolbar">
+        
+        <div class="aui-buttons">
+          <a id="repo-clone-button" class="aui-button aui-style" href="https://bitbucket.org/spacegaier/advancedogreframework">
+            <span class="icon clone">Clone icon</span>
+            <span>Clone</span>
+            <span class="aui-icon-dropdown"></span>
+          </a>
+          <a id="fork-button" class="aui-button aui-style"
+             href="/spacegaier/advancedogreframework/fork">
+            <span class="icon fork">Fork icon</span>
+            <span>Fork</span>
+          </a>
+        </div>
+        <div class="aui-buttons">
+          <a id="compare-button" class="aui-button aui-style"
+             href="/spacegaier/advancedogreframework/compare">
+            <span class="icon compare">Compare icon</span>
+            <span>Compare</span>
+          </a>
+          <a id="pull-request-button" class="aui-button aui-style"
+             href="/spacegaier/advancedogreframework/pull-request/new">
+            <span class="icon pull-request">Pull request icon</span>
+            <span>Pull request</span>
+          </a>
+        </div>
+        
+        
+
+<div id="repo-clone-dialog" class="clone-dialog hidden">
+  
+<div class="clone-url">
+  <div class="aui-buttons">
+    <a href="https://bitbucket.org/spacegaier/advancedogreframework"
+       class="aui-button aui-style aui-dropdown2-trigger" aria-haspopup="true"
+       aria-owns="clone-url-dropdown-header">
+      <span class="dropdown-text">HTTPS</span>
+    </a>
+    <div id="clone-url-dropdown-header" class="aui-dropdown2 aui-style-default">
+      <ul class="aui-list-truncate">
+        <li>
+          <a href="https://bitbucket.org/spacegaier/advancedogreframework"
+            
+              data-command="hg clone https://bitbucket.org/spacegaier/advancedogreframework"
+            
+            class="item-link https">HTTPS
+          </a>
+        </li>
+        <li>
+          <a href="ssh://hg@bitbucket.org/spacegaier/advancedogreframework"
+            
+              data-command="hg clone ssh://hg@bitbucket.org/spacegaier/advancedogreframework"
+            
+            class="item-link ssh">SSH
+          </a>
+        </li>
+      </ul>
+    </div>
+    <input type="text" readonly="readonly" value="hg clone https://bitbucket.org/spacegaier/advancedogreframework">
+  </div>
+  
+  <p>Need help cloning? Visit
+     <a href="https://confluence.atlassian.com/x/cgozDQ" target="_blank">Bitbucket 101</a>.</p>
+  
+</div>
+
+
+  
+  
+  
+
+<div class="clone-in-sourcetree"
+  data-https-url="https://bitbucket.org/spacegaier/advancedogreframework"
+  data-ssh-url="ssh://hg@bitbucket.org/spacegaier/advancedogreframework">
+  <p><button class="aui-button aui-style aui-button-primary">Clone in SourceTree</button></p>
+
+  <p>
+    
+      
+        <a href="http://www.sourcetreeapp.com" target="_blank">SourceTree</a>
+        is a free Mac client by Atlassian for Git, Mercurial, and Subversion.
+      
+    
+  </p>
+</div>
+
+  
+</div>
+
+      </div>
+    </div>
+    <div class="clearfix"></div>
+  </header>
+  <nav id="repo-tabs" class="aui-navgroup aui-navgroup-horizontal aui-navgroup-horizontal-roomy">
+    <div class="aui-navgroup-inner">
+      <div class="aui-navgroup-primary">
+        <ul class="aui-nav">
+          
+            <li>
+              <a href="/spacegaier/advancedogreframework/overview" id="repo-overview-link">Overview</a>
+            </li>
+          
+          
+            <li class="aui-nav-selected">
+              <a href="/spacegaier/advancedogreframework/src" id="repo-source-link">Source</a>
+            </li>
+          
+          
+            <li>
+              <a href="/spacegaier/advancedogreframework/commits" id="repo-commits-link">
+                Commits
+              </a>
+            </li>
+          
+          
+            <li>
+              <a href="/spacegaier/advancedogreframework/pull-requests" id="repo-pullrequests-link">
+                Pull requests
+                
+                  
+                
+              </a>
+            </li>
+          
+          
+            
+          
+            <li id="issues-tab" class="
+              
+                hidden
+              
+            ">
+              <a href="/spacegaier/advancedogreframework/issues?status=new&amp;status=open" id="repo-issues-link">
+                Issues
+                
+                  
+                
+              </a>
+            </li>
+            <li id="wiki-tab" class="
+                
+                  
+                    hidden
+                  
+                
+              ">
+              <a href="/spacegaier/advancedogreframework/wiki" id="repo-wiki-link">Wiki</a>
+            </li>
+          
+            <li>
+            <a href="/spacegaier/advancedogreframework/downloads" id="repo-downloads-link">
+              Downloads
+              
+                
+              
+            </a>
+            </li>
+          
+        </ul>
+      </div>
+      <div class="aui-navgroup-secondary">
+        <ul class="aui-nav">
+          
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+    <div id="content" role="main">
+      
+  <div id="repo-content">
+    
+  <div id="source-container">
+    
+
+
+
+<header id="source-path">
+  
+  <div class="labels labels-csv">
+    
+      <div class="aui-buttons">
+        <button data-branches-tags-url="/api/1.0/repositories/spacegaier/advancedogreframework/branches-tags"
+                class="aui-button aui-style branch-dialog-trigger" title="default">
+          
+            
+              <span class="branch icon">Branch</span>
+            
+            <span class="name">default</span>
+          
+          <span class="aui-icon-dropdown"></span>
+        </button>
+      </div>
+    
+  </div>
+  
+  
+    <div class="view-switcher">
+      <div class="aui-buttons">
+        
+          <a href="/spacegaier/advancedogreframework/src/d24a1662021a/AdvancedOgreFramework/DotSceneLoader.hpp?at=default"
+             class="aui-button aui-style pjax-trigger" aria-pressed="true">
+            Source
+          </a>
+          <a href="/spacegaier/advancedogreframework/diff/AdvancedOgreFramework/DotSceneLoader.hpp?diff2=d24a1662021a&at=default"
+             class="aui-button aui-style pjax-trigger"
+             title="Diff to previous change">
+            Diff
+          </a>
+          <a href="/spacegaier/advancedogreframework/history-node/d24a1662021a/AdvancedOgreFramework/DotSceneLoader.hpp?at=default"
+             class="aui-button aui-style pjax-trigger">
+            History
+          </a>
+        
+      </div>
+    </div>
+  
+  <h1>
+    <a href="/spacegaier/advancedogreframework/src/d24a1662021a?at=default"
+       class="pjax-trigger" title="[u&#39;AdvancedOgreFramework&#39;, u&#39;DotSceneLoader.hpp&#39;]">AdvancedOgreFramework</a> /
+    
+      
+        
+          
+            <a href="/spacegaier/advancedogreframework/src/d24a1662021a/AdvancedOgreFramework?at=default"
+               class="pjax-trigger">AdvancedOgreFramework</a> /
+          
+        
+      
+    
+      
+        
+          <span>DotSceneLoader.hpp</span>
+        
+      
+    
+  </h1>
+  
+    
+    
+  
+  <div class="clearfix"></div>
+</header>
+
+
+  
+    <div id="source-view">
+      <div class="toolbar">
+        <div class="primary">
+          <div class="aui-buttons">
+            
+              <button id="file-history-trigger" class="aui-button aui-style changeset-info"
+                      data-changeset="d24a1662021a2ca899990513e45bc2477cbd9339"
+                      data-path="AdvancedOgreFramework/DotSceneLoader.hpp"
+                      data-current="d24a1662021a2ca899990513e45bc2477cbd9339">
+                
+                   
+
+<img class="avatar avatar16" src="https://secure.gravatar.com/avatar/5fe8ca7a0588f2ebe5eacda338ee4d45?d=https%3A%2F%2Fd3oaxc4q5k2d6q.cloudfront.net%2Fm%2F9e262ba34f96%2Fimg%2Fdefault_avatar%2F16%2Fuser_blue.png&amp;s=16" alt="Philip Allgaier avatar" />
+<span class="changeset-hash">d24a166</span>
+<time datetime="2013-02-10T23:54:06+00:00" class="timestamp"></time>
+<span class="aui-icon-dropdown"></span>
+
+                
+              </button>
+            
+          </div>
+        </div>
+          <div class="secondary">
+            
+              <div class="aui-buttons">
+                <a href="/spacegaier/advancedogreframework/annotate/d24a1662021a2ca899990513e45bc2477cbd9339/AdvancedOgreFramework/DotSceneLoader.hpp?at=default"
+                   class="aui-button aui-style pjax-trigger">Blame</a>
+              </div>
+            
+            <div class="aui-buttons">
+              
+              <a href="/spacegaier/advancedogreframework/full-commit/d24a1662021a/AdvancedOgreFramework/DotSceneLoader.hpp" class="aui-button aui-style"
+                 title="View full commit d24a166">Full commit</a>
+              
+                
+                <a id="embed-link" href="https://bitbucket.org/spacegaier/advancedogreframework/src/d24a1662021a2ca899990513e45bc2477cbd9339/AdvancedOgreFramework/DotSceneLoader.hpp?embed=t"
+                   class="aui-button aui-style">Embed</a>
+              
+              <a href="/spacegaier/advancedogreframework/raw/d24a1662021a2ca899990513e45bc2477cbd9339/AdvancedOgreFramework/DotSceneLoader.hpp"
+                 class="aui-button aui-style">Raw</a>
+            </div>
+          </div>
+        <div class="clearfix"></div>
+      </div>
+    </div>
+
+    
+      
+        
+          <div class="file-source">
+            <table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><a href="#cl-1">  1</a>
+<a href="#cl-2">  2</a>
+<a href="#cl-3">  3</a>
+<a href="#cl-4">  4</a>
+<a href="#cl-5">  5</a>
+<a href="#cl-6">  6</a>
+<a href="#cl-7">  7</a>
+<a href="#cl-8">  8</a>
+<a href="#cl-9">  9</a>
+<a href="#cl-10"> 10</a>
+<a href="#cl-11"> 11</a>
+<a href="#cl-12"> 12</a>
+<a href="#cl-13"> 13</a>
+<a href="#cl-14"> 14</a>
+<a href="#cl-15"> 15</a>
+<a href="#cl-16"> 16</a>
+<a href="#cl-17"> 17</a>
+<a href="#cl-18"> 18</a>
+<a href="#cl-19"> 19</a>
+<a href="#cl-20"> 20</a>
+<a href="#cl-21"> 21</a>
+<a href="#cl-22"> 22</a>
+<a href="#cl-23"> 23</a>
+<a href="#cl-24"> 24</a>
+<a href="#cl-25"> 25</a>
+<a href="#cl-26"> 26</a>
+<a href="#cl-27"> 27</a>
+<a href="#cl-28"> 28</a>
+<a href="#cl-29"> 29</a>
+<a href="#cl-30"> 30</a>
+<a href="#cl-31"> 31</a>
+<a href="#cl-32"> 32</a>
+<a href="#cl-33"> 33</a>
+<a href="#cl-34"> 34</a>
+<a href="#cl-35"> 35</a>
+<a href="#cl-36"> 36</a>
+<a href="#cl-37"> 37</a>
+<a href="#cl-38"> 38</a>
+<a href="#cl-39"> 39</a>
+<a href="#cl-40"> 40</a>
+<a href="#cl-41"> 41</a>
+<a href="#cl-42"> 42</a>
+<a href="#cl-43"> 43</a>
+<a href="#cl-44"> 44</a>
+<a href="#cl-45"> 45</a>
+<a href="#cl-46"> 46</a>
+<a href="#cl-47"> 47</a>
+<a href="#cl-48"> 48</a>
+<a href="#cl-49"> 49</a>
+<a href="#cl-50"> 50</a>
+<a href="#cl-51"> 51</a>
+<a href="#cl-52"> 52</a>
+<a href="#cl-53"> 53</a>
+<a href="#cl-54"> 54</a>
+<a href="#cl-55"> 55</a>
+<a href="#cl-56"> 56</a>
+<a href="#cl-57"> 57</a>
+<a href="#cl-58"> 58</a>
+<a href="#cl-59"> 59</a>
+<a href="#cl-60"> 60</a>
+<a href="#cl-61"> 61</a>
+<a href="#cl-62"> 62</a>
+<a href="#cl-63"> 63</a>
+<a href="#cl-64"> 64</a>
+<a href="#cl-65"> 65</a>
+<a href="#cl-66"> 66</a>
+<a href="#cl-67"> 67</a>
+<a href="#cl-68"> 68</a>
+<a href="#cl-69"> 69</a>
+<a href="#cl-70"> 70</a>
+<a href="#cl-71"> 71</a>
+<a href="#cl-72"> 72</a>
+<a href="#cl-73"> 73</a>
+<a href="#cl-74"> 74</a>
+<a href="#cl-75"> 75</a>
+<a href="#cl-76"> 76</a>
+<a href="#cl-77"> 77</a>
+<a href="#cl-78"> 78</a>
+<a href="#cl-79"> 79</a>
+<a href="#cl-80"> 80</a>
+<a href="#cl-81"> 81</a>
+<a href="#cl-82"> 82</a>
+<a href="#cl-83"> 83</a>
+<a href="#cl-84"> 84</a>
+<a href="#cl-85"> 85</a>
+<a href="#cl-86"> 86</a>
+<a href="#cl-87"> 87</a>
+<a href="#cl-88"> 88</a>
+<a href="#cl-89"> 89</a>
+<a href="#cl-90"> 90</a>
+<a href="#cl-91"> 91</a>
+<a href="#cl-92"> 92</a>
+<a href="#cl-93"> 93</a>
+<a href="#cl-94"> 94</a>
+<a href="#cl-95"> 95</a>
+<a href="#cl-96"> 96</a>
+<a href="#cl-97"> 97</a>
+<a href="#cl-98"> 98</a>
+<a href="#cl-99"> 99</a>
+<a href="#cl-100">100</a>
+<a href="#cl-101">101</a>
+<a href="#cl-102">102</a>
+<a href="#cl-103">103</a>
+<a href="#cl-104">104</a>
+<a href="#cl-105">105</a>
+<a href="#cl-106">106</a>
+<a href="#cl-107">107</a>
+<a href="#cl-108">108</a>
+<a href="#cl-109">109</a>
+<a href="#cl-110">110</a>
+<a href="#cl-111">111</a>
+<a href="#cl-112">112</a>
+<a href="#cl-113">113</a>
+<a href="#cl-114">114</a></pre></div></td><td class="code"><div class="highlight"><pre><a name="cl-1"></a><span class="c1">//|||||||||||||||||||||||||||||||||||||||||||||||</span>
+<a name="cl-2"></a>
+<a name="cl-3"></a><span class="cp">#ifndef DOT_SCENELOADER_HPP</span>
+<a name="cl-4"></a><span class="cp">#define DOT_SCENELOADER_HPP</span>
+<a name="cl-5"></a>
+<a name="cl-6"></a><span class="c1">//|||||||||||||||||||||||||||||||||||||||||||||||</span>
+<a name="cl-7"></a>
+<a name="cl-8"></a><span class="c1">// Includes</span>
+<a name="cl-9"></a><span class="cp">#include &lt;OgreString.h&gt;</span>
+<a name="cl-10"></a><span class="cp">#include &lt;OgreVector3.h&gt;</span>
+<a name="cl-11"></a><span class="cp">#include &lt;OgreQuaternion.h&gt;</span>
+<a name="cl-12"></a><span class="cp">#include &lt;OgreResourceGroupManager.h&gt;</span>
+<a name="cl-13"></a><span class="cp">#include &lt;vector&gt;</span>
+<a name="cl-14"></a>
+<a name="cl-15"></a><span class="cp">#include &quot;rapidxml.hpp&quot;</span>
+<a name="cl-16"></a>
+<a name="cl-17"></a><span class="c1">//|||||||||||||||||||||||||||||||||||||||||||||||</span>
+<a name="cl-18"></a>
+<a name="cl-19"></a><span class="c1">// Forward declarations</span>
+<a name="cl-20"></a><span class="k">namespace</span> <span class="n">Ogre</span>
+<a name="cl-21"></a><span class="p">{</span>
+<a name="cl-22"></a>    <span class="k">class</span> <span class="nc">SceneManager</span><span class="p">;</span>
+<a name="cl-23"></a>    <span class="k">class</span> <span class="nc">SceneNode</span><span class="p">;</span>
+<a name="cl-24"></a>    <span class="k">class</span> <span class="nc">TerrainGroup</span><span class="p">;</span>
+<a name="cl-25"></a>    <span class="k">class</span> <span class="nc">TerrainGlobalOptions</span><span class="p">;</span>
+<a name="cl-26"></a><span class="p">}</span>
+<a name="cl-27"></a>
+<a name="cl-28"></a><span class="c1">//|||||||||||||||||||||||||||||||||||||||||||||||</span>
+<a name="cl-29"></a>
+<a name="cl-30"></a><span class="k">class</span> <span class="nc">nodeProperty</span>
+<a name="cl-31"></a><span class="p">{</span>
+<a name="cl-32"></a><span class="nl">public:</span>
+<a name="cl-33"></a>    <span class="n">Ogre</span><span class="o">::</span><span class="n">String</span> <span class="n">nodeName</span><span class="p">;</span>
+<a name="cl-34"></a>    <span class="n">Ogre</span><span class="o">::</span><span class="n">String</span> <span class="n">propertyNm</span><span class="p">;</span>
+<a name="cl-35"></a>    <span class="n">Ogre</span><span class="o">::</span><span class="n">String</span> <span class="n">valueName</span><span class="p">;</span>
+<a name="cl-36"></a>    <span class="n">Ogre</span><span class="o">::</span><span class="n">String</span> <span class="n">typeName</span><span class="p">;</span>
+<a name="cl-37"></a>
+<a name="cl-38"></a>    <span class="n">nodeProperty</span><span class="p">(</span><span class="k">const</span> <span class="n">Ogre</span><span class="o">::</span><span class="n">String</span> <span class="o">&amp;</span><span class="n">node</span><span class="p">,</span> <span class="k">const</span> <span class="n">Ogre</span><span class="o">::</span><span class="n">String</span> <span class="o">&amp;</span><span class="n">propertyName</span><span class="p">,</span> <span class="k">const</span> <span class="n">Ogre</span><span class="o">::</span><span class="n">String</span> <span class="o">&amp;</span><span class="n">value</span><span class="p">,</span> <span class="k">const</span> <span class="n">Ogre</span><span class="o">::</span><span class="n">String</span> <span class="o">&amp;</span><span class="n">type</span><span class="p">)</span>
+<a name="cl-39"></a>        <span class="o">:</span> <span class="n">nodeName</span><span class="p">(</span><span class="n">node</span><span class="p">),</span> <span class="n">propertyNm</span><span class="p">(</span><span class="n">propertyName</span><span class="p">),</span> <span class="n">valueName</span><span class="p">(</span><span class="n">value</span><span class="p">),</span> <span class="n">typeName</span><span class="p">(</span><span class="n">type</span><span class="p">)</span> <span class="p">{}</span>
+<a name="cl-40"></a><span class="p">};</span>
+<a name="cl-41"></a>
+<a name="cl-42"></a><span class="c1">//|||||||||||||||||||||||||||||||||||||||||||||||</span>
+<a name="cl-43"></a>
+<a name="cl-44"></a><span class="k">class</span> <span class="nc">DotSceneLoader</span>
+<a name="cl-45"></a><span class="p">{</span>
+<a name="cl-46"></a><span class="nl">public:</span>
+<a name="cl-47"></a>    <span class="n">Ogre</span><span class="o">::</span><span class="n">TerrainGlobalOptions</span> <span class="o">*</span><span class="n">mTerrainGlobalOptions</span><span class="p">;</span>
+<a name="cl-48"></a>
+<a name="cl-49"></a>    <span class="n">DotSceneLoader</span><span class="p">();</span>
+<a name="cl-50"></a>    <span class="k">virtual</span> <span class="o">~</span><span class="n">DotSceneLoader</span><span class="p">();</span>
+<a name="cl-51"></a>
+<a name="cl-52"></a>    <span class="kt">void</span> <span class="nf">parseDotScene</span><span class="p">(</span><span class="k">const</span> <span class="n">Ogre</span><span class="o">::</span><span class="n">String</span> <span class="o">&amp;</span><span class="n">SceneName</span><span class="p">,</span> <span class="k">const</span> <span class="n">Ogre</span><span class="o">::</span><span class="n">String</span> <span class="o">&amp;</span><span class="n">groupName</span><span class="p">,</span> <span class="n">Ogre</span><span class="o">::</span><span class="n">SceneManager</span> <span class="o">*</span><span class="n">yourSceneMgr</span><span class="p">,</span> <span class="n">Ogre</span><span class="o">::</span><span class="n">SceneNode</span> <span class="o">*</span><span class="n">pAttachNode</span> <span class="o">=</span> <span class="nb">NULL</span><span class="p">,</span> <span class="k">const</span> <span class="n">Ogre</span><span class="o">::</span><span class="n">String</span> <span class="o">&amp;</span><span class="n">sPrependNode</span> <span class="o">=</span> <span class="s">&quot;&quot;</span><span class="p">);</span>
+<a name="cl-53"></a>    <span class="n">Ogre</span><span class="o">::</span><span class="n">String</span> <span class="n">getProperty</span><span class="p">(</span><span class="k">const</span> <span class="n">Ogre</span><span class="o">::</span><span class="n">String</span> <span class="o">&amp;</span><span class="n">ndNm</span><span class="p">,</span> <span class="k">const</span> <span class="n">Ogre</span><span class="o">::</span><span class="n">String</span> <span class="o">&amp;</span><span class="n">prop</span><span class="p">);</span>
+<a name="cl-54"></a>
+<a name="cl-55"></a>    <span class="n">Ogre</span><span class="o">::</span><span class="n">TerrainGroup</span><span class="o">*</span> <span class="n">getTerrainGroup</span><span class="p">()</span> <span class="p">{</span> <span class="k">return</span> <span class="n">mTerrainGroup</span><span class="p">;</span> <span class="p">}</span>
+<a name="cl-56"></a>
+<a name="cl-57"></a>    <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">nodeProperty</span><span class="o">&gt;</span> <span class="n">nodeProperties</span><span class="p">;</span>
+<a name="cl-58"></a>    <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">Ogre</span><span class="o">::</span><span class="n">String</span><span class="o">&gt;</span> <span class="n">staticObjects</span><span class="p">;</span>
+<a name="cl-59"></a>    <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">Ogre</span><span class="o">::</span><span class="n">String</span><span class="o">&gt;</span> <span class="n">dynamicObjects</span><span class="p">;</span>
+<a name="cl-60"></a>
+<a name="cl-61"></a><span class="nl">protected:</span>
+<a name="cl-62"></a>    <span class="kt">void</span> <span class="nf">processScene</span><span class="p">(</span><span class="n">rapidxml</span><span class="o">::</span><span class="n">xml_node</span><span class="o">&lt;&gt;*</span> <span class="n">XMLRoot</span><span class="p">);</span>
+<a name="cl-63"></a>
+<a name="cl-64"></a>    <span class="kt">void</span> <span class="nf">processNodes</span><span class="p">(</span><span class="n">rapidxml</span><span class="o">::</span><span class="n">xml_node</span><span class="o">&lt;&gt;*</span> <span class="n">XMLNode</span><span class="p">);</span>
+<a name="cl-65"></a>    <span class="kt">void</span> <span class="nf">processExternals</span><span class="p">(</span><span class="n">rapidxml</span><span class="o">::</span><span class="n">xml_node</span><span class="o">&lt;&gt;*</span> <span class="n">XMLNode</span><span class="p">);</span>
+<a name="cl-66"></a>    <span class="kt">void</span> <span class="nf">processEnvironment</span><span class="p">(</span><span class="n">rapidxml</span><span class="o">::</span><span class="n">xml_node</span><span class="o">&lt;&gt;*</span> <span class="n">XMLNode</span><span class="p">);</span>
+<a name="cl-67"></a>    <span class="kt">void</span> <span class="nf">processTerrain</span><span class="p">(</span><span class="n">rapidxml</span><span class="o">::</span><span class="n">xml_node</span><span class="o">&lt;&gt;*</span> <span class="n">XMLNode</span><span class="p">);</span>
+<a name="cl-68"></a>    <span class="kt">void</span> <span class="nf">processTerrainPage</span><span class="p">(</span><span class="n">rapidxml</span><span class="o">::</span><span class="n">xml_node</span><span class="o">&lt;&gt;*</span> <span class="n">XMLNode</span><span class="p">);</span>
+<a name="cl-69"></a>    <span class="kt">void</span> <span class="nf">processBlendmaps</span><span class="p">(</span><span class="n">rapidxml</span><span class="o">::</span><span class="n">xml_node</span><span class="o">&lt;&gt;*</span> <span class="n">XMLNode</span><span class="p">);</span>
+<a name="cl-70"></a>    <span class="kt">void</span> <span class="nf">processUserDataReference</span><span class="p">(</span><span class="n">rapidxml</span><span class="o">::</span><span class="n">xml_node</span><span class="o">&lt;&gt;*</span> <span class="n">XMLNode</span><span class="p">,</span> <span class="n">Ogre</span><span class="o">::</span><span class="n">SceneNode</span> <span class="o">*</span><span class="n">pParent</span> <span class="o">=</span> <span class="mi">0</span><span class="p">);</span>
+<a name="cl-71"></a>    <span class="kt">void</span> <span class="nf">processUserDataReference</span><span class="p">(</span><span class="n">rapidxml</span><span class="o">::</span><span class="n">xml_node</span><span class="o">&lt;&gt;*</span> <span class="n">XMLNode</span><span class="p">,</span> <span class="n">Ogre</span><span class="o">::</span><span class="n">Entity</span> <span class="o">*</span><span class="n">pEntity</span><span class="p">);</span>
+<a name="cl-72"></a>    <span class="kt">void</span> <span class="nf">processOctree</span><span class="p">(</span><span class="n">rapidxml</span><span class="o">::</span><span class="n">xml_node</span><span class="o">&lt;&gt;*</span> <span class="n">XMLNode</span><span class="p">);</span>
+<a name="cl-73"></a>    <span class="kt">void</span> <span class="nf">processLight</span><span class="p">(</span><span class="n">rapidxml</span><span class="o">::</span><span class="n">xml_node</span><span class="o">&lt;&gt;*</span> <span class="n">XMLNode</span><span class="p">,</span> <span class="n">Ogre</span><span class="o">::</span><span class="n">SceneNode</span> <span class="o">*</span><span class="n">pParent</span> <span class="o">=</span> <span class="mi">0</span><span class="p">);</span>
+<a name="cl-74"></a>    <span class="kt">void</span> <span class="nf">processCamera</span><span class="p">(</span><span class="n">rapidxml</span><span class="o">::</span><span class="n">xml_node</span><span class="o">&lt;&gt;*</span> <span class="n">XMLNode</span><span class="p">,</span> <span class="n">Ogre</span><span class="o">::</span><span class="n">SceneNode</span> <span class="o">*</span><span class="n">pParent</span> <span class="o">=</span> <span class="mi">0</span><span class="p">);</span>
+<a name="cl-75"></a>
+<a name="cl-76"></a>    <span class="kt">void</span> <span class="nf">processNode</span><span class="p">(</span><span class="n">rapidxml</span><span class="o">::</span><span class="n">xml_node</span><span class="o">&lt;&gt;*</span> <span class="n">XMLNode</span><span class="p">,</span> <span class="n">Ogre</span><span class="o">::</span><span class="n">SceneNode</span> <span class="o">*</span><span class="n">pParent</span> <span class="o">=</span> <span class="mi">0</span><span class="p">);</span>
+<a name="cl-77"></a>    <span class="kt">void</span> <span class="nf">processLookTarget</span><span class="p">(</span><span class="n">rapidxml</span><span class="o">::</span><span class="n">xml_node</span><span class="o">&lt;&gt;*</span> <span class="n">XMLNode</span><span class="p">,</span> <span class="n">Ogre</span><span class="o">::</span><span class="n">SceneNode</span> <span class="o">*</span><span class="n">pParent</span><span class="p">);</span>
+<a name="cl-78"></a>    <span class="kt">void</span> <span class="nf">processTrackTarget</span><span class="p">(</span><span class="n">rapidxml</span><span class="o">::</span><span class="n">xml_node</span><span class="o">&lt;&gt;*</span> <span class="n">XMLNode</span><span class="p">,</span> <span class="n">Ogre</span><span class="o">::</span><span class="n">SceneNode</span> <span class="o">*</span><span class="n">pParent</span><span class="p">);</span>
+<a name="cl-79"></a>    <span class="kt">void</span> <span class="nf">processEntity</span><span class="p">(</span><span class="n">rapidxml</span><span class="o">::</span><span class="n">xml_node</span><span class="o">&lt;&gt;*</span> <span class="n">XMLNode</span><span class="p">,</span> <span class="n">Ogre</span><span class="o">::</span><span class="n">SceneNode</span> <span class="o">*</span><span class="n">pParent</span><span class="p">);</span>
+<a name="cl-80"></a>    <span class="kt">void</span> <span class="nf">processParticleSystem</span><span class="p">(</span><span class="n">rapidxml</span><span class="o">::</span><span class="n">xml_node</span><span class="o">&lt;&gt;*</span> <span class="n">XMLNode</span><span class="p">,</span> <span class="n">Ogre</span><span class="o">::</span><span class="n">SceneNode</span> <span class="o">*</span><span class="n">pParent</span><span class="p">);</span>
+<a name="cl-81"></a>    <span class="kt">void</span> <span class="nf">processBillboardSet</span><span class="p">(</span><span class="n">rapidxml</span><span class="o">::</span><span class="n">xml_node</span><span class="o">&lt;&gt;*</span> <span class="n">XMLNode</span><span class="p">,</span> <span class="n">Ogre</span><span class="o">::</span><span class="n">SceneNode</span> <span class="o">*</span><span class="n">pParent</span><span class="p">);</span>
+<a name="cl-82"></a>    <span class="kt">void</span> <span class="nf">processPlane</span><span class="p">(</span><span class="n">rapidxml</span><span class="o">::</span><span class="n">xml_node</span><span class="o">&lt;&gt;*</span> <span class="n">XMLNode</span><span class="p">,</span> <span class="n">Ogre</span><span class="o">::</span><span class="n">SceneNode</span> <span class="o">*</span><span class="n">pParent</span><span class="p">);</span>
+<a name="cl-83"></a>
+<a name="cl-84"></a>    <span class="kt">void</span> <span class="nf">processFog</span><span class="p">(</span><span class="n">rapidxml</span><span class="o">::</span><span class="n">xml_node</span><span class="o">&lt;&gt;*</span> <span class="n">XMLNode</span><span class="p">);</span>
+<a name="cl-85"></a>    <span class="kt">void</span> <span class="nf">processSkyBox</span><span class="p">(</span><span class="n">rapidxml</span><span class="o">::</span><span class="n">xml_node</span><span class="o">&lt;&gt;*</span> <span class="n">XMLNode</span><span class="p">);</span>
+<a name="cl-86"></a>    <span class="kt">void</span> <span class="nf">processSkyDome</span><span class="p">(</span><span class="n">rapidxml</span><span class="o">::</span><span class="n">xml_node</span><span class="o">&lt;&gt;*</span> <span class="n">XMLNode</span><span class="p">);</span>
+<a name="cl-87"></a>    <span class="kt">void</span> <span class="nf">processSkyPlane</span><span class="p">(</span><span class="n">rapidxml</span><span class="o">::</span><span class="n">xml_node</span><span class="o">&lt;&gt;*</span> <span class="n">XMLNode</span><span class="p">);</span>
+<a name="cl-88"></a>    <span class="kt">void</span> <span class="nf">processClipping</span><span class="p">(</span><span class="n">rapidxml</span><span class="o">::</span><span class="n">xml_node</span><span class="o">&lt;&gt;*</span> <span class="n">XMLNode</span><span class="p">);</span>
+<a name="cl-89"></a>
+<a name="cl-90"></a>    <span class="kt">void</span> <span class="nf">processLightRange</span><span class="p">(</span><span class="n">rapidxml</span><span class="o">::</span><span class="n">xml_node</span><span class="o">&lt;&gt;*</span> <span class="n">XMLNode</span><span class="p">,</span> <span class="n">Ogre</span><span class="o">::</span><span class="n">Light</span> <span class="o">*</span><span class="n">pLight</span><span class="p">);</span>
+<a name="cl-91"></a>    <span class="kt">void</span> <span class="nf">processLightAttenuation</span><span class="p">(</span><span class="n">rapidxml</span><span class="o">::</span><span class="n">xml_node</span><span class="o">&lt;&gt;*</span> <span class="n">XMLNode</span><span class="p">,</span> <span class="n">Ogre</span><span class="o">::</span><span class="n">Light</span> <span class="o">*</span><span class="n">pLight</span><span class="p">);</span>
+<a name="cl-92"></a>
+<a name="cl-93"></a>    <span class="n">Ogre</span><span class="o">::</span><span class="n">String</span> <span class="n">getAttrib</span><span class="p">(</span><span class="n">rapidxml</span><span class="o">::</span><span class="n">xml_node</span><span class="o">&lt;&gt;*</span> <span class="n">XMLNode</span><span class="p">,</span> <span class="k">const</span> <span class="n">Ogre</span><span class="o">::</span><span class="n">String</span> <span class="o">&amp;</span><span class="n">parameter</span><span class="p">,</span> <span class="k">const</span> <span class="n">Ogre</span><span class="o">::</span><span class="n">String</span> <span class="o">&amp;</span><span class="n">defaultValue</span> <span class="o">=</span> <span class="s">&quot;&quot;</span><span class="p">);</span>
+<a name="cl-94"></a>    <span class="n">Ogre</span><span class="o">::</span><span class="n">Real</span> <span class="n">getAttribReal</span><span class="p">(</span><span class="n">rapidxml</span><span class="o">::</span><span class="n">xml_node</span><span class="o">&lt;&gt;*</span> <span class="n">XMLNode</span><span class="p">,</span> <span class="k">const</span> <span class="n">Ogre</span><span class="o">::</span><span class="n">String</span> <span class="o">&amp;</span><span class="n">parameter</span><span class="p">,</span> <span class="n">Ogre</span><span class="o">::</span><span class="n">Real</span> <span class="n">defaultValue</span> <span class="o">=</span> <span class="mi">0</span><span class="p">);</span>
+<a name="cl-95"></a>    <span class="kt">bool</span> <span class="nf">getAttribBool</span><span class="p">(</span><span class="n">rapidxml</span><span class="o">::</span><span class="n">xml_node</span><span class="o">&lt;&gt;*</span> <span class="n">XMLNode</span><span class="p">,</span> <span class="k">const</span> <span class="n">Ogre</span><span class="o">::</span><span class="n">String</span> <span class="o">&amp;</span><span class="n">parameter</span><span class="p">,</span> <span class="kt">bool</span> <span class="n">defaultValue</span> <span class="o">=</span> <span class="nb">false</span><span class="p">);</span>
+<a name="cl-96"></a>
+<a name="cl-97"></a>    <span class="n">Ogre</span><span class="o">::</span><span class="n">Vector3</span> <span class="n">parseVector3</span><span class="p">(</span><span class="n">rapidxml</span><span class="o">::</span><span class="n">xml_node</span><span class="o">&lt;&gt;*</span> <span class="n">XMLNode</span><span class="p">);</span>
+<a name="cl-98"></a>    <span class="n">Ogre</span><span class="o">::</span><span class="n">Quaternion</span> <span class="n">parseQuaternion</span><span class="p">(</span><span class="n">rapidxml</span><span class="o">::</span><span class="n">xml_node</span><span class="o">&lt;&gt;*</span> <span class="n">XMLNode</span><span class="p">);</span>
+<a name="cl-99"></a>    <span class="n">Ogre</span><span class="o">::</span><span class="n">ColourValue</span> <span class="n">parseColour</span><span class="p">(</span><span class="n">rapidxml</span><span class="o">::</span><span class="n">xml_node</span><span class="o">&lt;&gt;*</span> <span class="n">XMLNode</span><span class="p">);</span>
+<a name="cl-100"></a>
+<a name="cl-101"></a>    <span class="n">Ogre</span><span class="o">::</span><span class="n">SceneManager</span> <span class="o">*</span><span class="n">mSceneMgr</span><span class="p">;</span>
+<a name="cl-102"></a>    <span class="n">Ogre</span><span class="o">::</span><span class="n">SceneNode</span> <span class="o">*</span><span class="n">mAttachNode</span><span class="p">;</span>
+<a name="cl-103"></a>    <span class="n">Ogre</span><span class="o">::</span><span class="n">String</span> <span class="n">m_sGroupName</span><span class="p">;</span>
+<a name="cl-104"></a>    <span class="n">Ogre</span><span class="o">::</span><span class="n">String</span> <span class="n">m_sPrependNode</span><span class="p">;</span>
+<a name="cl-105"></a>    <span class="n">Ogre</span><span class="o">::</span><span class="n">TerrainGroup</span><span class="o">*</span> <span class="n">mTerrainGroup</span><span class="p">;</span>
+<a name="cl-106"></a>    <span class="n">Ogre</span><span class="o">::</span><span class="n">Vector3</span> <span class="n">mTerrainPosition</span><span class="p">;</span>
+<a name="cl-107"></a>    <span class="n">Ogre</span><span class="o">::</span><span class="n">Vector3</span> <span class="n">mLightDirection</span><span class="p">;</span>
+<a name="cl-108"></a><span class="p">};</span>
+<a name="cl-109"></a>
+<a name="cl-110"></a><span class="c1">//|||||||||||||||||||||||||||||||||||||||||||||||</span>
+<a name="cl-111"></a>
+<a name="cl-112"></a><span class="cp">#endif</span>
+<a name="cl-113"></a>
+<a name="cl-114"></a><span class="c1">//|||||||||||||||||||||||||||||||||||||||||||||||</span>
+</pre></div>
+</td></tr></table>
+          </div>
+        
+      
+    
+  
+
+
+  <script id="source-changeset" type="text/html">
+  
+
+<a href="/spacegaier/advancedogreframework/src/[[raw_node]]/AdvancedOgreFramework/DotSceneLoader.hpp?at=default"
+   class="[[#selected]]highlight[[/selected]]"
+   data-hash="[[node]]">
+  [[#author.username]]
+    <img class="avatar avatar16" src="[[author.avatar]]"/>
+    <span class="author" title="[[raw_author]]">[[author.display_name]]</span>
+  [[/author.username]]
+  [[^author.username]]
+    <img class="avatar avatar16" src="https://d3oaxc4q5k2d6q.cloudfront.net/m/9e262ba34f96/img/default_avatar/16/user_blue.png"/>
+    <span class="author unmapped" title="[[raw_author]]">[[author]]</span>
+  [[/author.username]]
+  <time datetime="[[utctimestamp]]" data-title="true">[[utctimestamp]]</time>
+  <span class="message">[[message]]</span>
+</a>
+
+</script>
+  <script id="embed-template" type="text/html">
+  
+
+<form class="aui embed">
+  <label for="embed-code">Embed this source in another page:</label>
+  <input type="text" readonly="true" value="&lt;script src=&quot;[[url]]&quot;&gt;&lt;/script&gt;" id="embed-code">
+</form>
+
+</script>
+
+
+<div class="mask"></div>
+
+
+
+  <script id="branch-dialog-template" type="text/html">
+  
+
+<div class="tabbed-filter-widget branch-dialog">
+  <div class="tabbed-filter">
+    <input placeholder="Filter branches" class="filter-box" autosave="branch-dropdown-570991" type="text">
+    [[^ignoreTags]]
+      <div class="aui-tabs horizontal-tabs aui-tabs-disabled filter-tabs">
+        <ul class="tabs-menu">
+          <li class="menu-item active-tab"><a href="#branches">Branches</a></li>
+          <li class="menu-item"><a href="#tags">Tags</a></li>
+        </ul>
+      </div>
+    [[/ignoreTags]]
+  </div>
+  
+    <div class="tab-pane active-pane" id="branches" data-filter-placeholder="Filter branches">
+      <ol class="filter-list">
+        <li class="empty-msg">No matching branches</li>
+        [[#branches]]
+          [[#hasMultipleHeads]]
+            [[#heads]]
+              <li class="comprev filter-item">
+                <a href="/spacegaier/advancedogreframework/src/[[changeset]]/AdvancedOgreFramework/DotSceneLoader.hpp?at=[[safeName]]"
+                   title="[[name]]">
+                  [[name]] ([[shortChangeset]])
+                </a>
+              </li>
+            [[/heads]]
+          [[/hasMultipleHeads]]
+          [[^hasMultipleHeads]]
+            <li class="comprev filter-item">
+              <a href="/spacegaier/advancedogreframework/src/[[changeset]]/AdvancedOgreFramework/DotSceneLoader.hpp?at=[[safeName]]" title="[[name]]">
+                [[name]]
+              </a>
+            </li>
+          [[/hasMultipleHeads]]
+        [[/branches]]
+      </ol>
+    </div>
+    <div class="tab-pane" id="tags" data-filter-placeholder="Filter tags">
+      <ol class="filter-list">
+        <li class="empty-msg">No matching tags</li>
+        [[#tags]]
+          <li class="comprev filter-item">
+            <a href="/spacegaier/advancedogreframework/src/[[changeset]]/AdvancedOgreFramework/DotSceneLoader.hpp?at=[[safeName]]" title="[[name]]">
+              [[name]]
+            </a>
+          </li>
+        [[/tags]]
+      </ol>
+    </div>
+  
+</div>
+
+</script>
+
+
+
+  </div>
+
+  </div>
+  
+
+<form id="file-search-form" action="#"
+  
+  data-revision="d24a1662021a2ca899990513e45bc2477cbd9339"
+  data-branch="default">
+  <input type="text" id="file-search-query" class="loading">
+  <div id="filtered-files"></div>
+  <div class="tip"><em>Tip:</em> Filter by directory path e.g. <strong>/media app.js</strong> to search for public<strong>/media/app.js</strong>.</div>
+  <div class="tip"><em>Tip:</em> Use camelCasing e.g. <strong>ProjME</strong> to search for <strong>ProjectModifiedE</strong>vent.java.</div>
+  <div class="tip"><em>Tip:</em> Filter by extension type e.g. <strong>/repo .js</strong> to search for all <strong>.js</strong> files in the <strong>/repo</strong> directory.</div>
+  <div class="tip"><em>Tip:</em> Separate your search with spaces e.g. <strong>/ssh pom.xml</strong> to search for src<strong>/ssh/pom.xml</strong>.</div>
+  <div class="tip"><em>Tip:</em> Use ↑ and ↓ arrow keys to navigate and <strong>return</strong> to view the file.</div>
+  <div class="tip mod-osx"><em>Tip:</em> You can also navigate files with <strong>Ctrl+j</strong> <em>(next)</em> and <strong>Ctrl+k</strong> <em>(previous)</em> and view the file with <strong>Ctrl+o</strong>.</div>
+  <div class="tip mod-win"><em>Tip:</em> You can also navigate files with <strong>Alt+j</strong> <em>(next)</em> and <strong>Alt+k</strong> <em>(previous)</em> and view the file with <strong>Alt+o</strong>.</div>
+  <script id="filtered-files-template" type="text/html">
+  
+
+<table class="aui bb-list">
+  <thead>
+    <tr class="assistive">
+      <th class="name">Filename</th>
+    </tr>
+  </thead>
+  <tbody>
+    [[#files]]
+    <tr class="iterable-item">
+      <td class="name [[#isDirectory]]directory[[/isDirectory]]">
+        <a href="/spacegaier/advancedogreframework/src/[[node]]/[[name]][[#branch]]?at=[[branch]][[/branch]]"
+           title="[[name]]" class="execute" tabindex="-1">
+          [[&highlightedName]]
+        </a>
+      </td>
+    </tr>
+    [[/files]]
+  </tbody>
+</table>
+
+</script>
+</form>
+
+
+    </div>
+  </div>
+  <footer id="footer" role="contentinfo">
+    <section class="footer-body">
+      <ul>
+        <li><a href="http://blog.bitbucket.org">Blog</a></li>
+        <li><a href="//bitbucket.org/site/master/issues/new">Report a bug</a></li>
+        <li><a href="/support">Support</a></li>
+        <li><a href="http://confluence.atlassian.com/display/BITBUCKET">Documentation</a></li>
+        <li><a href="http://confluence.atlassian.com/x/IYBGDQ">API</a></li>
+        <li><a href="http://groups.google.com/group/bitbucket-users">Forum</a></li>
+        <li><a href="http://status.bitbucket.org/">Server status</a></li>
+        <li><a href="http://www.atlassian.com/hosted/terms.jsp">Terms of service</a></li>
+        <li><a href="http://www.atlassian.com/about/privacy.jsp">Privacy policy</a></li>
+      </ul>
+      <ul>
+        
+        <li><a href="http://git-scm.com/">Git 1.7.10.3</a></li>
+        <li><a href="http://mercurial.selenic.com/">Mercurial 2.2.2</a></li>
+        <li><a href="https://www.djangoproject.com/">Django 1.3.1</a></li>
+        <li><a href="http://www.python.org/">Python 2.7.3</a></li>
+        <li><a href="#">1a0ea496d75b / 9e262ba34f96 @ bitbucket21</a></li>
+      </ul>
+    </section>
+  </footer>
+</div>
+
+<script type="text/javascript" src="https://d3oaxc4q5k2d6q.cloudfront.net/m/9e262ba34f96/compressed/js/41c4c0a4ebcc.js"></script>
+
+<!-- This script exists purely for the benefit of our selenium tests -->
+<script>
+  setTimeout(function () {
+    BB.JsLoaded = true;
+  }, 3000);
+</script>
+
+
+
+<script>
+  (function (window) {
+    // Base URL to use for non-CNAME URLs.
+    BB.baseUrl = 'https://bitbucket.org';
+
+    BB.images = {
+      invitation: 'https://d3oaxc4q5k2d6q.cloudfront.net/m/9e262ba34f96/img/icons/fugue/card_address.png',
+      noAvatar: 'https://d3oaxc4q5k2d6q.cloudfront.net/m/9e262ba34f96/img/default_avatar/16/user_blue.png'
+    };
+    BB.user = {"isKbdShortcutsEnabled": true, "isSshEnabled": false, "isAuthenticated": false};
+    BB.repo || (BB.repo = {});
+    
+      BB.repo.id = 570991;
+      BB.repo.scm = 'hg';
+      BB.repo.readonly = false;
+      
+      
+        BB.repo.language = 'c++';
+        BB.repo.pygmentsLanguage = 'c++';
+      
+      
+        BB.repo.slug = 'advancedogreframework';
+      
+      
+        BB.repo.owner = {};
+        BB.repo.owner.username = 'spacegaier';
+        BB.repo.owner.is_team = false;
+      
+      
+      // Coerce `BB.repo` to a string to get
+      // "davidchambers/mango" or whatever.
+      BB.repo.toString = function () {
+        return BB.cname ? this.slug : '{owner.username}/{slug}'.format(this);
+      }
+      
+        BB.changeset = 'd24a1662021a2ca899990513e45bc2477cbd9339'
+      
+      
+    
+    window.setInterval(BB.localize, 60 * 1000);
+    $(document).on('ready pjax:end', function () { BB.localize(); });
+  })(window);
+</script>
+
+
+<script>
+    // Bitbucket Google Analytics
+    // NOTE: these will not fire in development. In debug mode it just logs them to console.
+    (function (window) {
+        // Track the main pageview to the Bitbucket GA account.
+        BB.gaqPush(['_trackPageview']);
+        // Track the main pageview to the Atlassian GA account.
+        BB.gaqPush(['atl._trackPageview']);
+
+        
+
+
+        
+
+        // Include GA commands from sub-templates
+        
+
+        (function () {
+            var ga = document.createElement('script');
+            ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+            ga.setAttribute('async', 'true');
+            document.documentElement.firstChild.appendChild(ga);
+        }());
+    })(window);
+</script>
+
+
+
+<script type="text/javascript">if(!NREUMQ.f){NREUMQ.f=function(){NREUMQ.push(["load",new Date().getTime()]);var e=document.createElement("script");e.type="text/javascript";e.src=(("http:"===document.location.protocol)?"http:":"https:")+"//"+"d1ros97qkrwjf5.cloudfront.net/42/eum/rum.js";document.body.appendChild(e);if(NREUMQ.a)NREUMQ.a();};NREUMQ.a=window.onload;window.onload=NREUMQ.f;};NREUMQ.push(["nrfj","beacon-1.newrelic.com","7d4a9813d0","295788","MgMDYhcHDUJVVEIKWAtJJ0MLBRdYW1kZAV4RBBRVDgMXH1VHRhAZFwMRWVdIFVhRQEVZUQwKBFQXCRRCUQ==",0,259,new Date().getTime(),"","","","",""]);</script></body>
+</html>

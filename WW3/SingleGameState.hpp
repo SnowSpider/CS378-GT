@@ -181,6 +181,7 @@ private:
     int acceptNeighbors[6];
     int unitBuilding;
     int unitMoving;
+    bool launching;
     int unitMoney;
     int unitPlutonium;
     int unitTimer;

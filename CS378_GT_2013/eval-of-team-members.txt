@@ -1,0 +1,51 @@
+Wonjun Lee wl4337 wlee
+
+
+
+Wonjun Lee
+I created the 3D environment and game objects, applied texture to them, and wrote the material files for the new textures. I implemented the physics simulation as well. I also grabbed some free sound sources from the internet and modified them with Audacity to fit our needs before pushing it into Howard's methods. Finally I merged the works of the three teammates. 
+
+Strengths: Hardworking; familiar with various tools; C++ geek
+Weaknesses: Poor documentation and spaghetti code.
+ 
+My Contribution:
+media/MyMaterials.material
+media/materials/textures/wood1.png
+media/materials/textures/wood2.png
+media/materials/textures/buddha.png
+boink1_cx65377.wav
+buddhist_chant.wav
+GameObject.cpp
+GameObject.h
+OgreMotionState.h
+Simulator.cpp
+Simulator.h
+TutorialApplication.cpp
+TutorialApplication.h
+
+
+
+Daniel Moreno
+He integrated CEGUI with OGRE and successfully implemented the scoreboard and the sound toggle. 
+
+Strengths: Fast learning; a lot of gaming experience; knows what defines a good game, both commercially and critically. 
+Weaknesses: easily distracted by his grand projects in Minecraft while working with the teammates.
+
+Daniel's Contribution:
+CEGUI
+TutorialApplication.cpp
+TutorialApplication.h
+
+
+
+Howard Fu
+He wrote the SoundManager, which uses the SDL to provide the sound effects. The SoundManager was simple and reliable. 
+
+Strengths: Gets the job done. 
+Weaknesses: He needs to communicate more with the rest of us. 
+
+Howard's Contribution:
+SoundManager.cpp
+SoundManager.h
+
+

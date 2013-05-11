@@ -1,0 +1,16 @@
+MenuState
+    Campaign
+    Field Manual
+    Quit
+ManualState
+    Return to Menu
+CampaignState
+    Mission List
+    Return to Menu
+BriefingState
+    Return to Menu
+GameState
+PauseState
+    Resume
+    Abort Mission
+

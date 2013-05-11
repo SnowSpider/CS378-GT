@@ -42,7 +42,7 @@ enum unitCost_gold{
     Au_AIRFORCEBASE = 25000,
     Au_NUCLEARPLANT = 150000,
     Au_ICBMSILO = 50000,
-    Au_LAUNCH = 100000,
+    Au_LAUNCH = 500,
     Au_CAPTURE = 0,
     Au_SAMSITE = 1000
 };
@@ -69,7 +69,7 @@ enum unitCost_plutonium{
     Pt_AIRFORCEBASE = 0,
     Pt_NUCLEARPLANT = 2500,
     Pt_ICBMSILO = 1000,
-    Pt_LAUNCH = 100000,
+    Pt_LAUNCH = 500,
     Pt_CAPTURE = 0,
     Pt_SAMSITE = 0
 };
@@ -153,10 +153,19 @@ class Missile {
     int owner;
     btVector3 start;
     btVector3 end;
+    btVector3 rotAxis;
+    float angle;
+    //float linearDistance;
+    float deltaTheta;
+    float progress;
+    float altitude;
+    float angle_of_reach;
+    float offset;
+    float speed;
+    float linearDistance;
     
-    std::vector<float> altitudes;
-    std::vector<btVector3> positions;
-    std::vector<btVector3> vectors;
+    PlanetVertex v;
+    btVector3 btPos;
     
     Missile(){
         owner = Owner_NEUTRAL;
@@ -166,10 +175,22 @@ class Missile {
         owner = myOwner;
         start = s;
         end = e;
+        rotAxis = start.cross(end);
+        rotAxis.normalize();
+        angle = start.angle(end);
+        //linearDistance = angle * 6371;
+        deltaTheta = 0.01; // angle per tick
+        progress = 0;
+        altitude = 0;
+        angle_of_reach = 0; // 0 to 2 * pi
+        offset = deltaTheta * 3.14159265359 / angle;
+        speed = deltaTheta * 6371;
+        linearDistance = angle * 6371;
     }
     void createObject(Ogre::SceneManager* scnMgr);
     void relocate(btVector3& dest);
-    void destroy(Ogre::SceneManager* scnMgr);
+    void updateAltitude();
+    void fly(Ogre::SceneManager* scnMgr);
 };
 
 class Arrow {

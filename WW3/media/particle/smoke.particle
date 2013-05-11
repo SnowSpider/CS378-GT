@@ -4,8 +4,8 @@
 particle_system Examples/Smoke
 {
 	material        	Examples/Smoke
-	particle_width  	35
-	particle_height 	35
+	particle_width  	50
+	particle_height 	50
 	cull_each       	true
 	quota           	500
 	billboard_type  	point
@@ -14,11 +14,11 @@ particle_system Examples/Smoke
 	// Area emitter
 	emitter Point
 	{
-		position 0 15 -15
+		position 0 0 0
 		angle 35
 		emission_rate 15
 		time_to_live 4
-		direction 0 1 0
+		direction 0 0 1
 		velocity_min 50
 		velocity_max 80    	
 	}
