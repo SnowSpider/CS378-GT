@@ -35,6 +35,9 @@ void MenuState::enter()
     m_pCamera->setOrthoWindow(aspect * 2, 2);
     // Orthographic projection
  
+    m_pCamera->setAspectRatio(Real(OgreFramework::getSingletonPtr()->m_pViewport->getActualWidth()) /
+        Real(OgreFramework::getSingletonPtr()->m_pViewport->getActualHeight()));
+ 
     OgreFramework::getSingletonPtr()->m_pViewport->setCamera(m_pCamera);
  
     OgreFramework::getSingletonPtr()->m_pTrayMgr->destroyAllWidgets();

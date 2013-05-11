@@ -1,3 +1,18 @@
+material MyMaterials/title
+{
+   technique
+   {
+      pass
+      {
+         texture_unit
+         {
+            texture NuclearWAR.png 2d
+            scale 1 1
+         }
+      }
+   }
+}
+
 material MyMaterials/runway_blue
 {
    technique
