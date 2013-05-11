@@ -2676,8 +2676,9 @@ void SingleGameState::combat(PlanetCell& yourCell,PlanetCell& enemyCell)
 {
     int yourUnit = yourCell.myUnit;
     int enemyUnit = enemyCell.myUnit;
-    if(yourUnit == enemyUnit && yourUnit != Unit_BOMBER){
-        //Do Vector Battle TODO
+    if(yourUnit == enemyUnit){
+        retireUnit(yourCell);
+        killEnemyUnit(enemyCell);
     }
     else if(yourUnit == Unit_INFANTRY){
         retireUnit(yourCell);

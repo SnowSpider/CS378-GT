@@ -1036,59 +1036,100 @@ void Planet::createBorderSegments(Ogre::SceneManager* scnMgr, float k){
 }
 
 void Planet::updateBorderSegments(Ogre::SceneManager* scnMgr){ // Ugly.
+    cout << "Starting Border..." << endl;
     for(int i=0;i<cells.size();i++){
         std::vector<size_t> n = cells[i].neighbors;
         std::vector<size_t> p = cells[i].paramVerts;
         for(int j=0;j<n.size();j++){
+            cout << "Starting Border...1" << endl;
             if (cells[i].owner != cells[n[j]].owner) {
+            cout << "Starting Border...1.1" << endl;
                 if(cells[i].owner == Owner_BLUE){
+            cout << "Starting Border...1.2" << endl;
                     for(int k=0;k<p.size();k+=2){ //critical
+            cout << "Starting Border...1.3" << endl;
                         for(int l=0;l<cells[n[j]].paramVerts.size();l++){
+            cout << "Starting Border...1.4" << endl;
                             if((btVector3)vertices[p[k]] == (btVector3)vertices[cells[n[j]].paramVerts[l]]){
+            cout << "Starting Border...1.5" << endl;
                                 int id = cells[i].borderSegments[k/2];
+            cout << "Starting Border...1.6" << endl;
                                 string s = "BorderSegment_";
                                 stringstream ss;
                                 Ogre::String name;
+            cout << "Starting Border...1.7" << endl;
                                 ss << id;
-                                name = s.append(ss.str()); 
-                                scnMgr->getEntity(name)->setVisible(true);
-                                scnMgr->getEntity(name)->setMaterialName("MyMaterials/Cyan");
+            cout << "Starting Border...1.8" << endl;
+                                name = s.append(ss.str());
+            cout << "Starting Border...1.9" << endl; 
+                                if(scnMgr->hasEntity(name)){
+            cout << "Starting Border...1.99" << endl;
+                                    scnMgr->getEntity(name)->setVisible(true);
+            cout << "Starting Border...1.999" << endl;
+                                    scnMgr->getEntity(name)->setMaterialName("MyMaterials/Cyan");
+                                }
+                                //scnMgr->getEntity(name)->setVisible(true);
+                                //scnMgr->getEntity(name)->setMaterialName("MyMaterials/Cyan");
                             }
                         }
                     }
                 }
                 else if(cells[i].owner == Owner_RED){
                     for(int k=0;k<p.size();k+=2){ //critical
+            cout << "Starting Border...2" << endl;
                         for(int l=0;l<cells[n[j]].paramVerts.size();l++){
+            cout << "Starting Border...2.1" << endl;
                             if((btVector3)vertices[p[k]] == (btVector3)vertices[cells[n[j]].paramVerts[l]]){
+            cout << "Starting Border...2.2" << endl;
                                 int id = cells[i].borderSegments[k/2];
+            cout << "Starting Border...2.3" << endl;
                                 string s = "BorderSegment_";
                                 stringstream ss;
                                 Ogre::String name;
+            cout << "Starting Border...2.4" << endl;
                                 ss << id;
-                                name = s.append(ss.str()); 
-                                scnMgr->getEntity(name)->setVisible(true);
-                                scnMgr->getEntity(name)->setMaterialName("MyMaterials/Red");
+            cout << "Starting Border...2.5" << endl;
+                                name = s.append(ss.str());
+            cout << "Starting Border...2.6" << endl; 
+                                if(scnMgr->hasEntity(name)){
+            cout << "Starting Border...2.7" << endl;
+                                    scnMgr->getEntity(name)->setVisible(true);
+            cout << "Starting Border...2.8" << endl;
+                                    scnMgr->getEntity(name)->setMaterialName("MyMaterials/Red");
+            cout << "Starting Border...2.9" << endl;
+                                }
+                                //scnMgr->getEntity(name)->setVisible(true);
+                                //scnMgr->getEntity(name)->setMaterialName("MyMaterials/Red");
                             }
                         }
                     }
                 }
             }
             else{
-                    for(int k=0;k<p.size();k+=2){ //critical
-                        for(int l=0;l<cells[n[j]].paramVerts.size();l++){
-                            if((btVector3)vertices[p[k]] == (btVector3)vertices[cells[n[j]].paramVerts[l]]){
-                                int id = cells[i].borderSegments[k/2];
-                                string s = "BorderSegment_";
-                                stringstream ss;
-                                Ogre::String name;
-                                ss << id;
-                                name = s.append(ss.str()); 
+                for(int k=0;k<p.size();k+=2){ //critical
+            cout << "Starting Border...3" << endl;
+                    for(int l=0;l<cells[n[j]].paramVerts.size();l++){
+            cout << "Starting Border...3.1" << endl;
+                        if((btVector3)vertices[p[k]] == (btVector3)vertices[cells[n[j]].paramVerts[l]]){
+            cout << "Starting Border...3.2" << endl;
+                            int id = cells[i].borderSegments[k/2];
+            cout << "Starting Border...3.3" << endl;
+                            string s = "BorderSegment_";
+            cout << "Starting Border...3.4" << endl;
+                            stringstream ss;
+                            Ogre::String name;
+                            ss << id;
+            cout << "Starting Border...3.5" << endl;
+                            name = s.append(ss.str()); 
+            cout << "Starting Border...3.6" << endl;
+                            if(scnMgr->hasEntity(name))
+            cout << "Starting Border...3.7" << endl;
                                 scnMgr->getEntity(name)->setVisible(false);
-                            }
+            cout << "Starting Border...3.8" << endl;
                         }
                     }
                 }
+            }
         }
     }
 }

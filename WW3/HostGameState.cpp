@@ -83,6 +83,8 @@ HostGameState::HostGameState()
     isPlayer = false;
     updateBypass = false;
     attackBypass = false;
+    moveID = -1;
+    diedinbattle = false;
 }
  
 //|||||||||||||||||||||||||||||||||||||||||||||||
@@ -370,6 +372,40 @@ void HostGameState::createScene()
     resultWindow->setXPosition(CEGUI::UDim(0.05f, 0));
     resultWindow->setSize(CEGUI::UVector2(CEGUI::UDim(0.4f, 0), CEGUI::UDim(0.4f, 0)));
     resultWindow->setText("Begin your reign of Justice by clicking any non-water tile within your boundries. From there, the CommandBase button (upper right cornor below Sound) will light up, allowing you to click and build. Begin by building "+commandMax+" CommandBases that will act as your foundation. Click this message to remove.");
+    resultWindow->setProperty("FrameEnabled", "false");
+    resultWindow->setProperty("BackgroundEnabled", "false");
+    resultWindow->setProperty("HorzFormatting", "WordWrapCentred");
+    resultWindow->disable();
+    resultWindow->setVisible( false );
+
+    sheet->addChildWindow(resultWindow);
+
+    resultWindow = wmgr.createWindow("TaharezLook/Button", "WinLose");
+    resultWindow->setHorizontalAlignment(CEGUI::HA_CENTRE);
+    resultWindow->setVerticalAlignment(CEGUI::VA_CENTRE);
+    resultWindow->setSize(CEGUI::UVector2(CEGUI::UDim(0.5f, 0), CEGUI::UDim(0.4f, 0)));
+    resultWindow->subscribeEvent(CEGUI::PushButton::EventClicked,CEGUI::Event::Subscriber(&HostGameState::Continue,this));
+    sheet->addChildWindow(resultWindow);
+    resultWindow->setVisible( false );
+
+    resultWindow = wmgr.createWindow("TaharezLook/StaticText", "YouLost");
+    resultWindow->setHorizontalAlignment(CEGUI::HA_CENTRE);
+    resultWindow->setVerticalAlignment(CEGUI::VA_CENTRE);
+    resultWindow->setSize(CEGUI::UVector2(CEGUI::UDim(0.4f, 0), CEGUI::UDim(0.4f, 0)));
+    resultWindow->setText("Sadly your Foundations have been demolished and you no longer have a place in this now forever corrupt world. Please quitely seek your death or make a futile attempt to overthrow the now true Justice by clicking this message. Both options end the same way...");
+    resultWindow->setProperty("FrameEnabled", "false");
+    resultWindow->setProperty("BackgroundEnabled", "false");
+    resultWindow->setProperty("HorzFormatting", "WordWrapCentred");
+    resultWindow->disable();
+    resultWindow->setVisible( false );
+
+    sheet->addChildWindow(resultWindow);
+
+    resultWindow = wmgr.createWindow("TaharezLook/StaticText", "YouWonn");
+    resultWindow->setHorizontalAlignment(CEGUI::HA_CENTRE);
+    resultWindow->setVerticalAlignment(CEGUI::VA_CENTRE);
+    resultWindow->setSize(CEGUI::UVector2(CEGUI::UDim(0.4f, 0), CEGUI::UDim(0.4f, 0)));
+    resultWindow->setText("The hearts, ideals, and military fortitudes of the opposing force has been brought to a swift and inevitable end. You may now seek peace in knowing that you are the true form of Justice. From here on you may quietly enjoy your life or continue wiping out the few enemy scum that remain on this planet by clicking this message. Either way, none can deny that you are the true rulers of this world.");
     resultWindow->setProperty("FrameEnabled", "false");
     resultWindow->setProperty("BackgroundEnabled", "false");
     resultWindow->setProperty("HorzFormatting", "WordWrapCentred");
@@ -851,6 +887,8 @@ bool HostGameState::keyPressed(const OIS::KeyEvent &keyEventRef)
     }
     if(keyEventRef.key == OIS::KC_R) //retire the unit on the current cell
     {
+        // needs repair
+        /*
         if(currentCell->myUnit != Unit_EMPTY && currentCell->occupier == myOwner){
             currentCell->myUnit = 0;
             currentCell->myUnitId = -1;
@@ -858,6 +896,7 @@ bool HostGameState::keyPressed(const OIS::KeyEvent &keyEventRef)
             units[currentCell->myUnitId].destroy(m_pSceneMgr);
             BuildButtons();
         }
+        */
         return true;
     }
     if(keyEventRef.key == OIS::KC_X)
@@ -1057,7 +1096,7 @@ void HostGameState::onLeftPressed(const OIS::MouseEvent &evt)
                 }
                 
                 BuildButtons();
-                if(currentCell->myUnit >= 1 && currentCell->myUnit <= 5){ //land unit
+                if(currentCell->myUnit >= 1 && currentCell->myUnit <= 5 && currentCell->occupier == myOwner){ //land unit
                     for(int i=0;i<currentCell->neighbors.size();i++){
                         PlanetCell& temp = earth.cells[currentCell->neighbors[i]];
                         if(temp.terrain != Terrain_WATER && temp.myUnit == Unit_EMPTY){
@@ -1071,7 +1110,7 @@ void HostGameState::onLeftPressed(const OIS::MouseEvent &evt)
                     }
                     unitMoving = currentCell->myUnit;
                 }
-                else if(currentCell->myUnit >= 6 && currentCell->myUnit <= 9){ //naval unit
+                else if(currentCell->myUnit >= 6 && currentCell->myUnit <= 9 && currentCell->occupier == myOwner){ //naval unit
                     for(int i=0;i<currentCell->neighbors.size();i++){
                         PlanetCell& temp = earth.cells[currentCell->neighbors[i]];
                         if(temp.terrain != Terrain_LAND && temp.myUnit == Unit_EMPTY){
@@ -1085,7 +1124,7 @@ void HostGameState::onLeftPressed(const OIS::MouseEvent &evt)
                     }
                     unitMoving = currentCell->myUnit;
                 }
-                else if(currentCell->myUnit >= 10 && currentCell->myUnit <= 12){ //air unit
+                else if(currentCell->myUnit >= 10 && currentCell->myUnit <= 12 && currentCell->occupier == myOwner){ //air unit
                     for(int i=0;i<currentCell->neighbors.size();i++){
                         PlanetCell& temp = earth.cells[currentCell->neighbors[i]];
                         if(temp.myUnit == Unit_EMPTY){
@@ -1204,7 +1243,6 @@ void HostGameState::getInput()
 
 void HostGameState::update(double timeSinceLastFrame)
 {
-    cout << "UpdatingLikeABoss" << endl;
     HostGameState::updateNetwork();
     m_FrameEvent.timeSinceLastFrame = timeSinceLastFrame / 1000.0;
     OgreFramework::getSingletonPtr()->m_pTrayMgr->frameRenderingQueued(m_FrameEvent);
@@ -1235,8 +1273,6 @@ void HostGameState::update(double timeSinceLastFrame)
         return false;
     */
 
-    PlanetCell& temp = earth.cells[128];
-    updateSend('0',temp);
     //Need to capture/update each device
     OgreFramework::getSingletonPtr()->m_pKeyboard->capture();
 }
@@ -1344,11 +1380,11 @@ bool HostGameState::CommandBaseButton(const CEGUI::EventArgs &e)
     
     Unit newUnit(myOwner, Unit_COMMANDBASE);
     commandBaseChange(true, false);
-    newUnit.createManualObject(m_pSceneMgr);
+    newUnit.createCommandObject(m_pSceneMgr);
     newUnit.relocate(earth.vertices[currentCell->id]);
-    newUnit.translate(0,150,0);
     units.push_back(newUnit);
     currentCell->myUnitId = newUnit.id;
+    updateSend('4',*currentCell);
 
     std::time(&currentTime);
     currentCell->timeNeeded = currentTime+currentCell->timer;
@@ -1368,9 +1404,10 @@ bool HostGameState::ArmyBaseButton(const CEGUI::EventArgs &e)
     Unit newUnit(myOwner, Unit_ARMYBASE);
     newUnit.createManualObject(m_pSceneMgr);
     newUnit.relocate(earth.vertices[currentCell->id]); 
-    newUnit.translate(0,150,0);
+
     units.push_back(newUnit);
     currentCell->myUnitId = newUnit.id;
+    updateSend('4',*currentCell);
 
     std::time(&currentTime);
     currentCell->timeNeeded = currentTime+currentCell->timer;
@@ -1390,9 +1427,10 @@ bool HostGameState::NavyBaseButton(const CEGUI::EventArgs &e)
     Unit newUnit(myOwner, Unit_NAVYBASE);
     newUnit.createManualObject(m_pSceneMgr);
     newUnit.relocate(earth.vertices[currentCell->id]);
-    newUnit.translate(0,150,0);
+
     units.push_back(newUnit);
     currentCell->myUnitId = newUnit.id;
+    updateSend('4',*currentCell);
 
     std::time(&currentTime);
     currentCell->timeNeeded = currentTime+currentCell->timer;
@@ -1412,9 +1450,10 @@ bool HostGameState::AirForceBaseButton(const CEGUI::EventArgs &e)
     Unit newUnit(myOwner, Unit_AIRFORCEBASE);
     newUnit.createManualObject(m_pSceneMgr);
     newUnit.relocate(earth.vertices[currentCell->id]); 
-    newUnit.translate(0,150,0);
+
     units.push_back(newUnit);
     currentCell->myUnitId = newUnit.id;
+    updateSend('4',*currentCell);
 
     std::time(&currentTime);
     currentCell->timeNeeded = currentTime+currentCell->timer;
@@ -1434,9 +1473,10 @@ bool HostGameState::NuclearPlantButton(const CEGUI::EventArgs &e)
     Unit newUnit(myOwner, Unit_NUCLEARPLANT);
     newUnit.createManualObject(m_pSceneMgr);
     newUnit.relocate(earth.vertices[currentCell->id]); 
-    newUnit.translate(0,150,0);
+
     units.push_back(newUnit);
     currentCell->myUnitId = newUnit.id;
+    updateSend('4',*currentCell);
 
     std::time(&currentTime);
     currentCell->timeNeeded = currentTime+currentCell->timer;
@@ -1456,9 +1496,10 @@ bool HostGameState::ICBMSiloButton(const CEGUI::EventArgs &e)
     Unit newUnit(myOwner, Unit_ICBMSILO);
     newUnit.createManualObject(m_pSceneMgr);
     newUnit.relocate(earth.vertices[currentCell->id]);
-    newUnit.translate(0,150,0);
+
     units.push_back(newUnit);
     currentCell->myUnitId = newUnit.id;
+    updateSend('4',*currentCell);
 
     std::time(&currentTime);
     currentCell->timeNeeded = currentTime+currentCell->timer;
@@ -1671,6 +1712,16 @@ bool HostGameState::FriendlyReminderButton(const CEGUI::EventArgs &e)
     return true;
 }
 
+bool HostGameState::Continue(const CEGUI::EventArgs &e)
+{
+        CEGUI::Window *resultWindow = CEGUI::WindowManager::getSingleton().getWindow("WinLose");
+        resultWindow->setVisible( false );
+        resultWindow = CEGUI::WindowManager::getSingleton().getWindow("YouWon");
+        resultWindow->setVisible( false );
+        resultWindow = CEGUI::WindowManager::getSingleton().getWindow("YouLost");
+        resultWindow->setVisible( false );
+}
+
 void HostGameState::BuildingImages0()
 {
     CEGUI::Window* w;
@@ -1840,6 +1891,12 @@ void HostGameState::BuildingImagesCB2(PlanetCell &cell)
         w = CEGUI::WindowManager::getSingleton().getWindow("Infantry");
         w->enable();
     }
+    if(cell.owner != myOwner){
+        w = CEGUI::WindowManager::getSingleton().getWindow("Infantry");
+        w->disable();
+        w = CEGUI::WindowManager::getSingleton().getWindow("Infantry");
+        w->disable();
+    }
     if(money < Au_INFANTRY || plutonium < Pt_INFANTRY)
     {
         w = CEGUI::WindowManager::getSingleton().getWindow("Infantry");
@@ -1871,6 +1928,12 @@ void HostGameState::BuildingImagesA3(PlanetCell &cell)
         w->enable();
         w = CEGUI::WindowManager::getSingleton().getWindow("Scud");
         w->enable();
+    }
+    if(cell.owner != myOwner){
+        w = CEGUI::WindowManager::getSingleton().getWindow("Tank");
+        w->disable();
+        w = CEGUI::WindowManager::getSingleton().getWindow("Scud");
+        w->disable();
     }
     if(money < Au_TANK || plutonium < Pt_TANK)
     {
@@ -1904,6 +1967,12 @@ void HostGameState::BuildingImagesN4(PlanetCell &cell)
         w = CEGUI::WindowManager::getSingleton().getWindow("Destroyer");
         w->enable();
     }
+    if(cell.owner != myOwner){
+        w = CEGUI::WindowManager::getSingleton().getWindow("Submarine");
+        w->disable();
+        w = CEGUI::WindowManager::getSingleton().getWindow("Destroyer");
+        w->disable();
+    }
     if(money < Au_SUBMARINE || plutonium < Pt_SUBMARINE)
     {
         w = CEGUI::WindowManager::getSingleton().getWindow("Submarine");
@@ -1936,6 +2005,12 @@ void HostGameState::BuildingImagesAF5(PlanetCell &cell)
         w = CEGUI::WindowManager::getSingleton().getWindow("Fighter");
         w->enable();
     }
+    if(cell.owner != myOwner){
+        w = CEGUI::WindowManager::getSingleton().getWindow("Bomber");
+        w->disable();
+        w = CEGUI::WindowManager::getSingleton().getWindow("Fighter");
+        w->disable();
+    }
     if(money < Au_BOMBER || plutonium < Pt_BOMBER)
     {
         w = CEGUI::WindowManager::getSingleton().getWindow("Bomber");
@@ -1964,6 +2039,10 @@ void HostGameState::BuildingImagesNP6(PlanetCell &cell)
         w = CEGUI::WindowManager::getSingleton().getWindow("NuclearPlantInterface");
         w->enable();
     }
+    if(cell.owner != myOwner){
+        w = CEGUI::WindowManager::getSingleton().getWindow("NuclearPlantInterface");
+        w->disable();
+    }
 }
 void HostGameState::BuildingImagesICBMS7(PlanetCell &cell)
 {
@@ -1980,6 +2059,10 @@ void HostGameState::BuildingImagesICBMS7(PlanetCell &cell)
     {
         w = CEGUI::WindowManager::getSingleton().getWindow("Launch");
         w->enable();
+    }
+    if(cell.owner != myOwner){
+        w = CEGUI::WindowManager::getSingleton().getWindow("Launch");
+        w->disable();
     }
     if(money < Au_LAUNCH || plutonium < Pt_LAUNCH)
     {
@@ -2008,8 +2091,16 @@ void HostGameState::UnitImagesI1(PlanetCell &cell)
         w = CEGUI::WindowManager::getSingleton().getWindow("InfantryInterface");
         w->enable();
     }
+    if(cell.occupier != myOwner){
+        w = CEGUI::WindowManager::getSingleton().getWindow("Capture");
+        w->disable();
+    }
     if(money < Au_CAPTURE || plutonium < Pt_CAPTURE || cell.owner == myOwner || cell.terrain == Terrain_WATER)
     {
+        w = CEGUI::WindowManager::getSingleton().getWindow("Capture");
+        w->disable();
+    }
+    else{
         w = CEGUI::WindowManager::getSingleton().getWindow("Capture");
         w->disable();
     }
@@ -2214,7 +2305,8 @@ bool HostGameState::createUnit(PlanetCell& goal){
             //newUnit.createObject(m_pSceneMgr, "missile.mesh", "MyMaterials/Blue");
         }
         else if(goal.myUnit == Unit_FIGHTER){
-            newUnit.createObject(m_pSceneMgr, "fighter.mesh", "MyMaterials/Blue");
+            newUnit.createFighterObject(m_pSceneMgr);
+            //newUnit.createObject(m_pSceneMgr, "fighter.mesh", "MyMaterials/Blue");
         }
         else if(goal.myUnit == Unit_TANK){
             newUnit.createSymbolObject(m_pSceneMgr);
@@ -2225,13 +2317,16 @@ bool HostGameState::createUnit(PlanetCell& goal){
             //newUnit.createObject(m_pSceneMgr, "soldier.mesh", "MyMaterials/Blue");
         }
         else if(goal.myUnit == Unit_DESTROYER){
-            newUnit.createObject(m_pSceneMgr, "destroyer.mesh", "MyMaterials/Blue");
+            newUnit.createNavyObject(m_pSceneMgr);
+            //newUnit.createObject(m_pSceneMgr, "destroyer.mesh", "MyMaterials/Blue");
         }
         else if(goal.myUnit == Unit_BOMBER){
-            newUnit.createObject(m_pSceneMgr, "bomber.mesh", "MyMaterials/Blue");
+            newUnit.createBomberObject(m_pSceneMgr);
+            //newUnit.createObject(m_pSceneMgr, "bomber.mesh", "MyMaterials/Blue");
         }
         else if(goal.myUnit == Unit_SUBMARINE){
-            newUnit.createObject(m_pSceneMgr, "sub.mesh", "MyMaterials/Blue");
+            newUnit.createNavyObject(m_pSceneMgr);
+            //newUnit.createObject(m_pSceneMgr, "sub.mesh", "MyMaterials/Blue");
         }
         else{
             newUnit.createManualObject(m_pSceneMgr);
@@ -2303,15 +2398,18 @@ bool HostGameState::moveUnit(Unit& unit, PlanetCell& origin, PlanetCell& goal){
         origin.occupier = Owner_NEUTRAL;
         origin.myUnitId = -1;
         goal.myUnit = unit.myType;
-        origin.occupier = myOwner;
+        goal.occupier = myOwner;
         goal.myUnitId = unit.id;
         deluminate(origin);
         illuminate(goal);
         attackBypass = false;
         attack(goal);
-        updateSend('3',origin);
-        if(!attackBypass)
+        if(!attackBypass){
+            updateSend('3',origin);
             updateSend('3',goal);
+        }
+        else
+            updateSend('2',origin);
         BuildButtons();
         return true;
     }
@@ -2419,36 +2517,45 @@ void HostGameState::fireMissile(PlanetCell& origin, PlanetCell& goal){
 
 void HostGameState::retireUnit(PlanetCell& targetCell){
     // No refund! No shit!
+    for(int g = 0; g <= units.size(); g++)
+        cout << "This has ID:" << g << endl;
+    cout << "This is ID:" << targetCell.myUnitId << endl;
     if(targetCell.myUnit == Unit_COMMANDBASE){
         sound.PlaySound(musicCommandKilled);
         commandBaseChange(false, false);
     }
     else
         sound.PlaySound(musicUnitKilled);
+        cout << "DONT KILL..." << endl;
     units[targetCell.myUnitId].destroy(m_pSceneMgr);
+    cout << "MEEEEEEEEEEEEEEE" << endl;
     deluminate(targetCell);
     targetCell.myUnit = 0;
     targetCell.myUnitId = -1;
     targetCell.occupier = Owner_NEUTRAL;
     attackBypass = true;
-    if(!updateBypass)
-        updateSend('2',targetCell);
     BuildButtons();
 }
 
 void HostGameState::killEnemyUnit(PlanetCell& targetCell){
+    for(int g = 0; g <= units.size(); g++)
+        cout << "This has ID:" << g << endl;
+    cout << "This is ID:" << targetCell.myUnitId << endl;
+            cout << "DONT KILL ME NOW" << endl;
     if(targetCell.myUnit == Unit_COMMANDBASE){
         sound.PlaySound(musicEnemyCommandKilled);
         commandBaseChange(false, true);
     }
     else
         sound.PlaySound(musicEnemyUnitKilled);
+        cout << "DONT KILL..." << endl;
     units[targetCell.myUnitId].destroy(m_pSceneMgr);
+    cout << "MEEEEEEEEEEEEEEE" << endl;
     targetCell.myUnit = 0;
     targetCell.myUnitId = -1;
     targetCell.occupier = Owner_NEUTRAL;
     if(!updateBypass)
-        updateSend('2',targetCell);
+        updateSend('0',targetCell);
     BuildButtons();
 }
 
@@ -2459,7 +2566,7 @@ void HostGameState::nuke(PlanetCell& targetCell){
     targetCell.myUnitId = -1;
     targetCell.occupier = Owner_NEUTRAL;
     if(!updateBypass)
-        updateSend('2',targetCell);
+        updateSend('0',targetCell);
     BuildButtons();
 }
 
@@ -2680,12 +2787,19 @@ void HostGameState::processTimer(void)
 
 void HostGameState::capture(PlanetCell& targetCell)
 {
+    cout << "Starting capture..." << endl;
     sound.PlaySound(musicCaptureComplete);
+    cout << "Starting capture...1" << endl;
     targetCell.capturing = false;
+    cout << "Starting capture...2" << endl;
     targetCell.owner = myOwner;
+    cout << "Starting capture...3" << endl;
     earth.own(m_pSceneMgr, targetCell);
+    cout << "Starting capture...4" << endl;
     earth.updateBorderSegments(m_pSceneMgr);
+    cout << "Starting capture...5" << endl;
     updateSend('1',targetCell);
+    cout << "Capture Complete" << endl;
 }
 
 
@@ -2703,10 +2817,12 @@ void HostGameState::attack(PlanetCell& targetCell)
 
 void HostGameState::combat(PlanetCell& yourCell,PlanetCell& enemyCell)
 {
+        cout << "BATTLEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE" << endl;
     int yourUnit = yourCell.myUnit;
     int enemyUnit = enemyCell.myUnit;
-    if(yourUnit == enemyUnit && yourUnit != Unit_BOMBER){
-        //Do Vector Battle TODO
+    if(yourUnit == enemyUnit){
+        retireUnit(yourCell);
+        killEnemyUnit(enemyCell);
     }
     else if(yourUnit == Unit_INFANTRY){
         retireUnit(yourCell);
@@ -2758,58 +2874,74 @@ void HostGameState::combat(PlanetCell& yourCell,PlanetCell& enemyCell)
 
 void HostGameState::commandBaseChange(bool built, bool enemy)
 {
-    if(built)
+    if(built && !enemy)
     {
         commandBaseTotal++;
         myCommandBase++;
     }
-    else if(enemy)
+    else if(enemy && !built)
     {
         enemyCommandBase--;
     }
-    else{
+    else if(!built && !enemy){
         myCommandBase--;
     }
-    std::string commandMy;
-    std::string commandEnemy;
-    std::string commandTotal;
-    std::string commandMax;
-    std::stringstream out;
-    out << commandBaseTotal;
-    commandTotal = out.str();
-    out.str( std::string() );
-    out.clear();
-    out << myCommandBase;
-    commandMy = out.str();
-    out.str( std::string() );
-    out.clear();
-    out << enemyCommandBase;
-    commandEnemy = out.str();
-    out.str( std::string() );
-    out.clear();   
-    out << commandBaseMax;
-    commandMax = out.str();
-    out.str( std::string() );
-    out.clear(); 
-    CEGUI::Window *resultWindow = CEGUI::WindowManager::getSingleton().getWindow("ProgressText1");
-    if(myOwner == Owner_BLUE)
-        resultWindow->setText("[colour='FF0000FF']Player Command Bases Remaining: "+commandMy+"/"+commandTotal+"");
-    else
-        resultWindow->setText("[colour='FFFF0000']Player Command Bases Remaining: "+commandMy+"/"+commandTotal+"");
+    if(!(built && enemy)){
+        std::string commandMy;
+        std::string commandEnemy;
+        std::string commandTotal;
+        std::string commandMax;
+        std::stringstream out;
+        out << commandBaseTotal;
+        commandTotal = out.str();
+        out.str( std::string() );
+        out.clear();
+        out << myCommandBase;
+        commandMy = out.str();
+        out.str( std::string() );
+        out.clear();
+        out << enemyCommandBase;
+        commandEnemy = out.str();
+        out.str( std::string() );
+        out.clear();   
+        out << commandBaseMax;
+        commandMax = out.str();
+        out.str( std::string() );
+        out.clear(); 
+            cout << "commandBaseMax:" << commandBaseMax << endl;
+            cout << "commandBaseTotal:" << commandBaseTotal << endl;
+            cout << "myCommandBase:" << myCommandBase << endl;
+            cout << "enemyCommandBase:" << enemyCommandBase << endl;
+        CEGUI::Window *resultWindow = CEGUI::WindowManager::getSingleton().getWindow("ProgressText1");
+        if(myOwner == Owner_BLUE)
+            resultWindow->setText("[colour='FF0000FF']Player Command Bases Remaining: "+commandMy+"/"+commandTotal+"");
+        else
+            resultWindow->setText("[colour='FFFF0000']Player Command Bases Remaining: "+commandMy+"/"+commandTotal+"");
 
-    resultWindow = CEGUI::WindowManager::getSingleton().getWindow("ProgressText2");
+        resultWindow = CEGUI::WindowManager::getSingleton().getWindow("ProgressText2");
 
-    if(myOwner == Owner_BLUE)
-        resultWindow->setText("[colour='FFFF0000']Enemy Command Bases Remaining: "+commandEnemy+"/"+commandMax+"");
-    else
-        resultWindow->setText("[colour='FF0000FF']Enemy Command Bases Remaining: "+commandEnemy+"/"+commandMax+"");
-    if(commandBaseTotal == commandBaseMax && enemyCommandBase == 0){
-        sound.PlaySound(musicVictory);
-        //YouWin
-    }
-    if(commandBaseTotal == commandBaseMax && myCommandBase == 0){
-        sound.PlaySound(musicDefeat);
-        //YouLose
+        if(myOwner == Owner_BLUE)
+            resultWindow->setText("[colour='FFFF0000']Enemy Command Bases Remaining: "+commandEnemy+"/"+commandMax+"");
+        else
+            resultWindow->setText("[colour='FF0000FF']Enemy Command Bases Remaining: "+commandEnemy+"/"+commandMax+"");
+        if(commandBaseTotal == commandBaseMax && enemyCommandBase == 0 && !diedinbattle){
+            sound.PlaySound(musicVictory);
+            resultWindow = CEGUI::WindowManager::getSingleton().getWindow("WinLose");
+            resultWindow->setVisible( true );
+            resultWindow = CEGUI::WindowManager::getSingleton().getWindow("YouWon");
+            resultWindow->setVisible( true );
+            resultWindow->activate();
+            diedinbattle = true;
+        }
+        if(commandBaseTotal == commandBaseMax && myCommandBase == 0 && !diedinbattle){
+            sound.PlaySound(musicDefeat);
+            resultWindow = CEGUI::WindowManager::getSingleton().getWindow("WinLose");
+            resultWindow->setVisible( true );
+            resultWindow = CEGUI::WindowManager::getSingleton().getWindow("YouLost");
+            resultWindow->setVisible( true );
+            resultWindow->activate();
+            diedinbattle = true;
+        }
     }
 }
 
@@ -2873,6 +3005,9 @@ void HostGameState::initNetwork(void)
 
 void HostGameState::updateNetwork(void)
 {
+    // Check for activity on the socket set
+    SDLNet_CheckSockets(socketset, 0);
+
     if (SDLNet_SocketReady(tcpsock)){
         // Accept the connection, add it to our array and the socket set
         cout << "Client connected.\n";
@@ -2880,42 +3015,42 @@ void HostGameState::updateNetwork(void)
         client[j] = new_tcpsock;
         SDLNet_TCP_AddSocket(socketset, client[j]);
         j++;
-        cout << "GOTAMOTHERFUCKINGCLIENTTTTTTTTTTTTTTTTTTTTTTTT" << endl;
+        if(!isPlayer){
+            CEGUI::Window *resultWindow = CEGUI::WindowManager::getSingleton().getWindow("NetworkWaiting");
+            resultWindow->setVisible( false );
+            resultWindow = CEGUI::WindowManager::getSingleton().getWindow("FriendlyReminder");
+            resultWindow->setVisible( true );
+            resultWindow = CEGUI::WindowManager::getSingleton().getWindow("FriendlyReminderText1");
+            resultWindow->setVisible( true );
+            resultWindow->activate();
+            isPlayer = true;
+
+            PlanetCell& temp = earth.cells[1465];
+            temp.myUnit_pending = Unit_COMMANDBASE;
+            temp.timer = BuildTime_COMMANDBASE;
+            temp.building = true;
+            processResources(-Au_COMMANDBASE,-Pt_COMMANDBASE);
+            
+            Unit newUnit(myOwner, Unit_COMMANDBASE);
+            commandBaseChange(true, false);
+            newUnit.createCommandObject(m_pSceneMgr);
+            newUnit.relocate(earth.vertices[temp.id]);
+
+            units.push_back(newUnit);
+            temp.myUnitId = newUnit.id;
+            updateSend('4',temp);
+
+            std::time(&currentTime);
+            temp.timeNeeded = currentTime+temp.timer;
+            Times tempt(currentTime+temp.timer , temp.id);
+            eventQueue.push(tempt);
+        }
     }
     // Check client sockets for activity
     for (i = 0; i < MAXSOCKET; i++){
         if (SDLNet_SocketReady(client[i])){
-            if(!isPlayer){
-                CEGUI::Window *resultWindow = CEGUI::WindowManager::getSingleton().getWindow("NetworkWaiting");
-                resultWindow->setVisible( false );
-                resultWindow = CEGUI::WindowManager::getSingleton().getWindow("FriendlyReminder");
-                    resultWindow->setVisible( true );
-                resultWindow = CEGUI::WindowManager::getSingleton().getWindow("FriendlyReminderText1");
-                resultWindow->setVisible( true );
-                resultWindow->activate();
-                isPlayer = true;
-
-                PlanetCell& temp = earth.cells[1465];
-                temp.myUnit_pending = Unit_COMMANDBASE;
-                temp.timer = BuildTime_COMMANDBASE;
-                temp.building = true;
-                processResources(-Au_COMMANDBASE,-Pt_COMMANDBASE);
-                
-                Unit newUnit(myOwner, Unit_COMMANDBASE);
-                commandBaseChange(true, false);
-                newUnit.createManualObject(m_pSceneMgr);
-                newUnit.relocate(earth.vertices[temp.id]);
-                newUnit.translate(0,150,0);
-                units.push_back(newUnit);
-                temp.myUnitId = newUnit.id;
-
-                std::time(&currentTime);
-                temp.timeNeeded = currentTime+temp.timer;
-                Times tempt(currentTime+temp.timer , temp.id);
-                eventQueue.push(tempt);
-
-            }
             // There is an incoming message
+            cout << "UpdatingLikeABoss" << endl;
             result = SDLNet_TCP_Recv(client[i], data, BUFFER);
             if (result == 0){
                 cout << "Client " << i << " disconnected.\n";
@@ -2926,13 +3061,15 @@ void HostGameState::updateNetwork(void)
                 client[i] = NULL;
             }
             else{
-
+cout << "Got the following from server: " << data << "(" << result << " bytes)" << endl;
             char indicator = 'p';
-            PlanetCell &temp = earth.cells[currentCell->id];;
-
+            PlanetCell &temp = earth.cells[0];
+            cout << "WEll I didnt crash on cell..." << endl;
             memcpy(&indicator, data,  1);
+            cout << "Made it past first memcpy..." << endl;
             memcpy(&temp ,data+1, sizeof(PlanetCell));
-            
+            cout << "and the second......" << endl;
+
             processUpdate(indicator, temp);
             }
         }
@@ -2941,11 +3078,12 @@ void HostGameState::updateNetwork(void)
 
 void HostGameState::updateSend(char indicator, PlanetCell &cell)
 {
+    cout << "UpdatingLikeABoss1111111" << endl;
     // Send message
     //strcpy(data, "Hello Client!");
     memcpy(data, &indicator, 1);
     memcpy(data+1, &cell, sizeof(PlanetCell));
-
+    cout << "UpdatingLikeABoss2222222" << endl;
     // Check client sockets for activity
     for (i = 0; i < MAXSOCKET; i++){
         // There is an incoming message
@@ -2964,12 +3102,17 @@ void HostGameState::updateSend(char indicator, PlanetCell &cell)
             }
         }
     }
+    cout << "UpdatingLikeABoss3333333" << endl;
 }
 
 void HostGameState::processUpdate(char &indicator, PlanetCell& targetCell)
 {
+    cout << "Hi Mom, im a process!" << endl;
     PlanetCell& temp = earth.cells[targetCell.id];
     if(indicator == '0'){
+        updateBypass = true;
+        retireUnit(temp);
+        updateBypass = false;
     }
     //Captured
     else if(indicator == '1'){
@@ -2982,62 +3125,190 @@ void HostGameState::processUpdate(char &indicator, PlanetCell& targetCell)
     //Someone Died
     else if(indicator == '2'){
         updateBypass = true;
-        if(temp.occupier == myOwner)
-            retireUnit(temp);
-        else
-            killEnemyUnit(temp);
+        killEnemyUnit(temp);
         updateBypass = false;
     }
     //Someone Moved
     else if(indicator == '3'){
         if(targetCell.myUnitId == -1){
+            moveID = temp.myUnitId;
             temp.myUnit = targetCell.myUnit;
-            temp.occupier = targetCell.occupier;
-            temp.myUnitId = targetCell.myUnitId;
+            temp.occupier = Owner_NEUTRAL;
+            temp.myUnitId = -1;
         }
         else{
             temp.myUnit = targetCell.myUnit;
-            temp.occupier = targetCell.occupier;
-            temp.myUnitId = targetCell.myUnitId;
+            temp.occupier = myEnemy;
+            temp.myUnitId = moveID;
             units[temp.myUnitId].relocate(earth.vertices[temp.id]);
         }
     }
     //Someone was Made
     else if(indicator == '4'){
-        temp.myUnit = targetCell.myUnit_pending;
-        temp.occupier = targetCell.myUnit_pending;
+        temp.myUnit = targetCell.myUnit;
+        temp.occupier = myEnemy;
         temp.myUnit_pending = targetCell.myUnit_pending;
-        Unit newUnit(targetCell.owner, targetCell.myUnit);
         if(temp.myUnit == Unit_SCUD){
+            Unit newUnit(myEnemy, targetCell.myUnit);
             newUnit.createSymbolObject(m_pSceneMgr);
             //newUnit.createObject(m_pSceneMgr, "missile.mesh", "MyMaterials/Blue");
+            newUnit.relocate(earth.vertices[temp.id]);
+            //newUnit.setDirection(goal.myUnitDirection);
+            units.push_back(newUnit);
+            temp.myUnitId = newUnit.id;
         }
         else if(temp.myUnit == Unit_FIGHTER){
-            newUnit.createObject(m_pSceneMgr, "fighter.mesh", "MyMaterials/Blue");
+            Unit newUnit(myEnemy, targetCell.myUnit);
+            newUnit.createFighterObject(m_pSceneMgr);
+            //newUnit.createObject(m_pSceneMgr, "fighter.mesh", "MyMaterials/Blue");
+            newUnit.relocate(earth.vertices[temp.id]);
+            //newUnit.setDirection(goal.myUnitDirection);
+            units.push_back(newUnit);
+            temp.myUnitId = newUnit.id;
         }
         else if(temp.myUnit == Unit_TANK){
+            Unit newUnit(myEnemy, targetCell.myUnit);
             newUnit.createSymbolObject(m_pSceneMgr);
             //newUnit.createObject(m_pSceneMgr, "tank.mesh", "MyMaterials/Blue");
+            newUnit.relocate(earth.vertices[temp.id]);
+            //newUnit.setDirection(goal.myUnitDirection);
+            units.push_back(newUnit);
+            temp.myUnitId = newUnit.id;
         }
         else if(temp.myUnit == Unit_INFANTRY){
+            Unit newUnit(myEnemy, targetCell.myUnit);
             newUnit.createSymbolObject(m_pSceneMgr);
             //newUnit.createObject(m_pSceneMgr, "soldier.mesh", "MyMaterials/Blue");
+            newUnit.relocate(earth.vertices[temp.id]);
+            //newUnit.setDirection(goal.myUnitDirection);
+            units.push_back(newUnit);
+            temp.myUnitId = newUnit.id;
         }
         else if(temp.myUnit == Unit_DESTROYER){
-            newUnit.createObject(m_pSceneMgr, "destroyer.mesh", "MyMaterials/Blue");
+            Unit newUnit(myEnemy, targetCell.myUnit);
+            newUnit.createNavyObject(m_pSceneMgr);
+            //newUnit.createObject(m_pSceneMgr, "destroyer.mesh", "MyMaterials/Blue");
+            newUnit.relocate(earth.vertices[temp.id]);
+            //newUnit.setDirection(goal.myUnitDirection);
+            units.push_back(newUnit);
+            temp.myUnitId = newUnit.id;
         }
         else if(temp.myUnit == Unit_BOMBER){
-            newUnit.createObject(m_pSceneMgr, "bomber.mesh", "MyMaterials/Blue");
+            Unit newUnit(myEnemy, targetCell.myUnit);
+            newUnit.createBomberObject(m_pSceneMgr);
+            //newUnit.createObject(m_pSceneMgr, "bomber.mesh", "MyMaterials/Blue");
+            newUnit.relocate(earth.vertices[temp.id]);
+            //newUnit.setDirection(goal.myUnitDirection);
+            units.push_back(newUnit);
+            temp.myUnitId = newUnit.id;
         }
         else if(temp.myUnit == Unit_SUBMARINE){
-            newUnit.createObject(m_pSceneMgr, "sub.mesh", "MyMaterials/Blue");
+            Unit newUnit(myEnemy, targetCell.myUnit);
+            newUnit.createNavyObject(m_pSceneMgr);
+            //newUnit.createObject(m_pSceneMgr, "sub.mesh", "MyMaterials/Blue");
+            newUnit.relocate(earth.vertices[temp.id]);
+            //newUnit.setDirection(goal.myUnitDirection);
+            units.push_back(newUnit);
+            temp.myUnitId = newUnit.id;
+        }
+        else if(temp.myUnit_pending == Unit_COMMANDBASE){
+            temp.timer = BuildTime_COMMANDBASE;
+            temp.building = true;
+            Unit newUnit(myEnemy, targetCell.myUnit_pending);
+            commandBaseChange(true, true);
+            newUnit.createCommandObject(m_pSceneMgr);
+
+            std::time(&currentTime);
+            temp.timeNeeded = currentTime+temp.timer;
+            Times tempt(currentTime+temp.timer , temp.id);
+            eventQueue.push(tempt);
+            newUnit.relocate(earth.vertices[temp.id]);
+            //newUnit.setDirection(goal.myUnitDirection);
+            units.push_back(newUnit);
+            temp.myUnitId = newUnit.id;
+        }
+        else if(temp.myUnit_pending == Unit_ARMYBASE){
+            temp.timer = BuildTime_ARMYBASE;
+            temp.building = true;
+            Unit newUnit(myEnemy, targetCell.myUnit_pending);
+            newUnit.createManualObject(m_pSceneMgr);
+
+            std::time(&currentTime);
+            temp.timeNeeded = currentTime+temp.timer;
+            Times tempt(currentTime+temp.timer , temp.id);
+            eventQueue.push(tempt);
+            newUnit.relocate(earth.vertices[temp.id]);
+            //newUnit.setDirection(goal.myUnitDirection);
+            units.push_back(newUnit);
+            temp.myUnitId = newUnit.id;
+        }
+        else if(temp.myUnit_pending == Unit_NAVYBASE){
+            temp.timer = BuildTime_NAVYBASE;
+            temp.building = true;
+            Unit newUnit(myEnemy, targetCell.myUnit_pending);
+            newUnit.createManualObject(m_pSceneMgr);
+
+            std::time(&currentTime);
+            temp.timeNeeded = currentTime+temp.timer;
+            Times tempt(currentTime+temp.timer , temp.id);
+            eventQueue.push(tempt);
+            newUnit.relocate(earth.vertices[temp.id]);
+            //newUnit.setDirection(goal.myUnitDirection);
+            units.push_back(newUnit);
+            temp.myUnitId = newUnit.id;
+        }
+        else if(temp.myUnit_pending == Unit_AIRFORCEBASE){
+            temp.timer = BuildTime_AIRFORCEBASE;
+            temp.building = true;
+            Unit newUnit(myEnemy, targetCell.myUnit_pending);
+            newUnit.createManualObject(m_pSceneMgr);
+
+            std::time(&currentTime);
+            temp.timeNeeded = currentTime+temp.timer;
+            Times tempt(currentTime+temp.timer , temp.id);
+            eventQueue.push(tempt);
+            newUnit.relocate(earth.vertices[temp.id]);
+            //newUnit.setDirection(goal.myUnitDirection);
+            units.push_back(newUnit);
+            temp.myUnitId = newUnit.id;
+        }
+        else if(temp.myUnit_pending == Unit_NUCLEARPLANT){
+            temp.timer = BuildTime_NUCLEARPLANT;
+            temp.building = true;
+            Unit newUnit(myEnemy, targetCell.myUnit_pending);
+            newUnit.createManualObject(m_pSceneMgr);
+
+            std::time(&currentTime);
+            temp.timeNeeded = currentTime+temp.timer;
+            Times tempt(currentTime+temp.timer , temp.id);
+            eventQueue.push(tempt);
+            newUnit.relocate(earth.vertices[temp.id]);
+            //newUnit.setDirection(goal.myUnitDirection);
+            units.push_back(newUnit);
+            temp.myUnitId = newUnit.id;
+        }
+        else if(temp.myUnit_pending == Unit_ICBMSILO){
+            temp.timer = BuildTime_ICBMSILO;
+            temp.building = true;
+            Unit newUnit(myEnemy, targetCell.myUnit_pending);
+            newUnit.createManualObject(m_pSceneMgr);
+
+            std::time(&currentTime);
+            temp.timeNeeded = currentTime+temp.timer;
+            Times tempt(currentTime+temp.timer , temp.id);
+            eventQueue.push(tempt);
+            newUnit.relocate(earth.vertices[temp.id]);
+            //newUnit.setDirection(goal.myUnitDirection);
+            units.push_back(newUnit);
+            temp.myUnitId = newUnit.id;
         }
         else{
+            Unit newUnit(myEnemy, targetCell.myUnit);
             newUnit.createManualObject(m_pSceneMgr);
+            newUnit.relocate(earth.vertices[temp.id]);
+            //newUnit.setDirection(goal.myUnitDirection);
+            units.push_back(newUnit);
+            temp.myUnitId = newUnit.id;
         }
-        newUnit.relocate(earth.vertices[temp.id]);
-        //newUnit.setDirection(goal.myUnitDirection);
-        units.push_back(newUnit);
-        temp.myUnitId = newUnit.id;
     }
 }

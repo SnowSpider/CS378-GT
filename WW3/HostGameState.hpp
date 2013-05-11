@@ -92,6 +92,7 @@ public:
     bool CaptureButton(const CEGUI::EventArgs &e);
     bool LaunchButton(const CEGUI::EventArgs &e);
     bool FriendlyReminderButton(const CEGUI::EventArgs &e);
+    bool Continue(const CEGUI::EventArgs &e);
     
     void DeButton();
     void BuildingImages0();
@@ -211,7 +212,9 @@ private:
     char* musicDefeat;
     bool updateBypass;
     bool attackBypass;
-    
+    int moveID;
+    bool diedinbattle;
+
     PlanetCell* currentCell;
     PlanetCell* lastCell;
     bool timerup;

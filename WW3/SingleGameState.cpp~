@@ -1350,7 +1350,7 @@ bool SingleGameState::ArmyBaseButton(const CEGUI::EventArgs &e)
     Unit newUnit(myOwner, Unit_ARMYBASE);
     newUnit.createManualObject(m_pSceneMgr);
     newUnit.relocate(earth.vertices[currentCell->id]); 
-    newUnit.translate(0,0,newUnit.height);
+    
     units.push_back(newUnit);
     currentCell->myUnitId = newUnit.id;
 
@@ -1372,7 +1372,7 @@ bool SingleGameState::NavyBaseButton(const CEGUI::EventArgs &e)
     Unit newUnit(myOwner, Unit_NAVYBASE);
     newUnit.createManualObject(m_pSceneMgr);
     newUnit.relocate(earth.vertices[currentCell->id]);
-    newUnit.translate(0,0,newUnit.height);
+    
     units.push_back(newUnit);
     currentCell->myUnitId = newUnit.id;
 
@@ -1394,7 +1394,7 @@ bool SingleGameState::AirForceBaseButton(const CEGUI::EventArgs &e)
     Unit newUnit(myOwner, Unit_AIRFORCEBASE);
     newUnit.createManualObject(m_pSceneMgr);
     newUnit.relocate(earth.vertices[currentCell->id]); 
-    newUnit.translate(0,0,newUnit.height);
+    
     units.push_back(newUnit);
     currentCell->myUnitId = newUnit.id;
 
@@ -1416,7 +1416,7 @@ bool SingleGameState::NuclearPlantButton(const CEGUI::EventArgs &e)
     Unit newUnit(myOwner, Unit_NUCLEARPLANT);
     newUnit.createManualObject(m_pSceneMgr);
     newUnit.relocate(earth.vertices[currentCell->id]); 
-    newUnit.translate(0,0,newUnit.height);
+    
     units.push_back(newUnit);
     currentCell->myUnitId = newUnit.id;
 
@@ -1438,7 +1438,7 @@ bool SingleGameState::ICBMSiloButton(const CEGUI::EventArgs &e)
     Unit newUnit(myOwner, Unit_ICBMSILO);
     newUnit.createManualObject(m_pSceneMgr);
     newUnit.relocate(earth.vertices[currentCell->id]);
-    newUnit.translate(0,0,newUnit.height);
+    
     units.push_back(newUnit);
     currentCell->myUnitId = newUnit.id;
 

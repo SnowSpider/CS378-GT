@@ -132,7 +132,7 @@ public:
     void commandBaseChange(bool, bool);
     void initNetwork();
     void updateNetwork();
-    void updateSend(char &indicator, PlanetCell &cell);
+    void updateSend(char, PlanetCell &cell);
     float y(float, float, float);
     void processUpdate(char &indicator, PlanetCell& targetCell);
     
@@ -211,7 +211,9 @@ private:
     char* musicDefeat;
     bool updateBypass;
     bool attackBypass;
-    
+    int moveID;
+    bool diedinbattle;
+
     PlanetCell* currentCell;
     PlanetCell* lastCell;
     bool timerup;

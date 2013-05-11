@@ -36,6 +36,7 @@ using namespace std;
 
 #define PORT 1234 // The port we are connecting to
 #define BUFFER 512 // Size of message buffer
+#define MAXSOCKET 10 // Max number of clients to connect
 #define GRAVITY 9.80665
 
 //|||||||||||||||||||||||||||||||||||||||||||||||
@@ -90,6 +91,7 @@ public:
     bool CaptureButton(const CEGUI::EventArgs &e);
     bool LaunchButton(const CEGUI::EventArgs &e);
     bool FriendlyReminderButton(const CEGUI::EventArgs &e);
+    bool Continue(const CEGUI::EventArgs &e);
     
     void DeButton();
     void BuildingImages0();
@@ -209,7 +211,10 @@ private:
     char* musicDefeat;
     bool updateBypass;
     bool attackBypass;
-    
+    bool firstContact;
+    int moveID;
+    bool diedinbattle;
+
     PlanetCell* currentCell;
     PlanetCell* lastCell;
     bool timerup;
@@ -238,8 +243,11 @@ private:
     const char *host; // Where we store the host name
     IPaddress ipaddress; // The IP we will connect to
     TCPsocket tcpsock; // The socket to use
+    TCPsocket new_tcpsock; // A temp socket
+    TCPsocket client[MAXSOCKET]; // An array of sockets for the clients
+    SDLNet_SocketSet socketset; // A set of sockets
     string servername; // The server name
-    int result;
+    int i, j, result;
     char data[BUFFER];
 };
 //|||||||||||||||||||||||||||||||||||||||||||||||
